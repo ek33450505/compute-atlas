@@ -65,22 +65,45 @@ EOF
 	# SUBMIT_SUMMARY_MODE=missing|garbage breaks the summary on purpose.
 	cat >"$BIN_DIR/fake-submit" <<'FAKE_SUBMIT_EOF'
 #!/usr/bin/env bash
-rid=""; st=""
+rid=""; st=""; resumed=0
+echo "submit $*" >>"${SUBMIT_ARGV_LOG:-/dev/null}"
 for a in "$@"; do
 	case "$a" in
 	--run-id=*) rid="${a#--run-id=}" ;;
 	--state=*) st="${a#--state=}" ;;
+	--resume-from-log=*) resumed=1 ;;
 	esac
 done
 var="SUBMIT_COUNTS_$st"
 counts="${!var:-${SUBMIT_COUNTS:-0 0}}"
 set -- $counts
+# SUBMIT_WRITES_LOG=0: exit before writing any run log (the real script's
+# "exited 3 before its first checkpoint" case).
+[ "${SUBMIT_WRITES_LOG:-1}" = 1 ] && write_log=1 || write_log=0
+[ "$write_log" = 1 ] || SUBMIT_SUMMARY_MODE=missing
 case "${SUBMIT_SUMMARY_MODE:-ok}" in
 missing) ;;
 garbage) echo "not json" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
-*) printf '{"runId":"%s","discovered":%s,"submitted":0,"skippedInvalid":%s}\n' "$rid" "$1" "$2" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
+*) subvar="SUBMIT_SUBMITTED_$st"; printf '{"runId":"%s","discovered":%s,"submitted":%s,"skippedInvalid":%s,"skippedUnreachable":%s}\n' "$rid" "$1" "${!subvar:-${SUBMIT_SUBMITTED:-0}}" "$2" "${SUBMIT_UNREACHABLE:-0}" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
 esac
-exit 0
+# SUBMIT_AUTH_REJECTED=<n>: a summary carrying apiAuthRejected (the real
+# script's field), for the enrichment cursor-promotion rule.
+if [ -n "${SUBMIT_AUTH_REJECTED:-}" ] && [ "${SUBMIT_SUMMARY_MODE:-ok}" = ok ]; then
+	printf '{"runId":"%s","discovered":0,"submitted":0,"skippedInvalid":0,"apiAuthRejected":%s}\n' "$rid" "$SUBMIT_AUTH_REJECTED" >"$DISCOVERY_LOG_DIR/run-$rid.json"
+fi
+# Exit code seam: SUBMIT_RESUBMIT_RC for a --resume-from-log call, else
+# SUBMIT_RC_ENRICHMENT for the enrichment run, else SUBMIT_RC (default 0).
+# SUBMIT_CRASH_ON_RESUME=1: after checkpointing its log, TERM the parent run.sh
+# (a crash mid-drain) and wait to be reaped.
+if [ "$resumed" = 1 ] && [ "${SUBMIT_CRASH_ON_RESUME:-0}" = 1 ]; then
+	kill -TERM "$PPID"
+	sleep 5
+fi
+if [ "$resumed" = 1 ]; then exit "${SUBMIT_RESUBMIT_RC:-0}"; fi
+case "$rid" in
+*-enrichment) exit "${SUBMIT_RC_ENRICHMENT:-${SUBMIT_RC:-0}}" ;;
+esac
+exit "${SUBMIT_RC:-0}"
 FAKE_SUBMIT_EOF
 	chmod +x "$BIN_DIR/fake-submit"
 
@@ -110,6 +133,57 @@ case "\$*" in
 	;;
 *submit-candidates.ts*)
 	exec "$BIN_DIR/fake-submit" "\$@"
+	;;
+*preflight.ts*)
+	# preflight.ts must never really run (Ollama + DB reads). Passes by default;
+	# tests set PREFLIGHT_RC=1 (config) or 3 (environmental).
+	[ "\${PREFLIGHT_RC:-0}" = 0 ] || echo "preflight: FAIL stub - forced rc \${PREFLIGHT_RC}" >&2
+	exit \${PREFLIGHT_RC:-0}
+	;;
+*extract-fields.ts*)
+	# EXTRACT_WRITES_OUT=1: leave a non-empty --out file so the enrichment
+	# submit runs; default writes nothing (the lane skips its submit).
+	# EXTRACT_NEXT=<id>: propose that cursor via --next-cursor-out (the file is
+	# written only when set, like the real tool). EXTRACT_RC: exit code.
+	echo "extract \$*" >>"$TEST_TMP/lane-argv.log"
+	while [ \$# -gt 0 ]; do
+		if [ "\$1" = --out ] && [ "\${EXTRACT_WRITES_OUT:-0}" = 1 ]; then echo '[]' >"\$2"; fi
+		if [ "\$1" = --next-cursor-out ] && [ -n "\${EXTRACT_NEXT:-}" ]; then echo "\$EXTRACT_NEXT" >"\$2"; fi
+		shift
+	done
+	exit \${EXTRACT_RC:-0}
+	;;
+*verify-fields.ts*)
+	# Same seam for the read-only verify lane: VERIFY_NEXT / VERIFY_RC.
+	echo "verify \$*" >>"$TEST_TMP/lane-argv.log"
+	while [ \$# -gt 0 ]; do
+		if [ "\$1" = --next-cursor-out ] && [ -n "\${VERIFY_NEXT:-}" ]; then echo "\$VERIFY_NEXT" >"\$2"; fi
+		shift
+	done
+	exit \${VERIFY_RC:-0}
+	;;
+*scripts/discovery/cursor.ts*)
+	# cursor.ts --write <path> <id>: CURSOR_WRITE_RC nonzero = failed write,
+	# old file untouched (the real tool is atomic).
+	# Parsed by flag, not position: a changed call shape fails loudly (exit 2,
+	# nothing written) instead of writing a stray file.
+	_cw_path=""; _cw_id=""; _cw_seen=0
+	while [ \$# -gt 0 ]; do
+		if [ "\$1" = --write ]; then
+			_cw_seen=1
+			[ \$# -ge 3 ] || break
+			_cw_path="\$2"; _cw_id="\$3"
+			break
+		fi
+		shift
+	done
+	if [ "\$_cw_seen" != 1 ] || [ -z "\$_cw_path" ] || [ -z "\$_cw_id" ]; then
+		echo "cursor.ts stub: expected '--write <path> <id>', got: \$*" >&2
+		exit 2
+	fi
+	[ "\${CURSOR_WRITE_RC:-0}" = 0 ] || exit \$CURSOR_WRITE_RC
+	printf '%s\n' "\$_cw_id" >"\$_cw_path"
+	exit 0
 	;;
 *check-sources.ts*)
 	# Healthy by default. A nonzero exit is a recorded FAILURES entry (see the
@@ -168,7 +242,8 @@ EOF
 		chmod +x "$BIN_DIR/$_surface"
 	done
 
-	export HOME LOG_DIR CLAUDE_CALL_LOG NPX_CALL_LOG NOTIFY_CALL_LOG
+	SUBMIT_ARGV_LOG="$TEST_TMP/submit-argv.log"
+	export HOME LOG_DIR CLAUDE_CALL_LOG NPX_CALL_LOG NOTIFY_CALL_LOG SUBMIT_ARGV_LOG
 	export PATH="$BIN_DIR:$PATH"
 	export DISCOVERY_LOG_DIR="$LOG_DIR"
 
@@ -199,10 +274,17 @@ EOF
 	ENV_FIXTURE="$TEST_TMP/env-fixture"
 	printf 'DISCOVERY_READ_DATABASE_URL=dummy-reader-value\nAPI_INTAKE_TOKEN=dummy-intake-value\n' >"$ENV_FIXTURE"
 	export DISCOVERY_ENV_FILE="$ENV_FIXTURE" DISCOVERY_TEST_MODE=1
-	unset DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN
+	unset DISCOVERY_REQUIRE_READER DISCOVERY_REQUIRE_INTAKE_TOKEN DISCOVERY_REQUIRE_VERIFY DISCOVERY_ALLOW_DIRTY PREFLIGHT_RC
+
+	# run.sh's git guard (A-OPS-10) would inspect the real worktree this suite runs
+	# from. The seam is honored only under DISCOVERY_TEST_MODE=1; the guard tests
+	# below unset it and run a COPY of run.sh inside a throwaway git repo.
+	export DISCOVERY_SKIP_GIT_GUARD=1
 }
 
 teardown() {
+	# Wave 5 lock tests park a live `sleep` as the "other run"; never leak it.
+	[ -z "${BG_PID:-}" ] || kill "$BG_PID" 2>/dev/null || true
 	rm -rf "$TEST_TMP"
 }
 
@@ -1975,6 +2057,110 @@ EOF
 	[ ! -s "$NOTIFY_CALL_LOG" ]
 }
 
+# Day-aware staleness budget (Wave 5.0): Mon 84, Tue-Sat 36, Sun 60. The weekday
+# is pinned by a `date` shim that answers only the `+%u` query.
+_pin_weekday() {
+	# Resolve the real date once: on a second call `command -v date` would find
+	# the shim itself and the shim would exec itself forever.
+	[[ -n "${REAL_DATE:-}" ]] || REAL_DATE="$(command -v date)"
+	printf '#!/bin/bash\nif [[ "${1:-}" == "+%%u" ]]; then echo "%s"; exit 0; fi\nexec "%s" "$@"\n' \
+		"$1" "$REAL_DATE" >"$BIN_DIR/date"
+	chmod +x "$BIN_DIR/date"
+}
+
+_write_heartbeat_aged() {
+	local old
+	# BSD (macOS) then GNU (Linux/CI) — this file must pass on both.
+	old="$(date -j -v-"$1"H '+%Y-%m-%dT%H:%M:%S%z' 2>/dev/null \
+		|| date -d "$1 hours ago" '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$old" >"$LOG_DIR/heartbeat.json"
+}
+
+@test "Thursday: a 45h-old heartbeat (one missed mid-week run) warns" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_pin_weekday 4
+	_write_heartbeat_aged 45
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+	grep -q "Missed runs" "$NOTIFY_CALL_LOG"
+}
+
+@test "Monday: a 70h-old heartbeat (normal weekend gap) does not warn" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_pin_weekday 1
+	_write_heartbeat_aged 70
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+	[ ! -s "$NOTIFY_CALL_LOG" ]
+}
+
+@test "Monday: a 90h-old heartbeat warns" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_pin_weekday 1
+	_write_heartbeat_aged 90
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "Sunday: a 50h-old heartbeat does not warn" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_pin_weekday 7
+	_write_heartbeat_aged 50
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "DISCOVERY_STALE_HOURS stays a fixed override of the day-aware budget" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true DISCOVERY_STALE_HOURS=100
+	_pin_weekday 4
+	_write_heartbeat_aged 45
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "an unparseable DISCOVERY_STALE_HOURS is reported and the day-aware budget applies" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true DISCOVERY_STALE_HOURS=abc
+	_pin_weekday 4
+	_write_heartbeat_aged 45
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"DISCOVERY_STALE_HOURS='abc' is not a positive integer"* ]] || return 1
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+}
+
+@test "DISCOVERY_STALE_HOURS=0 is rejected and does not flag a fresh heartbeat" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true DISCOVERY_STALE_HOURS=0
+	_pin_weekday 4
+	_write_heartbeat_aged 1
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[[ "$output" == *"DISCOVERY_STALE_HOURS='0' is not a positive integer"* ]] || return 1
+	[[ "$output" != *"scheduled runs were MISSED"* ]] || return 1
+}
+
+# The whole table, Mon..Sun = 84 36 36 36 36 36 60. scripts/schedule-budget.test.ts
+# holds the same table for the TypeScript side: change one, change both.
+@test "the day-aware budget table is 84/36/36/36/36/36/60 for Mon..Sun" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	local got="" d
+	for d in 1 2 3 4 5 6 7; do
+		_pin_weekday "$d"
+		_write_heartbeat_aged 200
+		run bash "$RUN_SH"
+		[ "$status" -eq 0 ]
+		got="$got $(printf '%s\n' "$output" | grep -o '(> [0-9]*h)' | head -1)"
+	done
+	[ "$got" = " (> 84h) (> 36h) (> 36h) (> 36h) (> 36h) (> 36h) (> 60h)" ] || {
+		echo "got:$got"
+		return 1
+	}
+}
+
 # --- wall-clock cap enforcement (open item #2, 2026-08-14) -------------------
 # MEASURED: against a process that ignores SIGTERM, `timeout 2` let it run the
 # full 31s and STILL exited 124. So (a) -k is what actually enforces, and
@@ -3374,4 +3560,1425 @@ PROBE
 	run bash "$RUN_SH"
 	[ "$status" -eq 1 ]
 	[[ "$output" == *"strict credential preflight failed: DISCOVERY_READ_DATABASE_URL API_INTAKE_TOKEN missing"* ]]
+}
+
+# --- Wave 5 (A-OPS-09 / A-OPS-16): EXIT trap, run lock + run-in-progress marker.
+# run.sh's lock is ONE object: $LOG_DIR/run.lock (dir, atomic mkdir) holding
+# `info` (pid/started/run). It doubles as the run-in-progress marker, so "lock
+# removed" and "marker removed" are the same assertion.
+
+# Start a live run in the background whose 2nd claude call blocks (as a
+# `launchctl bootout` mid-batch would find it), then send TERM to run.sh ONLY.
+# run.sh must kill the claude child itself and finish its trap within seconds
+# (launchd SIGKILLs ~20 s after TERM). Sets RUN_RC and SHIM_PID.
+_term_run_mid_batch() {
+	export CLAUDE_COUNT_FILE="$TEST_TMP/claude-count" CLAUDE_BLOCKED_PID_FILE="$TEST_TMP/claude-blocked.pid" CLAUDE_FD3_SEEN_FILE="$TEST_TMP/claude-fd3-seen"
+	cat >"$BIN_DIR/claude" <<'CLAUDE_EOF'
+#!/usr/bin/env bash
+n=$(( $(cat "$CLAUDE_COUNT_FILE" 2>/dev/null || echo 0) + 1 ))
+echo "$n" >"$CLAUDE_COUNT_FILE"
+if [ "$n" -ge 2 ] && { true <&3; } 2>/dev/null; then
+	cat <&3 >"$CLAUDE_FD3_SEEN_FILE"
+fi
+if [ "$n" -ge 2 ]; then
+	echo $$ >"$CLAUDE_BLOCKED_PID_FILE"
+	exec sleep 120
+fi
+echo '[]'
+CLAUDE_EOF
+	chmod +x "$BIN_DIR/claude"
+	# fd 3 is bats' own result channel: close it for the child (see _run_no_fd3).
+	bash "$RUN_SH" >"$TEST_TMP/run.out" 2>&1 3>&- &
+	local run_pid=$!
+	local i
+	for i in $(seq 1 120); do
+		[ -s "$CLAUDE_BLOCKED_PID_FILE" ] && break
+		sleep 0.5
+	done
+	SHIM_PID="$(cat "$CLAUDE_BLOCKED_PID_FILE" 2>/dev/null || true)"
+	[ -n "$SHIM_PID" ] || { kill "$run_pid" 2>/dev/null; return 1; }
+	# The lock must exist while the run is alive.
+	[ -d "$LOG_DIR/run.lock" ] || { kill -9 "$run_pid" "$SHIM_PID" 2>/dev/null; return 1; }
+	grep -q "^pid=$run_pid\$" "$LOG_DIR/run.lock/info" || { kill -9 "$run_pid" "$SHIM_PID" 2>/dev/null; return 1; }
+	kill -TERM "$run_pid"
+	# The trap must fire while claude is still running: wait at most 10 s
+	# (TERM_WAIT_TICKS x 0.25 s; the exit-budget test raises it). TERM_ELAPSED is
+	# whole seconds from TERM to exit.
+	local term_at=$SECONDS
+	for i in $(seq 1 "${TERM_WAIT_TICKS:-40}"); do
+		kill -0 "$run_pid" 2>/dev/null || break
+		sleep 0.25
+	done
+	TERM_ELAPSED=$((SECONDS - term_at))
+	if kill -0 "$run_pid" 2>/dev/null; then
+		kill -9 "$run_pid" "$SHIM_PID" 2>/dev/null
+		return 1
+	fi
+	RUN_RC=0
+	wait "$run_pid" || RUN_RC=$?
+	# run.sh killed the claude child itself: nothing is left behind.
+	! kill -0 "$SHIM_PID" 2>/dev/null || { kill -9 "$SHIM_PID" 2>/dev/null; return 1; }
+	return 0
+}
+
+@test "TERM mid-batch rewinds the cursor to the first unfinished state, writes a crashed heartbeat, releases the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# TX finished; VA was in flight; OH never started. The cursor had already
+	# advanced past the batch (to GA) and must come back to VA.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	[ -f "$LOG_DIR/heartbeat.json" ]
+	grep -q '"status": "crashed"' "$LOG_DIR/heartbeat.json"
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+	run node -e "
+const h = JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8'));
+const got = h.states.map((s) => s.state + ':' + s.claudeStatus).join(',');
+process.exit(got === 'TX:ok,VA:skipped,OH:skipped' ? 0 : (console.error(got), 1));
+"
+	[ "$status" -eq 0 ]
+	grep -q "ERROR: run exited uncleanly" "$TEST_TMP/run.out"
+	grep -q "scripts/discovery/publish-heartbeat.ts" "$NPX_CALL_LOG"
+	grep -q "CRASHED" "$NOTIFY_CALL_LOG"
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "TERM mid-batch on an override rotation leaves cursor.txt and heartbeat.json alone but still releases the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3 DISCOVERY_STATES="TX VA OH GA"
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "a normal run advances the cursor once, writes an ok heartbeat and leaves no lock or marker" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "OH" ]
+	grep -q '"status": "ok"' "$LOG_DIR/heartbeat.json"
+	[[ "$output" != *"exited uncleanly"* ]] || return 1
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "a normal nonzero exit does not fire the crash handler: no rewind, degraded not crashed" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=2 CHECK_SOURCES_RC=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "OH" ]
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	! grep -q '"status": "crashed"' "$LOG_DIR/heartbeat.json"
+	[[ "$output" != *"exited uncleanly"* ]] || return 1
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "a stale lock whose PID is dead warns, is taken over, and degrades this run's heartbeat" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	sleep 0 &
+	local dead=$!
+	wait "$dead"
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=2026-11-11T13:00:00+0000\nrun=OLDBATCH\n' "$dead" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+	[[ "$output" == *"run=OLDBATCH"* ]] || return 1
+	grep -q "died without cleanup" "$NOTIFY_CALL_LOG"
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+	[[ "$output" == *"  - previous run died without cleanup"* ]] || return 1
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "a lock held by a live PID refuses the run with exit 1 and touches neither cursor nor heartbeat" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# The owner must look like a run.sh (a bare live PID is not enough).
+	mkdir -p "$TEST_TMP/scripts/discovery"
+	printf '#!/usr/bin/env bash\nsleep 120\n' >"$TEST_TMP/scripts/discovery/run.sh"
+	bash "$TEST_TMP/scripts/discovery/run.sh" &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OTHER\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"ERROR: another discovery run holds"* ]] || return 1
+	grep -q "FAILED" "$NOTIFY_CALL_LOG"
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	# The other run's lock is intact.
+	grep -q "^pid=$BG_PID\$" "$LOG_DIR/run.lock/info"
+}
+
+@test "a dry run takes no lock, ignores a held lock, and leaves cursor and lock untouched" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -e "$LOG_DIR/run.lock" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+	sleep 120 &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=x\nrun=OTHER\n' "$BG_PID" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	grep -q "^pid=$BG_PID\$" "$LOG_DIR/run.lock/info"
+}
+
+@test "a missed-run gap on a live run lands in the heartbeat failures and degrades it" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	old="$(date -j -v-5d '+%Y-%m-%dT%H:%M:%S%z' 2>/dev/null \
+		|| date -d '5 days ago' '+%Y-%m-%dT%H:%M:%S%z')"
+	printf '{\n  "lastRunAt": "%s",\n  "states": []\n}\n' "$old" >"$LOG_DIR/heartbeat.json"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"scheduled runs were MISSED"* ]] || return 1
+	[[ "$output" == *"missed runs: previous run was"* ]] || return 1
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+}
+
+@test "a lock whose recorded PID is a live but unrelated process (reused PID) is taken over with a WARN" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	sleep 120 &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OLDBATCH\nlstart=Mon Jan  1 00:00:00 2001\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+	[ ! -e "$LOG_DIR/run.lock" ]
+	[ -z "$(ls -d "$LOG_DIR"/run.lock.stale.* 2>/dev/null)" ]
+	# The unrelated process is left alone.
+	kill -0 "$BG_PID"
+}
+
+@test "TERM after an environmental failure rewinds to that state, not to the in-flight one" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3 DISCOVERY_MIN_CLAUDE_SECS=120
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# TX returned an instant empty array (suspect_short, environmental); VA was in
+	# flight. The rewind must go back to TX, or TX is lost for a whole rotation.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	run node -e "
+const h = JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8'));
+const got = h.states.map((s) => s.state + ':' + s.claudeStatus).join(',');
+process.exit(got === 'TX:suspect_short,VA:skipped,OH:skipped' ? 0 : (console.error(got), 1));
+"
+	[ "$status" -eq 0 ]
+	# Recorded, so a repeat kill is bounded (next test).
+	[ "$(tr -d ' \n' <"$LOG_DIR/suspect-short-requeued.txt")" = "TX" ]
+}
+
+@test "repeated TERM cannot pin a suspect_short state: it is not re-queued twice in a row" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3 DISCOVERY_MIN_CLAUDE_SECS=120
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# TX was already re-queued for suspect_short last time: the rewind goes to the
+	# in-flight state VA instead.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	grep -q "suspect_short twice in a row" "$TEST_TMP/run.out"
+}
+
+@test "a non-bash process whose command line contains scripts/discovery/run.sh does not count as the lock owner" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir -p "$TEST_TMP/scripts/discovery"
+	: >"$TEST_TMP/scripts/discovery/run.sh.log"
+	tail -f "$TEST_TMP/scripts/discovery/run.sh.log" >/dev/null 2>&1 &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OLDBATCH\nlstart=Mon Jan  1 00:00:00 2001\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+}
+
+@test "TERM on the keychain-token branch: trap fires within seconds, claude is gone, the token reached it on fd 3 and leaked nowhere" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	_install_security_with_token
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# The shim read the token from fd 3 before it blocked.
+	[ "$(cat "$CLAUDE_FD3_SEEN_FILE")" = "$TOKEN_SENTINEL" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	grep -q '"status": "crashed"' "$LOG_DIR/heartbeat.json"
+	[ ! -e "$LOG_DIR/run.lock" ]
+	output="$(cat "$TEST_TMP/run.out")"
+	_assert_token_not_in_sinks
+}
+
+# --- unit B review fixes ------------------------------------------------------
+
+@test "a hung notifier cannot lose the ALERTS-PENDING marker: the crash alert is on disk and the run still exits fast" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# Denied notifier (exit 3), so the chain falls through to the hanging osascript
+	# stub; never remove the shim, or PATH reaches the real terminal-notifier.
+	printf '#!/usr/bin/env bash\nexit 3\n' >"$BIN_DIR/terminal-notifier"
+	chmod +x "$BIN_DIR/terminal-notifier"
+	printf '#!/usr/bin/env bash\nexec sleep 30\n' >"$BIN_DIR/osascript"
+	chmod +x "$BIN_DIR/osascript"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	[ "$TERM_ELAPSED" -lt 10 ]
+	grep -q "CRASHED" "$LOG_DIR/ALERTS-PENDING.txt"
+	[ "$(ls -l "$LOG_DIR/ALERTS-PENDING.txt" | cut -c1-10)" = "-rw-------" ]
+}
+
+@test "TERM with a hanging publish and a hanging notifier still exits within the launchd budget with a crashed heartbeat" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3 TERM_WAIT_TICKS=60
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# Denied notifier (exit 3), so the chain falls through to the hanging osascript
+	# stub; never remove the shim, or PATH reaches the real terminal-notifier.
+	printf '#!/usr/bin/env bash\nexit 3\n' >"$BIN_DIR/terminal-notifier"
+	chmod +x "$BIN_DIR/terminal-notifier"
+	printf '#!/usr/bin/env bash\nexec sleep 30\n' >"$BIN_DIR/osascript"
+	mv "$BIN_DIR/npx" "$BIN_DIR/npx.orig"
+	cat >"$BIN_DIR/npx" <<EOS
+#!/usr/bin/env bash
+case "\$*" in
+*publish-heartbeat.ts*) exec sleep 120 ;;
+esac
+exec "$BIN_DIR/npx.orig" "\$@"
+EOS
+	chmod +x "$BIN_DIR/osascript" "$BIN_DIR/npx"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# 2 s kill + 5 s publish + 2 s kill + 3 s notify = ~12 s; launchd gives 20 s.
+	[ "$TERM_ELAPSED" -le 15 ]
+	grep -q '"status": "crashed"' "$LOG_DIR/heartbeat.json"
+}
+
+@test "a stale suspect_short marker is cleared when TERM hits a batch with no suspect_short state" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	echo "TX" >"$LOG_DIR/suspect-short-requeued.txt"
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	# TX ok, VA in flight: cursor goes to VA, and the marker for TX must go.
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	[ ! -e "$LOG_DIR/suspect-short-requeued.txt" ]
+}
+
+@test "a live non-bash process whose argv merely mentions bash and scripts/discovery/run.sh is not the lock owner" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir -p "$TEST_TMP/bash/scripts/discovery"
+	: >"$TEST_TMP/bash/scripts/discovery/run.sh"
+	tail -f "$TEST_TMP/bash/scripts/discovery/run.sh" >/dev/null 2>&1 &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OLDBATCH\nlstart=Mon Jan  1 00:00:00 2001\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	kill "$BG_PID" 2>/dev/null || true
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+}
+
+# lock_owner_alive identifies the owner by PID + process start time (lstart), not
+# by command line: a live run.sh must hold the lock however it was invoked.
+_lstart_of() { LC_ALL=C TZ=UTC0 ps -o lstart= -p "$1" | tr -s ' ' | sed 's/^ //; s/ $//'; }
+
+# _assert_live_owner_refuses SCRIPT [bash flags...] [--cd]: start a long-lived
+# fake run.sh, record its REAL lstart in the lock, and require the new run to refuse.
+_assert_live_owner_refuses() {
+	local script="$1" mode="${2:-}"
+	mkdir -p "$(dirname "$script")"
+	printf '#!/usr/bin/env bash\nsleep 120\n' >"$script"
+	case "$mode" in
+		--cd) (cd "$(dirname "$script")" && exec bash ./run.sh) 3>&- & ;;
+		"") bash "$script" 3>&- & ;;
+		*) bash "$mode" "$script" 3>&- & ;;
+	esac
+	BG_PID=$!
+	sleep 0.5
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OTHER\nlstart=%s\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" "$(_lstart_of "$BG_PID")" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	pkill -P "$BG_PID" 2>/dev/null || true
+	kill "$BG_PID" 2>/dev/null || true
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"another discovery run holds"* ]] || return 1
+}
+
+@test "a live owner started as bash -x <script> still holds the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_assert_live_owner_refuses "$TEST_TMP/scripts/discovery/run.sh" -x
+}
+
+@test "a live owner whose script path contains a space still holds the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_assert_live_owner_refuses "$TEST_TMP/a b/scripts/discovery/run.sh"
+}
+
+@test "a live owner started as cd <dir> && bash ./run.sh still holds the lock" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_assert_live_owner_refuses "$TEST_TMP/scripts/discovery/run.sh" --cd
+}
+
+@test "a lock without lstart (older version): a live process whose command lacks run.sh is not the owner" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	sleep 120 3>&- &
+	BG_PID=$!
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OLDBATCH\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	kill "$BG_PID" 2>/dev/null || true
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+}
+
+@test "a lock without lstart (older version): a live process whose command contains run.sh still holds it" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir -p "$TEST_TMP/scripts/discovery"
+	printf '#!/usr/bin/env bash\nsleep 120\n' >"$TEST_TMP/scripts/discovery/run.sh"
+	bash "$TEST_TMP/scripts/discovery/run.sh" 3>&- &
+	BG_PID=$!
+	sleep 0.5
+	mkdir "$LOG_DIR/run.lock"
+	printf 'pid=%s\nstarted=%s\nrun=OTHER\n' "$BG_PID" "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/run.lock/info"
+	run bash "$RUN_SH"
+	pkill -P "$BG_PID" 2>/dev/null || true
+	kill "$BG_PID" 2>/dev/null || true
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"another discovery run holds"* ]] || return 1
+}
+
+@test "a live run records its own normalized lstart in run.lock/info" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	export CLAUDE_COUNT_FILE="$TEST_TMP/claude-count" CLAUDE_BLOCKED_PID_FILE="$TEST_TMP/claude-blocked.pid"
+	cat >"$BIN_DIR/claude" <<'CLAUDE_EOF'
+#!/usr/bin/env bash
+echo $$ >"$CLAUDE_BLOCKED_PID_FILE"
+exec sleep 120
+CLAUDE_EOF
+	chmod +x "$BIN_DIR/claude"
+	bash "$RUN_SH" >"$TEST_TMP/run.out" 2>&1 3>&- &
+	local run_pid=$! i
+	for i in $(seq 1 120); do
+		[ -s "$CLAUDE_BLOCKED_PID_FILE" ] && break
+		sleep 0.5
+	done
+	local want got
+	want="$(_lstart_of "$run_pid")"
+	got="$(sed -n 's/^lstart=//p' "$LOG_DIR/run.lock/info")"
+	kill -TERM "$run_pid"
+	wait "$run_pid" || true
+	[ -n "$got" ]
+	[ "$got" = "$want" ]
+}
+
+# A lock directory with no owner info is a live owner that has not written yet
+# (never steal it) unless it is a >10 min orphan from a crash before the write.
+@test "a fresh lock directory with no owner info is not stolen: refuses and touches nothing" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir "$LOG_DIR/run.lock"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"no owner info yet"* ]] || return 1
+	[[ "$output" == *"remove $LOG_DIR/run.lock"* ]] || return 1
+	[ -d "$LOG_DIR/run.lock" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+}
+
+@test "an orphan lock directory with no owner info older than 10 minutes is taken over with a WARN" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	mkdir "$LOG_DIR/run.lock"
+	touch -t 200001010000 "$LOG_DIR/run.lock"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" != *"another discovery run holds"* ]] || return 1
+	[[ "$output" == *"WARN: previous discovery run died without cleanup"* ]] || return 1
+	grep -q '"failureCount": 1' "$LOG_DIR/heartbeat.json"
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "an owner that cannot write its lock info releases the lock and exits 1 without touching the cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	# mv shim: fail only for the info.tmp -> info rename, pass everything else.
+	REAL_MV="$(command -v mv)"
+	cat >"$BIN_DIR/mv" <<EOS
+#!/usr/bin/env bash
+case "\$*" in *info.tmp*) exit 1 ;; esac
+exec "$REAL_MV" "\$@"
+EOS
+	chmod +x "$BIN_DIR/mv"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"could not write"* ]] || return 1
+	[ ! -e "$LOG_DIR/run.lock" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "TX" ]
+	[ ! -e "$LOG_DIR/heartbeat.json" ]
+}
+
+# --- pre-cursor run gates: git guard + preflight (A-OPS-06/08/10) --------------
+# Each refusal must leave cursor.txt byte-identical, publish a heartbeat with an
+# explicit status and notify. The guard tests run a COPY of run.sh from a real
+# throwaway repo (REPO_ROOT is derived from the script's own location).
+
+make_guard_repo() {
+	G="$TEST_TMP/repo"
+	mkdir -p "$G/scripts/discovery" "$G/public/data"
+	cp "$RUN_SH" "$G/scripts/discovery/run.sh"
+	# Files a full live run reads relative to its REPO_ROOT.
+	mkdir -p "$G/lib"
+	cp "$REPO_ROOT/scripts/discovery/discovery-prompt.txt" "$REPO_ROOT/scripts/discovery/fetch-url.sh" "$G/scripts/discovery/"
+	cp "$REPO_ROOT/lib/schema.ts" "$REPO_ROOT/lib/status.ts" "$G/lib/"
+	echo a >"$G/tracked.txt"
+	echo a >"$G/other.txt"
+	for _f in AGENTS.md CLAUDE.md public/data/map-layers.json public/data/x.geojson; do echo a >"$G/$_f"; done
+	git -C "$G" init -q
+	git -C "$G" symbolic-ref HEAD refs/heads/main
+	git -C "$G" add -A
+	git -C "$G" -c user.name=t -c user.email=t@t -c core.hooksPath=/dev/null commit -qm init
+	export DISCOVERY_ENABLED=true
+	unset DISCOVERY_SKIP_GIT_GUARD
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+}
+
+assert_refused() { # status exit-code
+	[ "$status" -eq "$2" ]
+	cmp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	grep -q "\"status\": \"$1\"" "$LOG_DIR/heartbeat.json"
+	grep -q "publish-heartbeat.ts" "$NPX_CALL_LOG"
+	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+	[ ! -e "$LOG_DIR/run.lock" ]
+}
+
+@test "git guard: a dirty tracked file is refused, cursor untouched" {
+	make_guard_repo
+	echo b >"$G/tracked.txt"
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: tracked.txt"* ]]
+}
+
+@test "git guard: only the excluded generated paths dirty runs normally and logs HEAD" {
+	make_guard_repo
+	for _f in AGENTS.md CLAUDE.md public/data/map-layers.json public/data/x.geojson; do echo b >"$G/$_f"; done
+	run bash "$G/scripts/discovery/run.sh"
+	# The copy has no scripts/discovery/*.ts or node_modules, so the batch itself
+	# may fail downstream; what matters is that it got past the gates and started.
+	[[ "$output" != *"git guard refused"* ]]
+	[[ "$output" == *"git: HEAD "*" on main"* ]]
+	[[ "$output" == *"preflight ok"* ]]
+	[[ "$output" == *"starting discovery batch"* ]]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+}
+
+@test "git guard: DISCOVERY_ALLOW_DIRTY=1 runs a dirty tree with a WARN" {
+	make_guard_repo
+	echo b >"$G/tracked.txt"
+	export DISCOVERY_ALLOW_DIRTY=1
+	run bash "$G/scripts/discovery/run.sh"
+	[[ "$output" == *"WARN: DISCOVERY_ALLOW_DIRTY=1 - bypassing git guard"*"tracked.txt"* ]]
+	[[ "$output" == *"starting discovery batch"* ]]
+}
+
+@test "git guard: a detached HEAD is refused" {
+	make_guard_repo
+	git -C "$G" checkout -q --detach
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"HEAD is detached"* ]]
+}
+
+@test "git guard: a branch other than main is refused" {
+	make_guard_repo
+	git -C "$G" checkout -q -b feature/x
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"on branch 'feature/x'"* ]]
+}
+
+@test "git guard: a merge in progress is refused" {
+	make_guard_repo
+	git -C "$G" rev-parse HEAD >"$G/$(git -C "$G" rev-parse --git-path MERGE_HEAD)"
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"MERGE_HEAD present"* ]]
+}
+
+@test "git guard: a rename onto a non-excluded path is refused" {
+	make_guard_repo
+	git -C "$G" mv AGENTS.md renamed.md
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: renamed.md"* ]]
+}
+
+@test "git guard: a rename of a non-excluded path into an excluded one is refused via the orig side" {
+	make_guard_repo
+	git -C "$G" mv other.txt public/data/y.geojson
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: other.txt"* ]]
+}
+
+@test "git guard: DISCOVERY_SKIP_GIT_GUARD=1 is ignored outside DISCOVERY_TEST_MODE" {
+	make_guard_repo
+	echo b >"$G/tracked.txt"
+	export DISCOVERY_SKIP_GIT_GUARD=1
+	unset DISCOVERY_TEST_MODE
+	# Without the test seam DISCOVERY_ENV_FILE is ignored too; opt out of the credential preflight.
+	export DISCOVERY_REQUIRE_READER=0 DISCOVERY_REQUIRE_INTAKE_TOKEN=0
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: tracked.txt"* ]]
+}
+
+@test "git guard: a dirty geojson in a public/data subdirectory is not excluded" {
+	make_guard_repo
+	mkdir -p "$G/public/data/sub"
+	echo a >"$G/public/data/sub/x.geojson"
+	git -C "$G" add -A
+	git -C "$G" -c user.name=t -c user.email=t@t -c core.hooksPath=/dev/null commit -qm sub
+	echo b >"$G/public/data/sub/x.geojson"
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"tracked change: public/data/sub/x.geojson"* ]]
+}
+
+@test "git guard: a non-git directory fails closed" {
+	make_guard_repo
+	rm -rf "$G/.git"
+	run bash "$G/scripts/discovery/run.sh"
+	assert_refused refused 1
+	[[ "$output" == *"git guard failed closed"* ]]
+}
+
+@test "git guard: a dry run skips the guard and preflight entirely" {
+	make_guard_repo
+	echo b >"$G/tracked.txt"
+	export DISCOVERY_DRY_RUN=true PREFLIGHT_RC=1
+	run bash "$G/scripts/discovery/run.sh"
+	[ "$status" -eq 0 ]
+	cmp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	run grep -c "preflight.ts" "$NPX_CALL_LOG"
+	[ "${output//[[:space:]]/}" = "0" ]
+}
+
+@test "preflight exit 1 refuses the run (exit 1, heartbeat refused, cursor untouched)" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	run bash "$RUN_SH"
+	assert_refused refused 1
+	[[ "$output" == *"preflight: FAIL stub"* ]]
+	grep -q "preflight: FAIL stub" "$LOG_DIR/preflight.log"
+}
+
+@test "preflight exit 2 (unknown code) is treated as a config refusal" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	run bash "$RUN_SH"
+	assert_refused refused 1
+}
+
+@test "preflight exit 3 skips the run as skipped_env with exit 75" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	cp "$LOG_DIR/cursor.txt" "$TEST_TMP/cursor.before"
+	run bash "$RUN_SH"
+	assert_refused skipped_env 75
+}
+
+@test "preflight exit 0 runs normally and advances the cursor" {
+	export DISCOVERY_ENABLED=true
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/cursor.txt")" = "VA" ]
+	grep -q "preflight.ts" "$NPX_CALL_LOG"
+}
+
+@test "DISCOVERY_REQUIRE_VERIFY rejects values other than 0 or 1" {
+	export DISCOVERY_ENABLED=true DISCOVERY_REQUIRE_VERIFY=2
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[[ "$output" == *"DISCOVERY_REQUIRE_VERIFY='2' must be 0 or 1 - refusing to run"* ]]
+	[ ! -s "$CLAUDE_CALL_LOG" ]
+}
+
+# --- resubmit queue (exit 3 from submit-candidates -> retry next live run) ----
+# A queue line is "<epoch> <state or -> <candidates> <latest run log> <prev log or ->".
+
+@test "resubmit: per-state submit exit 3 queues one 5-field line" {
+	export DISCOVERY_ENABLED=true SUBMIT_RC=3
+	run bash "$RUN_SH"
+	[ -s "$LOG_DIR/resubmit-queue" ]
+	[ "$(wc -l <"$LOG_DIR/resubmit-queue" | tr -d ' ')" = 1 ]
+	read -r q_epoch q_state q_cand q_log q_prev q_extra <"$LOG_DIR/resubmit-queue"
+	[[ "$q_epoch" =~ ^[0-9]+$ ]] || return 1
+	[ "$q_state" = "TX" ]
+	[[ "$q_cand" == "$LOG_DIR"/candidates-*-TX.json ]] || return 1
+	[[ "$q_log" == "$LOG_DIR"/run-*-TX.json ]] || return 1
+	[ "$q_prev" = "-" ]
+	[ -z "$q_extra" ]
+	[[ "$output" == *"queued for resubmit"* ]] || return 1
+}
+
+@test "resubmit: per-state submit exit 1 does not queue" {
+	export DISCOVERY_ENABLED=true SUBMIT_RC=1
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+}
+
+@test "resubmit: enrichment submit exit 3 queues with state -" {
+	export DISCOVERY_ENABLED=true EXTRACT_WRITES_OUT=1 SUBMIT_RC_ENRICHMENT=3
+	run bash "$RUN_SH"
+	[ -s "$LOG_DIR/resubmit-queue" ]
+	read -r q_epoch q_state q_cand q_log q_prev <"$LOG_DIR/resubmit-queue"
+	[ "$q_state" = "-" ]
+	[[ "$q_cand" == "$LOG_DIR"/enrichment-*-enrichment.json ]] || return 1
+	[[ "$q_log" == "$LOG_DIR"/run-*-enrichment.json ]] || return 1
+}
+
+# Seed a queue entry. Args: epoch state [with_log=1] [with_prev=0] [line_override]
+seed_resubmit_entry() {
+	local epoch="$1" state="$2"
+	echo '[]' >"$LOG_DIR/cand-seed.json"
+	echo '{}' >"$LOG_DIR/run-seed.json"
+	echo "$epoch $state $LOG_DIR/cand-seed.json $LOG_DIR/run-seed.json" >"$LOG_DIR/resubmit-queue"
+}
+
+@test "resubmit: drain rc 0 resumes from the log with a new run id, drops the entry, no failure" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=0
+	seed_resubmit_entry "$(date +%s)" VA
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed.json" "$SUBMIT_ARGV_LOG"
+	grep -- "--resume-from-log=" "$SUBMIT_ARGV_LOG" | grep -q -- "--run-id=[0-9T]*-resubmit-VA"
+	grep -- "--resume-from-log=" "$SUBMIT_ARGV_LOG" | grep -q -- "--state=VA"
+	[[ "$output" == *"resubmitted: VA"* ]] || return 1
+	[[ "$output" != *"resubmit failed"* ]] || return 1
+}
+
+@test "resubmit: drain rc 3 keeps the entry with the new run log, prev log and the original epoch" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3
+	seed_resubmit_entry "$(( $(date +%s) - 3600 ))" VA
+	orig_epoch="$(cut -d' ' -f1 "$LOG_DIR/resubmit-queue")"
+	run bash "$RUN_SH"
+	[ "$(wc -l <"$LOG_DIR/resubmit-queue" | tr -d ' ')" = 1 ]
+	read -r q_epoch q_state q_cand q_log q_prev <"$LOG_DIR/resubmit-queue"
+	[ "$q_epoch" = "$orig_epoch" ]
+	[ "$q_cand" = "$LOG_DIR/cand-seed.json" ]
+	[[ "$q_log" == "$LOG_DIR"/run-*-resubmit-VA.json ]] || return 1
+	[ "$q_prev" = "$LOG_DIR/run-seed.json" ]
+	[ ! -e "$LOG_DIR/resubmit-queue.tmp" ]
+}
+
+@test "resubmit: rc 3 where the child wrote no log keeps the entry; the next drain resumes from the previous log" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3 SUBMIT_WRITES_LOG=0
+	seed_resubmit_entry "$(date +%s)" VA
+	run bash "$RUN_SH"
+	read -r q_epoch q_state q_cand q_log q_prev <"$LOG_DIR/resubmit-queue"
+	[ ! -e "$q_log" ]
+	[ "$q_prev" = "$LOG_DIR/run-seed.json" ]
+	: >"$SUBMIT_ARGV_LOG"
+	export SUBMIT_RESUBMIT_RC=0
+	# The first run advanced the cursor onto VA; reset it so VA is not in today's batch.
+	rm -f "$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed.json" "$SUBMIT_ARGV_LOG"
+}
+
+@test "resubmit: an entry whose log and prev log are both missing is resubmitted WITHOUT --resume-from-log" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=0
+	seed_resubmit_entry "$(date +%s)" VA
+	rm "$LOG_DIR/run-seed.json"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -- "-resubmit-VA" "$SUBMIT_ARGV_LOG" | grep -q -- "--run-id="
+	if grep -q -- "--resume-from-log" "$SUBMIT_ARGV_LOG"; then return 1; fi
+	[[ "$output" == *"resubmitting without --resume-from-log"* ]] || return 1
+}
+
+@test "resubmit: a crash mid-drain leaves the entry pointing at the new log (write-ahead); the next drain resumes from it" {
+	export DISCOVERY_ENABLED=true SUBMIT_CRASH_ON_RESUME=1
+	seed_resubmit_entry "$(date +%s)" VA
+	run bash "$RUN_SH"
+	[ -s "$LOG_DIR/resubmit-queue" ]
+	read -r q_epoch q_state q_cand q_log q_prev <"$LOG_DIR/resubmit-queue"
+	[[ "$q_log" == "$LOG_DIR"/run-*-resubmit-VA.json ]] || return 1
+	[ -f "$q_log" ]
+	[ "$q_prev" = "$LOG_DIR/run-seed.json" ]
+	unset SUBMIT_CRASH_ON_RESUME
+	: >"$SUBMIT_ARGV_LOG"
+	run bash "$RUN_SH"
+	grep -q -- "--resume-from-log=$q_log" "$SUBMIT_ARGV_LOG"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+}
+
+@test "resubmit: drain rc 1 drops the entry and records a failure" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=1
+	seed_resubmit_entry "$(date +%s)" VA
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	[[ "$output" == *"resubmit failed (exit 1)"* ]] || return 1
+}
+
+@test "resubmit: an entry older than 7 days is dropped with the give-up failure and never submitted" {
+	export DISCOVERY_ENABLED=true
+	seed_resubmit_entry "$(( $(date +%s) - 700000 ))" TX
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	[[ "$output" == *"resubmit gave up after 7 days: TX"* ]] || return 1
+	if grep -q -- "--resume-from-log" "$SUBMIT_ARGV_LOG"; then return 1; fi
+}
+
+@test "resubmit: an epoch with leading zeros does not abort the run" {
+	export DISCOVERY_ENABLED=true
+	seed_resubmit_entry 0000000008 TX
+	run bash "$RUN_SH"
+	[[ "$output" == *"resubmit gave up after 7 days: TX"* ]] || return 1
+	[[ "$output" == *"starting discovery run"* ]] || return 1
+}
+
+@test "resubmit: a missing candidates file drops the entry without submitting" {
+	export DISCOVERY_ENABLED=true
+	seed_resubmit_entry "$(date +%s)" VA
+	rm "$LOG_DIR/cand-seed.json"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	[[ "$output" == *"candidates file missing"* ]] || return 1
+	if grep -q -- "--resume-from-log" "$SUBMIT_ARGV_LOG"; then return 1; fi
+}
+
+@test "resubmit: a queued state that is also in today's batch is still resubmitted and today's batch still runs it" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=0
+	seed_resubmit_entry "$(date +%s)" TX
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed.json" "$SUBMIT_ARGV_LOG"
+	# Today's own TX submit (no --resume-from-log) also ran.
+	grep -- "--state=TX" "$SUBMIT_ARGV_LOG" | grep -v -- "--resume-from-log" | grep -q -- "--run-id=[0-9T]*-TX "
+}
+
+@test "resubmit: two entries for one state both drain, each from its own log" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=0
+	seed_resubmit_entry "$(date +%s)" VA
+	echo '{}' >"$LOG_DIR/run-seed2.json"
+	echo "$(date +%s) VA $LOG_DIR/cand-seed.json $LOG_DIR/run-seed2.json -" >>"$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/resubmit-queue" ]
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed.json" "$SUBMIT_ARGV_LOG"
+	grep -q -- "--resume-from-log=$LOG_DIR/run-seed2.json" "$SUBMIT_ARGV_LOG"
+}
+
+@test "resubmit: dry run neither queues nor drains" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true SUBMIT_RC=3
+	seed_resubmit_entry "$(date +%s)" TX
+	before="$(cat "$LOG_DIR/resubmit-queue")"
+	run bash "$RUN_SH"
+	[ "$(cat "$LOG_DIR/resubmit-queue")" = "$before" ]
+	if grep -q -- "--resume-from-log" "$SUBMIT_ARGV_LOG"; then return 1; fi
+}
+
+@test "resubmit: a preflight-refused run leaves the queue untouched" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=3
+	seed_resubmit_entry "$(( $(date +%s) - 700000 ))" TX
+	before="$(cat "$LOG_DIR/resubmit-queue")"
+	run bash "$RUN_SH"
+	[ "$(cat "$LOG_DIR/resubmit-queue")" = "$before" ]
+	[ ! -e "$SUBMIT_ARGV_LOG" ] || ! grep -q "submit" "$SUBMIT_ARGV_LOG"
+}
+
+# --- per-state yield + zero-yield streak (heartbeat) -------------------------
+# check-heartbeat.ts documents the streak; run.sh computes it from the previous
+# LOCAL heartbeat.json's top-level consecutiveZeroYieldRuns.
+
+_seed_streak() {
+	printf '{\n  "lastRunAt": "%s",\n  "status": "ok",\n  "consecutiveZeroYieldRuns": %s,\n  "states": []\n}\n' \
+		"$(date '+%Y-%m-%dT%H:%M:%S%z')" "$1" >"$LOG_DIR/heartbeat.json"
+}
+
+# _hb_field <js expression over h>: prints the value, "undefined" when absent.
+_hb_field() {
+	node -e "const h = JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8')); console.log(String($1));"
+}
+
+@test "yield: an ok state carries submitted/discovered/skippedUnreachable; the file stays valid JSON" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="7 1" SUBMIT_SUBMITTED=4 SUBMIT_UNREACHABLE=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.states[0].submitted')" = "4" ]
+	[ "$(_hb_field 'h.states[0].discovered')" = "7" ]
+	[ "$(_hb_field 'h.states[0].skippedUnreachable')" = "2" ]
+}
+
+@test "yield: a failed state omits the yield fields (never empty or null)" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	printf '#!/usr/bin/env bash\necho "You have hit your session limit"\nexit 1\n' >"$BIN_DIR/claude"
+	chmod +x "$BIN_DIR/claude"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(_hb_field 'h.states[0].claudeStatus')" = "blocked" ]
+	[ "$(_hb_field 'h.states[0].submitted')" = "undefined" ]
+	[ "$(_hb_field 'h.states[0].discovered')" = "undefined" ]
+	[ "$(_hb_field 'h.states[0].skippedUnreachable')" = "undefined" ]
+}
+
+@test "streak: an all-ok zero-submit run increments it" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 2
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "3" ]
+	[ "$(_hb_field 'h.status')" = "ok" ]
+}
+
+@test "streak: a run that submitted something resets it to 0" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="3 0" SUBMIT_SUBMITTED=3
+	_seed_streak 4
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "0" ]
+}
+
+@test "streak: a degraded run leaves it unchanged" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 3
+	printf '#!/usr/bin/env bash\necho "You have hit your session limit"\nexit 1\n' >"$BIN_DIR/claude"
+	chmod +x "$BIN_DIR/claude"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "3" ]
+}
+
+@test "streak: a refused run (PREFLIGHT_RC=1) leaves it unchanged" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=1
+	_seed_streak 3
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(_hb_field 'h.status')" = "refused" ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "3" ]
+}
+
+@test "streak: a crashed run (TERM mid-batch) leaves it unchanged" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_seed_streak 3
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	[ "$(_hb_field 'h.status')" = "crashed" ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "3" ]
+}
+
+@test "streak: the 5th consecutive zero-yield run reports zero_yield and notifies" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 4
+	run bash "$RUN_SH"
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "5" ]
+	[ "$(_hb_field 'h.status')" = "zero_yield" ]
+	[[ "$output" == *"zero yield for 5 consecutive runs"* ]] || return 1
+	grep -q "zero yield" "$NOTIFY_CALL_LOG"
+}
+
+@test "streak: the 6th consecutive zero-yield run stays zero_yield and does not notify again" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 5
+	run bash "$RUN_SH"
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "6" ]
+	[ "$(_hb_field 'h.status')" = "zero_yield" ]
+	[[ "$output" == *"zero yield for 6 consecutive runs"* ]] || return 1
+	! grep -q "zero yield" "$NOTIFY_CALL_LOG"
+}
+
+@test "streak: the 4th zero-yield run is still ok" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 3
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.status')" = "ok" ]
+}
+
+@test "streak: a garbage previous streak counts as 0" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	printf '{"lastRunAt":"%s","consecutiveZeroYieldRuns":"abc","states":[]}\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/heartbeat.json"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "1" ]
+}
+
+@test "streak: a negative previous streak counts as 0" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak -7
+	run bash "$RUN_SH"
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "1" ]
+}
+
+# Parse the exported constants out of check-heartbeat.ts and run.sh's assignments.
+@test "parity: ZERO_YIELD_RUNS_ALARM and ZERO_YIELD_STATUS match check-heartbeat.ts" {
+	local ts="$BATS_TEST_DIRNAME/../../scripts/discovery/check-heartbeat.ts"
+	local ts_n ts_s sh_n sh_s
+	ts_n="$(sed -n 's/^export const ZERO_YIELD_RUNS_ALARM = \([0-9][0-9]*\);.*/\1/p' "$ts")"
+	ts_s="$(sed -n 's/^export const ZERO_YIELD_STATUS = "\([^"]*\)";.*/\1/p' "$ts")"
+	sh_n="$(sed -n 's/^ZERO_YIELD_RUNS_ALARM=\([0-9][0-9]*\)$/\1/p' "$RUN_SH")"
+	sh_s="$(sed -n 's/^ZERO_YIELD_STATUS="\([^"]*\)"$/\1/p' "$RUN_SH")"
+	[ -n "$ts_n" ] && [ -n "$ts_s" ] && [ -n "$sh_n" ] && [ -n "$sh_s" ]
+	[ "$ts_n" = "$sh_n" ]
+	[ "$ts_s" = "$sh_s" ]
+}
+
+# --- extract/verify lane cursors (Wave 5 item 5.2 wiring) --------------------
+# The fake npx writes --next-cursor-out from EXTRACT_NEXT / VERIFY_NEXT and
+# fakes `cursor.ts --write` (CURSOR_WRITE_RC). Lane argv is in lane-argv.log.
+
+@test "cursor lane: first run passes --next-cursor-out and a cursor path that does not exist" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -e "$LOG_DIR/extract-cursor.txt" ]
+	grep "^extract " "$TEST_TMP/lane-argv.log" | grep -q -- "--cursor-file $LOG_DIR/extract-cursor.txt --next-cursor-out $LOG_DIR/extract-next-cursor.txt"
+	grep "^verify " "$TEST_TMP/lane-argv.log" | grep -q -- "--cursor-file $LOG_DIR/verify-cursor.txt --next-cursor-out $LOG_DIR/verify-next-cursor.txt"
+}
+
+@test "cursor lane: extract proposal is promoted after a successful submit" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-b" ]
+	[[ "$output" == *"cursor: extract <start> -> fac-b"* ]] || return 1
+}
+
+@test "cursor lane: extract proposal is promoted when there is nothing to submit" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_NEXT=fac-b
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-b" ]
+}
+
+@test "cursor lane: submit exit 3 with the file queued promotes the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=3
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ -s "$LOG_DIR/resubmit-queue" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-b" ]
+}
+
+@test "cursor lane: submit exit 3 with the queue write skipped keeps the cursor and the run goes on" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=3 VERIFY_NEXT=fac-v
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	if [ "$(id -u)" = 0 ]; then skip "read-only file is writable as root"; fi
+	# An empty read-only queue: the drain skips it (not -s), the append fails.
+	: >"$LOG_DIR/resubmit-queue"
+	chmod 444 "$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[[ "$output" == *"resubmit not queued"* ]] || return 1
+	# the run was not aborted: the verify lane after it still ran and promoted
+	[ "$(tr -d ' \n' <"$LOG_DIR/verify-cursor.txt")" = "fac-v" ]
+}
+
+@test "cursor lane: submit exit 1 with no auth rejection promotes the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=1 SUBMIT_AUTH_REJECTED=0
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-b" ]
+}
+
+@test "cursor lane: submit exit 1 with an auth rejection keeps the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=1 SUBMIT_AUTH_REJECTED=1
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[[ "$output" == *"rejected the intake token"* ]] || return 1
+}
+
+@test "cursor lane: submit exit 1 with an unreadable run log keeps the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=1 SUBMIT_SUMMARY_MODE=missing
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[[ "$output" == *"unreadable after submit exit 1"* ]] || return 1
+}
+
+@test "cursor lane: any other submit exit code keeps the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=2
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+}
+
+@test "cursor lane: a failed extract does not promote the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_NEXT=fac-b EXTRACT_RC=1
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+}
+
+@test "cursor lane: a stale next-cursor file is removed before the lane and never promoted" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	echo stale-x >"$LOG_DIR/extract-next-cursor.txt"
+	echo stale-y >"$LOG_DIR/verify-next-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[ ! -e "$LOG_DIR/verify-cursor.txt" ]
+}
+
+@test "cursor lane: a stale verify next-cursor file is removed before the lane and never promoted" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false
+	echo fac-a >"$LOG_DIR/verify-cursor.txt"
+	echo stale-y >"$LOG_DIR/verify-next-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/verify-cursor.txt")" = "fac-a" ]
+	[ ! -e "$LOG_DIR/verify-next-cursor.txt" ]
+}
+
+@test "cursor lane: verify proposal is promoted on success and not on failure" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false VERIFY_NEXT=fac-v
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/verify-cursor.txt")" = "fac-v" ]
+	rm -f "$LOG_DIR/verify-cursor.txt"
+	export VERIFY_RC=1
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/verify-cursor.txt" ]
+}
+
+@test "cursor lane: a failed cursor write warns, records a failure and keeps the old cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_NEXT=fac-b CURSOR_WRITE_RC=1
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[[ "$output" == *"extract cursor write failed"* ]] || return 1
+	[[ "$output" == *"extract: cursor write failed"* ]] || return 1
+}
+
+@test "cursor lane: a dry run never reaches the lane, so neither reads nor writes a cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true EXTRACT_NEXT=fac-b
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/extract-cursor.txt" ]
+	[ ! -e "$TEST_TMP/lane-argv.log" ]
+}
+
+# --- log pruning (A-OPS-17): prune_old_logs --------------------------------------
+# Old = 2026-09-01 (>60 days before the pinned era of these tests); ancient = 2024.
+# All of it happens inside $TEST_TMP; nothing here touches a real log dir.
+
+_inode() { stat -c %i "$1" 2>/dev/null || stat -f %i "$1"; }
+_mk_old() { # file [touch -t stamp]
+	: >"$1"
+	touch -t "${2:-202609010000}" "$1"
+}
+
+@test "prune: old generated files are deleted, young ones kept" {
+	export DISCOVERY_ENABLED=true
+	_mk_old "$LOG_DIR/retention-prune-20260801T000000.log"
+	_mk_old "$LOG_DIR/retention-prune-20260802T000000.log" 202609020000
+	: >"$LOG_DIR/retention-prune-20261101T000000.log"
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/retention-prune-20260801T000000.log" ]
+	[ -e "$LOG_DIR/retention-prune-20261101T000000.log" ]
+	[[ "$output" == *"prune: deleted "* ]] || return 1
+}
+
+@test "prune: the newest file of a pattern is kept even when it is old" {
+	export DISCOVERY_ENABLED=true
+	_mk_old "$LOG_DIR/source-health-2025-01-01T00-00-00-000Z.json" 202501010000
+	_mk_old "$LOG_DIR/source-health-2025-02-01T00-00-00-000Z.json" 202502010000
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/source-health-2025-01-01T00-00-00-000Z.json" ]
+	[ -e "$LOG_DIR/source-health-2025-02-01T00-00-00-000Z.json" ]
+}
+
+@test "prune: hand-made names survive at 2 years old" {
+	export DISCOVERY_ENABLED=true
+	local n
+	for n in run-local-1794090448066.json run-manual-b25-leads.json run-20261015-OH-b3.json \
+		run-20260921T082555-CA-recover.json run-depth-20260921T190931.json enrichment-depth-20260921T165555.json \
+		depth-20260921T165555.log wave3-notes.json wave3b-stage.log cursor.txt.bak-20260922T095637 \
+		cursor.txt heartbeat.json resubmit-queue-old.json manual-rerun-20261028.out; do
+		_mk_old "$LOG_DIR/$n" 202401010000
+	done
+	# A decoy generated pair so the newest-kept rule cannot be what saves them.
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	for n in run-local-1794090448066.json run-manual-b25-leads.json run-20261015-OH-b3.json \
+		run-20260921T082555-CA-recover.json run-depth-20260921T190931.json enrichment-depth-20260921T165555.json \
+		depth-20260921T165555.log wave3-notes.json wave3b-stage.log cursor.txt.bak-20260922T095637 \
+		cursor.txt heartbeat.json resubmit-queue-old.json manual-rerun-20261028.out; do
+		[ -e "$LOG_DIR/$n" ] || { echo "deleted $n"; return 1; }
+	done
+}
+
+@test "prune: files referenced by the resubmit queue survive regardless of age" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/run-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/run-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/candidates-20240103T000000-VA.json" 202401030000
+	_mk_old "$LOG_DIR/run-20240103T000000-VA.json" 202401030000
+	echo "$(date +%s) VA $LOG_DIR/candidates-20240101T000000-VA.json $LOG_DIR/run-20240101T000000-VA.json" >"$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/candidates-20240101T000000-VA.json" ]
+	[ -e "$LOG_DIR/run-20240101T000000-VA.json" ]
+	[ ! -e "$LOG_DIR/candidates-20240102T000000-VA.json" ]
+	[ ! -e "$LOG_DIR/run-20240102T000000-VA.json" ]
+	[[ "$output" == *"prune: "* ]] || return 1
+}
+
+@test "prune: above the cap deletes nothing and records a FAILURES entry" {
+	export DISCOVERY_ENABLED=true
+	seq 1 1002 | awk '{printf "source-health-2025-01-01T00-00-%02d-%03dZ.json\n", int($1/1000), $1%1000}' |
+		(cd "$LOG_DIR" && xargs touch -t 202501010000)
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ "$(find "$LOG_DIR" -name 'source-health-*' | wc -l | tr -d ' ')" = 1002 ]
+	[ -e "$LOG_DIR/retention-prune-20240101T000000.log" ] || { echo "$output" | grep -i prune; return 1; }
+	[[ "$output" == *"above the cap; nothing deleted"* ]] || return 1
+	[[ "$output" == *"FAIL: discovery run finished"* ]] || return 1
+}
+
+@test "prune: a dry run (DISCOVERY_DRY_RUN=true) touches nothing" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	[[ "$output" != *"prune: "* ]] || return 1
+}
+
+@test "prune: DISCOVERY_PRUNE_DRY=1 lists what it would delete and deletes nothing" {
+	export DISCOVERY_ENABLED=true DISCOVERY_PRUNE_DRY=1
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	[[ "$output" == *"would delete retention-prune-20240101T000000.log"* ]] || return 1
+}
+
+@test "prune: a matching symlink to a file outside LOG_DIR is not followed or deleted" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$TEST_TMP/outside"
+	_mk_old "$TEST_TMP/outside/victim" 202401010000
+	ln -s "$TEST_TMP/outside/victim" "$LOG_DIR/retention-prune-20240101T000000.log"
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	_mk_old "$LOG_DIR/retention-prune-20240103T000000.log" 202401030000
+	run bash "$RUN_SH"
+	[ -e "$TEST_TMP/outside/victim" ]
+	[ -L "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	[ ! -e "$LOG_DIR/retention-prune-20240102T000000.log" ]
+}
+
+@test "prune: files in a subdirectory are not touched" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$LOG_DIR/retention-backups"
+	_mk_old "$LOG_DIR/retention-backups/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-backups/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/retention-backups/retention-prune-20240101T000000.log" ]
+}
+
+@test "prune: an oversized launchd.out is trimmed to the last N lines IN PLACE" {
+	export DISCOVERY_ENABLED=true
+	seq -f %.0f 1 1000000 >"$LOG_DIR/launchd.out"
+	[ "$(wc -c <"$LOG_DIR/launchd.out")" -gt 5242880 ]
+	ino="$(_inode "$LOG_DIR/launchd.out")"
+	run bash "$RUN_SH"
+	[ "$(_inode "$LOG_DIR/launchd.out")" = "$ino" ]
+	[ "$(wc -l <"$LOG_DIR/launchd.out" | tr -d ' ')" = 20000 ]
+	[ "$(tail -n1 "$LOG_DIR/launchd.out")" = 1000000 ] || { tail -n2 "$LOG_DIR/launchd.out"; echo "$output" | grep -i prune; return 1; }
+	[ -z "$(find "$LOG_DIR" -name '.prune-trim.*')" ]
+}
+
+@test "prune: a small launchd.out is left alone" {
+	export DISCOVERY_ENABLED=true
+	seq 1 100 >"$LOG_DIR/launchd.out"
+	run bash "$RUN_SH"
+	[ "$(wc -l <"$LOG_DIR/launchd.out" | tr -d ' ')" = 100 ]
+}
+
+@test "prune: isolated-config transcripts are pruned only under \$HOME/.compute-atlas-discovery" {
+	export DISCOVERY_ENABLED=true
+	cfg="$HOME/.compute-atlas-discovery/claude-config"
+	mkdir -p "$cfg/projects/p"
+	_mk_old "$cfg/projects/p/old.jsonl" 202401010000
+	: >"$cfg/projects/p/new.jsonl"
+	run bash "$RUN_SH"
+	[ ! -e "$cfg/projects/p/old.jsonl" ]
+	[ -e "$cfg/projects/p/new.jsonl" ]
+}
+
+@test "prune: transcripts outside the allowed root are refused with a WARN" {
+	export DISCOVERY_ENABLED=true DISCOVERY_CLAUDE_CONFIG_DIR="$TEST_TMP/elsewhere"
+	mkdir -p "$TEST_TMP/elsewhere/projects/p"
+	_mk_old "$TEST_TMP/elsewhere/projects/p/old.jsonl" 202401010000
+	run bash "$RUN_SH"
+	[ -e "$TEST_TMP/elsewhere/projects/p/old.jsonl" ]
+	[[ "$output" == *"not pruning transcripts"* ]] || return 1
+}
+
+@test "prune: a queued file survives a 1500-line queue with its entry on line 1 (no SIGPIPE false-negative)" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/run-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/run-20240102T000000-VA.json" 202401020000
+	{
+		echo "$(date +%s) VA $LOG_DIR/candidates-20240101T000000-VA.json $LOG_DIR/run-20240101T000000-VA.json"
+		seq 1 1500 | awk -v d="$LOG_DIR" -v e="$(date +%s)" '{pad = sprintf("%0200d", $1); printf "%s VA %s/cand-%s.json %s/run-%s.json\n", e, d, pad, d, pad}'
+	} >"$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/candidates-20240101T000000-VA.json" ]
+	[ -e "$LOG_DIR/run-20240101T000000-VA.json" ]
+}
+
+@test "prune: a trailing-slash DISCOVERY_LOG_DIR still protects queued files" {
+	export DISCOVERY_ENABLED=true SUBMIT_RESUBMIT_RC=3 DISCOVERY_LOG_DIR="$LOG_DIR/"
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/run-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/run-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/candidates-20240103T000000-VA.json" 202401030000
+	_mk_old "$LOG_DIR/run-20240103T000000-VA.json" 202401030000
+	echo "$(date +%s) VA $LOG_DIR//candidates-20240101T000000-VA.json $LOG_DIR//run-20240101T000000-VA.json" >"$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/candidates-20240101T000000-VA.json" ]
+	[ -e "$LOG_DIR/run-20240101T000000-VA.json" ]
+	[ ! -e "$LOG_DIR/candidates-20240102T000000-VA.json" ]
+}
+
+@test "prune: the cap is COMBINED across log files and transcripts" {
+	export DISCOVERY_ENABLED=true
+	seq 1 600 | awk '{printf "source-health-2025-01-01T00-00-00-%03dZ.json\n", $1}' |
+		(cd "$LOG_DIR" && xargs touch -t 202501010000)
+	cfg="$HOME/.compute-atlas-discovery/claude-config"
+	mkdir -p "$cfg/projects/p"
+	seq 1 600 | awk '{printf "t%d.jsonl\n", $1}' | (cd "$cfg/projects/p" && xargs touch -t 202401010000)
+	run bash "$RUN_SH"
+	[ "$(find "$LOG_DIR" -name 'source-health-*' | wc -l | tr -d ' ')" = 600 ]
+	[ "$(find "$cfg/projects" -name '*.jsonl' | wc -l | tr -d ' ')" = 600 ]
+	[[ "$output" == *"above the cap; nothing deleted"* ]] || return 1
+}
+
+@test "prune: a hardlinked file is neither deleted nor trimmed" {
+	export DISCOVERY_ENABLED=true
+	mkdir -p "$TEST_TMP/outside"
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	ln "$LOG_DIR/retention-prune-20240101T000000.log" "$TEST_TMP/outside/twin"
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	_mk_old "$LOG_DIR/retention-prune-20240103T000000.log" 202401030000
+	seq -f %.0f 1 1000000 >"$TEST_TMP/outside/big"
+	ln "$TEST_TMP/outside/big" "$LOG_DIR/launchd.out"
+	run bash "$RUN_SH"
+	[ -e "$LOG_DIR/retention-prune-20240101T000000.log" ]
+	[ ! -e "$LOG_DIR/retention-prune-20240102T000000.log" ]
+	[ "$(wc -l <"$LOG_DIR/launchd.out" | tr -d ' ')" = 1000000 ]
+}
+
+@test "prune: each deleted file is logged by name" {
+	export DISCOVERY_ENABLED=true
+	_mk_old "$LOG_DIR/retention-prune-20240101T000000.log" 202401010000
+	_mk_old "$LOG_DIR/retention-prune-20240102T000000.log" 202401020000
+	run bash "$RUN_SH"
+	[[ "$output" == *"prune: deleted retention-prune-20240101T000000.log"* ]] || return 1
+}
+
+@test "prune: unit: an unreadable resubmit-queue deletes nothing and records a FAILURES entry" {
+	[ "$(id -u)" != 0 ] || skip "root reads everything"
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/candidates-20240103T000000-VA.json" 202401030000
+	echo "1 VA $LOG_DIR/candidates-20240101T000000-VA.json $LOG_DIR/run-20240101T000000-VA.json" >"$TEST_TMP/q"
+	chmod 000 "$TEST_TMP/q"
+	_prune_unit "$LOG_DIR"
+	chmod 600 "$TEST_TMP/q"
+	[ ! -e "$TEST_TMP/rm.log" ] || { cat "$TEST_TMP/rm.log"; return 1; }
+	[[ "$output" == *"resubmit-queue unreadable; nothing deleted"* ]] || return 1
+	[[ "$output" == *"failures=1"* ]] || return 1
+}
+
+@test "prune: a config root under a path with a space prunes exactly the old file, one log line each" {
+	export DISCOVERY_ENABLED=true HOME="$TEST_TMP/home dir"
+	cfg="$HOME/.compute-atlas-discovery/claude-config"
+	mkdir -p "$cfg/projects/p q"
+	_mk_old "$cfg/projects/p q/old one.jsonl" 202401010000
+	: >"$cfg/projects/p q/young one.jsonl"
+	_mk_old "$cfg/projects/p q/old.keep" 202401010000
+	run bash "$RUN_SH"
+	[ ! -e "$cfg/projects/p q/old one.jsonl" ]
+	[ -e "$cfg/projects/p q/young one.jsonl" ]
+	[ -e "$cfg/projects/p q/old.keep" ]
+	[[ "$output" == *"prune: deleted transcript old one.jsonl"* ]] || return 1
+}
+
+# Unit-level: extract the function and run it with rm shimmed to a recorder.
+_prune_unit() { # LOG_DIR-value
+	awk '/^PRUNE_AGE_DAYS=/{p=1} p{print} p&&/^prune_old_logs\(\)/{f=1} f&&/^}$/{exit}' "$RUN_SH" >"$TEST_TMP/prune-fn.sh"
+	TEST_TMP="$TEST_TMP" run bash -c '
+		set -euo pipefail
+		log() { echo "$*"; }
+		rm() { echo "RM $*" >>"$TEST_TMP/rm.log"; }
+		FAILURES=(); RESUBMIT_QUEUE="$TEST_TMP/q"; LOG_DIR="$1"
+		source "$TEST_TMP/prune-fn.sh"
+		prune_old_logs
+		echo "failures=${#FAILURES[@]}"
+	' _ "$1"
+}
+
+@test "prune: refuses an empty LOG_DIR, / and \$HOME with a FAILURES entry" {
+	local d
+	for d in "" "/" "$HOME" "$HOME/" "$TEST_TMP/missing"; do
+		_prune_unit "$d"
+		[[ "$output" == *"prune refused"* ]] || { echo "not refused: [$d] $output"; return 1; }
+		[[ "$output" == *"failures=1"* ]] || return 1
+	done
+	[ ! -e "$TEST_TMP/rm.log" ]
+}
+
+@test "prune: unit: a huge queue with the protected entry on line 1 does not lose it to SIGPIPE" {
+	_mk_old "$LOG_DIR/candidates-20240101T000000-VA.json" 202401010000
+	_mk_old "$LOG_DIR/candidates-20240102T000000-VA.json" 202401020000
+	_mk_old "$LOG_DIR/candidates-20240103T000000-VA.json" 202401030000
+	{
+		echo "1 VA $LOG_DIR/candidates-20240101T000000-VA.json $LOG_DIR/run-20240101T000000-VA.json"
+		seq 1 1500 | awk -v d="$LOG_DIR" '{pad = sprintf("%0200d", $1); printf "1 VA %s/cand-%s.json %s/run-%s.json\n", d, pad, d, pad}'
+	} >"$TEST_TMP/q"
+	_prune_unit "$LOG_DIR"
+	[ -s "$TEST_TMP/rm.log" ]
+	if grep -q 'candidates-20240101T000000-VA.json' "$TEST_TMP/rm.log"; then return 1; fi
+	grep -q 'candidates-20240102T000000-VA.json' "$TEST_TMP/rm.log"
 }

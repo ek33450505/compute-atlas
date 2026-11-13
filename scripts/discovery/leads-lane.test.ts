@@ -4,6 +4,8 @@ import { join } from "node:path";
 
 import {
   runLeadsLane,
+  leadsLaneExitCode,
+  classifyFetchFailure,
   LeadsLaneUnavailableError,
   type LeadsLaneDeps,
   type LeadForLane,
@@ -11,6 +13,7 @@ import {
   type RunLeadsLaneOptions,
 } from "./leads-lane";
 import type { FetchPageTextResult } from "./fetch-page-text";
+import { MAX_PAGE_TEXT_CHARS } from "./verify-source";
 import type { CallOllamaResult } from "./ollama-client";
 import type { ModelVerdict } from "./verify-source";
 import type { GeocodeResult } from "../../lib/geocode";
@@ -24,7 +27,7 @@ const PAGE_TEXT =
   "Example Facility is a proposed data center located in Austin, Texas, with a planned capacity of 50 megawatts.";
 
 function makeLead(overrides: Partial<LeadForLane> = {}): LeadForLane {
-  return { id: "lead-1", url: "https://example.com/article", note: null, attribution: null, triage: null, ...overrides };
+  return { id: "lead-1", url: "https://example.com/article", note: null, attribution: null, triage: null, createdAt: new Date("2026-08-19T00:00:00.000Z"), ...overrides };
 }
 
 function pageOk(text: string = PAGE_TEXT): FetchPageTextResult {
@@ -101,6 +104,7 @@ function makeDeps(overrides: Partial<LeadsLaneDeps> = {}): LeadsLaneDeps {
   return {
     listNewLeadsImpl: vi.fn(async () => [makeLead()]),
     fetchPageTextImpl: vi.fn(async () => pageOk()),
+    fetchPdfTextImpl: vi.fn(async () => ({ ok: false as const, reason: "bad_content_type" as const })),
     callOllamaImpl: sequencedOllama([extractionOk(extraction()), verdictResult(VERIFIED_QUOTE)]),
     geocodeImpl: vi.fn(async (): Promise<GeocodeResult[]> => [{ lat: 30.1, lon: -97.7, label: "Austin, TX" }]),
     findPossibleDuplicatesImpl: vi.fn(async (): Promise<string[]> => []),
@@ -203,16 +207,36 @@ describe("runLeadsLane — model unavailable", () => {
 // --- fetch failure -------------------------------------------------------------
 
 describe("runLeadsLane — fetch failure", () => {
-  it("leaves the lead 'new' (no status write at all)", async () => {
-    const deps = makeDeps({ fetchPageTextImpl: vi.fn(async () => pageFail("http_error")) });
+  it("defers the lead with the reason code on a permanent failure", async () => {
+    const deps = makeDeps({ fetchPageTextImpl: vi.fn(async () => pageFail("blocked")) });
 
     const summary = await runLeadsLane(baseOpts(), deps);
 
     expect(summary.fetchFailed).toBe(1);
     expect(summary.staged).toBe(0);
     expect(deps.callOllamaImpl).not.toHaveBeenCalled();
-    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("blocked"));
     expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
+  });
+
+  it("reads a PDF lead through the PDF path and proceeds", async () => {
+    const deps = makeDeps({
+      fetchPageTextImpl: vi.fn(async (): Promise<FetchPageTextResult> => pageFail("bad_content_type")),
+      fetchPdfTextImpl: vi.fn(async () => ({
+        ok: true as const,
+        text: PAGE_TEXT,
+        finalUrl: "https://example.com/a.pdf",
+        httpStatus: 200,
+        contentType: "application/pdf",
+        pages: 1,
+      })) as never,
+    });
+
+    const summary = await runLeadsLane(baseOpts(), deps);
+
+    expect(deps.fetchPdfTextImpl).toHaveBeenCalled();
+    expect(summary.fetchFailed).toBe(0);
+    expect(summary.staged).toBe(1);
   });
 });
 
@@ -498,8 +522,11 @@ describe("leads-lane writes `deferred`, never `researching`", () => {
   // same way lib/lead-fields.guard.test.ts pins its import boundary.
   const source = readFileSync(join(process.cwd(), "scripts/discovery/leads-lane.ts"), "utf8");
 
-  it("wires markDeferredImpl to updateLeadStatus(..., 'deferred')", () => {
-    expect(source).toMatch(/markDeferredImpl:\s*\(id,\s*note\)\s*=>\s*updateLeadStatus\(id,\s*"deferred",\s*note\)/);
+  it("wires markDeferredImpl to the guarded deferLeadIfNew, which writes 'deferred'", () => {
+    expect(source).toMatch(/markDeferredImpl:\s*\(id,\s*note\)\s*=>\s*deferLeadIfNew\(id,\s*note\)/);
+    const leadsLib = readFileSync(join(process.cwd(), "lib/leads.ts"), "utf8");
+    const fn = leadsLib.slice(leadsLib.indexOf("export async function deferLeadIfNew"));
+    expect(fn.slice(0, fn.indexOf("\n}\n"))).toMatch(/status: "deferred"/);
 
     // The regexes here scan the WHOLE module, so a SECOND `markDeferredImpl:`
     // wiring (or the literal in a comment) could satisfy the positive match
@@ -669,5 +696,251 @@ describe("runLeadsLane — possible duplicate", () => {
     expect(summary.possibleDuplicate).toBe(0);
     expect(summary.staged).toBe(1);
     expect(deps.createSubmissionImpl).toHaveBeenCalledTimes(1);
+  });
+});
+
+// --- Wave 5: exit code, ordering, truncation, no invented values ---------------
+
+describe("leadsLaneExitCode", () => {
+  it("is 1 when a createSubmission failed, 0 otherwise", async () => {
+    const deps = makeDeps({
+      createSubmissionImpl: vi.fn(async (): Promise<SubmissionResult> => ({ ok: false, error: "boom" } as never)),
+    });
+    const failed = await runLeadsLane(baseOpts(), deps);
+    expect(failed.errors).toBe(1);
+    expect(leadsLaneExitCode(failed)).toBe(1);
+
+    const ok = await runLeadsLane(baseOpts(), makeDeps());
+    expect(leadsLaneExitCode(ok)).toBe(0);
+  });
+
+  it("is 0 for a deliberately deferred lead", async () => {
+    const deps = makeDeps({ fetchPageTextImpl: vi.fn(async () => pageFail("http_error")) });
+    expect(leadsLaneExitCode(await runLeadsLane(baseOpts(), deps))).toBe(0);
+  });
+});
+
+describe("runLeadsLane — extraction prompt and unstated facts", () => {
+  it("truncates an oversized page before the extraction prompt", async () => {
+    const huge = "x".repeat(MAX_PAGE_TEXT_CHARS * 2);
+    const ollama = sequencedOllama([extractionOk(extraction()), verdictResult(VERIFIED_QUOTE)]);
+    const deps = makeDeps({
+      fetchPageTextImpl: vi.fn(async () => pageOk(huge)),
+      callOllamaImpl: vi.fn(ollama) as never,
+    });
+
+    await runLeadsLane(baseOpts(), deps);
+
+    const firstCall = vi.mocked(deps.callOllamaImpl).mock.calls[0][0] as { userPrompt: string };
+    expect(firstCall.userPrompt.length).toBeLessThan(MAX_PAGE_TEXT_CHARS + 2_000);
+  });
+
+  it.each([
+    ["facilityType", { facilityType: null }],
+    ["status", { status: null }],
+  ])("defers instead of staging an invented value when %s is null", async (_label, patch) => {
+    const deps = makeDeps({
+      callOllamaImpl: sequencedOllama([extractionOk(extraction(patch)), verdictResult(VERIFIED_QUOTE)]),
+    });
+
+    const summary = await runLeadsLane(baseOpts(), deps);
+
+    expect(summary.staged).toBe(0);
+    expect(deps.createSubmissionImpl).not.toHaveBeenCalled();
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("facility type/status"));
+  });
+});
+
+describe("runLeadsLane — permanent vs transient read failures", () => {
+  const run = (fail: FetchPageTextResult, lead: Partial<LeadForLane> = {}) => {
+    const deps = makeDeps({
+      listNewLeadsImpl: vi.fn(async () => [makeLead(lead)]),
+      fetchPageTextImpl: vi.fn(async () => fail),
+    });
+    return runLeadsLane(baseOpts(), deps).then(() => deps);
+  };
+
+  it.each<[string, FetchPageTextResult]>([
+    ["too_large", { ok: false, reason: "too_large" }],
+    ["blocked", { ok: false, reason: "blocked" }],
+    ["bad_content_type", { ok: false, reason: "bad_content_type" }],
+    ["http 404", { ok: false, reason: "http_error", httpStatus: 404 }],
+  ])("defers at once on permanent %s", async (_l, fail) => {
+    const deps = await run(fail);
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("could not be read"));
+  });
+
+  it.each<[string, FetchPageTextResult]>([
+    ["network_error", { ok: false, reason: "network_error" }],
+    ["http 503", { ok: false, reason: "http_error", httpStatus: 503 }],
+    ["http 429", { ok: false, reason: "http_error", httpStatus: 429 }],
+    ["http 408", { ok: false, reason: "http_error", httpStatus: 408 }],
+    ["http 403 bot wall", { ok: false, reason: "http_error", httpStatus: 403 }],
+    ["http 401", { ok: false, reason: "http_error", httpStatus: 401 }],
+  ])("leaves a fresh lead new on transient %s", async (_l, fail) => {
+    const deps = await run(fail);
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+  });
+
+  it("defers a transient failure once the lead is 15 days old", async () => {
+    const deps = await run(
+      { ok: false, reason: "network_error" },
+      { createdAt: new Date("2026-08-05T00:00:00.000Z") }
+    );
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith(
+      "lead-1",
+      "leads-lane: page could not be read for 14 days (network_error)"
+    );
+  });
+
+  it("does not defer a transient failure at 13 days", () => {
+    const now = new Date("2026-08-20T00:00:00.000Z");
+    expect(
+      classifyFetchFailure({ reason: "network_error" }, new Date("2026-08-07T00:00:00.000Z"), now)
+    ).toEqual({ action: "retry" });
+  });
+});
+
+describe("runLeadsLane — PDF-path failure reasons", () => {
+  const pdfRun = (pdf: unknown, lead: Partial<LeadForLane> = {}) => {
+    const deps = makeDeps({
+      listNewLeadsImpl: vi.fn(async () => [makeLead(lead)]),
+      fetchPageTextImpl: vi.fn(async (): Promise<FetchPageTextResult> => pageFail("bad_content_type")),
+      fetchPdfTextImpl: vi.fn(async () => pdf) as never,
+    });
+    return runLeadsLane(baseOpts(), deps).then((summary) => ({ deps, summary }));
+  };
+
+  it("poppler missing: stays new, is counted, fails the run, and never ages out", async () => {
+    const old = { createdAt: new Date("2026-01-01T00:00:00.000Z") };
+    const { deps, summary } = await pdfRun({ ok: false, reason: "pdf_extractor_unavailable" }, old);
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+    expect(summary.pdfExtractorUnavailable).toBe(1);
+    expect(leadsLaneExitCode(summary)).toBe(1);
+  });
+
+  it("a 503 or network error on the PDF GET is transient (fresh lead stays new)", async () => {
+    for (const pdf of [
+      { ok: false, reason: "http_error", httpStatus: 503 },
+      { ok: false, reason: "network_error" },
+    ]) {
+      const { deps } = await pdfRun(pdf);
+      expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+    }
+  });
+
+  it("a PDF path that throws is transient", async () => {
+    const deps = makeDeps({
+      fetchPageTextImpl: vi.fn(async (): Promise<FetchPageTextResult> => pageFail("bad_content_type")),
+      fetchPdfTextImpl: vi.fn(async () => {
+        throw new Error("EMFILE");
+      }),
+    });
+    await runLeadsLane(baseOpts(), deps);
+    expect(deps.markDeferredImpl).not.toHaveBeenCalled();
+  });
+
+  it("a genuinely unparseable PDF defers at once", async () => {
+    const { deps } = await pdfRun({ ok: false, reason: "pdf_extract_failed" });
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("pdf_extract_failed"));
+  });
+});
+
+describe("runLeadsLane — no starvation, no double staging", () => {
+  const OLD = new Date("2026-08-01T00:00:00.000Z");
+
+  it("escalate and geocode-error leads age out after 14 days, not before", async () => {
+    const cases: Array<Partial<LeadsLaneDeps>> = [
+      {
+        fetchPageTextImpl: (() => {
+          let n = 0;
+          return vi.fn(async (): Promise<FetchPageTextResult> => (++n === 1 ? pageOk() : { ok: false, reason: "too_large" }));
+        })(),
+      },
+      { geocodeImpl: vi.fn(async (): Promise<GeocodeResult[]> => { throw new Error("503"); }) },
+    ];
+    for (const over of cases) {
+      for (const [now, expectDefer] of [["2026-08-10T00:00:00.000Z", false], ["2026-08-20T00:00:00.000Z", true]] as const) {
+        const deps = makeDeps({
+          listNewLeadsImpl: vi.fn(async () => [makeLead({ createdAt: OLD })]),
+          now: () => new Date(now),
+          ...over,
+          ...(over.fetchPageTextImpl ? { fetchPageTextImpl: (() => {
+            let n = 0;
+            return vi.fn(async (): Promise<FetchPageTextResult> => (++n === 1 ? pageOk() : { ok: false, reason: "too_large" }));
+          })() } : {}),
+        });
+        await runLeadsLane(baseOpts(), deps);
+        expect(vi.mocked(deps.markDeferredImpl).mock.calls.length).toBe(expectDefer ? 1 : 0);
+        if (expectDefer) {
+          expect(deps.markDeferredImpl).toHaveBeenCalledWith("lead-1", expect.stringContaining("for 14 days"));
+        }
+      }
+    }
+  });
+
+  it("ten stuck oldest leads cannot hold the queue past the age-out window", async () => {
+    const state = new Map<string, { createdAt: Date; status: string }>();
+    for (let i = 0; i < 10; i++) state.set(`stuck-${i}`, { createdAt: new Date(Date.UTC(2026, 7, 1, i)), status: "new" });
+    state.set("fresh", { createdAt: new Date("2026-08-02T00:00:00.000Z"), status: "new" });
+    const processed: string[] = [];
+    let now = new Date("2026-08-03T00:00:00.000Z");
+    const deps = makeDeps({
+      listNewLeadsImpl: vi.fn(async (limit: number) =>
+        [...state.entries()]
+          .filter(([, v]) => v.status === "new")
+          .sort((a, b) => a[1].createdAt.getTime() - b[1].createdAt.getTime())
+          .slice(0, limit)
+          .map(([id, v]) => makeLead({ id, url: `https://example.com/${id}`, createdAt: v.createdAt }))
+      ),
+      fetchPageTextImpl: vi.fn(async (url: string): Promise<FetchPageTextResult> => {
+        processed.push(url);
+        return url.endsWith("fresh") ? pageOk() : { ok: false, reason: "network_error" };
+      }),
+      markDeferredImpl: vi.fn(async (id: string): Promise<LeadActionResult> => {
+        state.get(id)!.status = "deferred";
+        return { ok: true, lead: { status: "deferred" } as never };
+      }),
+      now: () => now,
+    });
+    await runLeadsLane(baseOpts(), deps);
+    expect(processed.some((u) => u.endsWith("fresh"))).toBe(false);
+    now = new Date("2026-08-16T00:00:00.000Z"); // > 14 days after the stuck leads
+    await runLeadsLane(baseOpts(), deps); // ages the stuck ones out
+    await runLeadsLane(baseOpts(), deps);
+    expect(processed.some((u) => u.endsWith("fresh"))).toBe(true);
+  });
+
+  it("a failed promoteLead parks the lead deferred with the submission id (no re-stage)", async () => {
+    const deps = makeDeps({
+      promoteLeadImpl: vi.fn(async (): Promise<LeadActionResult> => ({ ok: false, status: 409, error: "x" })),
+    });
+    const summary = await runLeadsLane(baseOpts(), deps);
+    expect(summary.staged).toBe(1);
+    expect(deps.markDeferredImpl).toHaveBeenCalledWith(
+      "lead-1",
+      "leads-lane: staged as submission 22222222-2222-2222-2222-222222222222, promote failed"
+    );
+    expect(leadsLaneExitCode(summary)).toBe(0);
+  });
+
+  it("a 409 on the park (lead already changed) is logged and skipped, not an error", async () => {
+    const deps = makeDeps({
+      promoteLeadImpl: vi.fn(async (): Promise<LeadActionResult> => ({ ok: false, status: 500, error: "ambiguous" })),
+      markDeferredImpl: vi.fn(
+        async (): Promise<LeadActionResult> => ({ ok: false, status: 409, error: "Lead is no longer new" })
+      ),
+    });
+    const summary = await runLeadsLane(baseOpts(), deps);
+    expect(summary.errors).toBe(0);
+    expect(leadsLaneExitCode(summary)).toBe(0);
+  });
+
+  it("promote AND park failing fails the run", async () => {
+    const deps = makeDeps({
+      promoteLeadImpl: vi.fn(async (): Promise<LeadActionResult> => ({ ok: false, status: 500, error: "x" })),
+      markDeferredImpl: vi.fn(async (): Promise<LeadActionResult> => ({ ok: false, status: 500, error: "y" })),
+    });
+    expect(leadsLaneExitCode(await runLeadsLane(baseOpts(), deps))).toBe(1);
   });
 });

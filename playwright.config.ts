@@ -72,7 +72,9 @@ export default defineConfig({
     // nobody asked for. The cost is a rebuild per local run; that is the
     // right trade for a check that is only worth anything if it is trusted.
     reuseExistingServer: false,
-    // Sized for a COLD CI runner, not this laptop. The build prerenders
+    // Sized for a COLD CI runner, not this laptop. The route counts here are a
+    // dated snapshot (2026-09-11), not a constant: re-measure from a build log
+    // before citing them. The build prerenders
     // 3,039 routes (facilities 1,571 · operators 645 · counties 637 ·
     // states 51 · embed 50 · metros 28) — the by-county lens added 637 of
     // them, +26.5% over the previous 2,402. Measured locally 2026-09-11 on

@@ -9,6 +9,7 @@ import {
   buildCiUrl,
   buildPlan,
   generatePassword,
+  GRANTED_COLUMNS,
   GRANTED_TABLES,
   parseCliArgs,
   run,
@@ -99,6 +100,10 @@ describe("buildPlan", () => {
     expect(plan).toContain(
       `GRANT SELECT ON ${GRANTED_TABLES.join(", ")} TO ci_monitor`,
     );
+    expect(plan).toContain("GRANT SELECT (status, target_type) ON subscriptions TO ci_monitor");
+    expect(plan).toContain("GRANT SELECT (received_at, processed_at) ON paypal_webhook_events TO ci_monitor");
+    expect(plan).not.toMatch(/GRANT SELECT ON [^\n]*\b(subscriptions|email_sends|paypal_webhook_events|dataset_editions)\b/);
+    expect(plan).not.toMatch(/GRANT SELECT \([^)]*\bemail\b[^)]*\) ON subscriptions/);
     expect(plan).toContain("default_transaction_read_only = on");
     expect(plan).toContain("statement_timeout = '30s'");
     expect(plan).toContain("PASSWORD '<redacted>'");
@@ -149,9 +154,14 @@ function harness(opts: {
     query: async (text: string) => {
       if (text.startsWith("INSERT")) throw Object.assign(new Error("denied"), { code: "42501" });
       if (text.startsWith("SELECT 1 FROM")) return [{}];
+      if (text.includes("unnest(ARRAY")) return (opts.verifyRows?.tablePriv ?? []) as unknown[];
       if (text.includes("has_table_privilege(current_user, 'public.api_daily_usage'")) return [{ p: false }];
       if (text.includes("has_table_privilege(current_user, c.oid")) {
         return (opts.verifyRows?.rel ?? GRANTED_TABLES.map((relname) => ({ relname }))) as unknown[];
+      }
+      if (text.includes("has_column_privilege")) {
+        return (opts.verifyRows?.cols ??
+          Object.entries(GRANTED_COLUMNS).flatMap(([relname, cs]) => cs.map((attname) => ({ relname, attname })))) as unknown[];
       }
       if (text.includes("has_database_privilege")) return opts.verifyRows?.db ?? [{ p: false }];
       if (text.includes("has_schema_privilege")) return opts.verifyRows?.schema ?? [{ p: false }];
@@ -197,7 +207,7 @@ describe("run", () => {
     const create = h.statements.find((s) => s.startsWith("CREATE ROLE ci_monitor"));
     expect(create).toContain(`PASSWORD '${new URL(url).password}'`);
     expect(create).not.toContain("SCRAM-SHA-256$");
-    expect(h.out.filter((l) => l.startsWith("PASS"))).toHaveLength(10);
+    expect(h.out.filter((l) => l.startsWith("PASS"))).toHaveLength(GRANTED_TABLES.length + Object.keys(GRANTED_COLUMNS).length + 9);
     expect(h.out.filter((l) => l.startsWith("FAIL"))).toEqual([]);
   });
 
@@ -308,6 +318,22 @@ describe("verifyRole boundary checks", () => {
     const res = await verifyRole(sqlWith({ rel }), 19);
     expect(res.find((r) => r.name.startsWith("SELECT-able"))?.ok).toBe(false);
   });
+  it("fails when an extra column (subscriptions.email) is readable", async () => {
+    const cols = [
+      ...Object.entries(GRANTED_COLUMNS).flatMap(([relname, cs]) => cs.map((attname) => ({ relname, attname }))),
+      { relname: "subscriptions", attname: "email" },
+    ];
+    const res = await verifyRole(sqlWith({ cols }), 19);
+    expect(res.find((r) => r.name.startsWith("column-readable"))?.ok).toBe(false);
+  });
+  it("fails when a granted column is not readable", async () => {
+    const res = await verifyRole(sqlWith({ cols: [] }), 19);
+    expect(res.find((r) => r.name.startsWith("column-readable"))?.ok).toBe(false);
+  });
+  it("fails when the role holds a table-level privilege on a column-granted table", async () => {
+    const res = await verifyRole(sqlWith({ tablePriv: [{ relname: "subscriptions" }] }), 19);
+    expect(res.find((r) => r.name.startsWith("no table-level"))?.ok).toBe(false);
+  });
   it("fails when the role can CREATE on the database", async () => {
     const res = await verifyRole(sqlWith({ db: [{ p: true }] }), 19);
     expect(res.find((r) => r.name === "no CREATE on the database")?.ok).toBe(false);
@@ -321,7 +347,7 @@ describe("verifyRole boundary checks", () => {
       },
     };
     await verifyRole(sql, 19);
-    expect(seen.find((q) => q.includes("c.relkind IN"))).toContain("'S', 'f'");
+    expect(seen.find((q) => q.includes("c.relkind IN ('r', 'p', 'v'"))).toContain("'S', 'f'");
   });
   it("fails when the role is a member of another role", async () => {
     const res = await verifyRole(sqlWith({ members: [{ n: 1 }] }), 19);

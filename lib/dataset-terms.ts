@@ -19,7 +19,7 @@ export const DATASET_COMMERCIAL_TERMS: readonly string[] = [
   "Cancel at any time from the download page or in your PayPal account's automatic payments settings. Access continues to the end of the paid period.",
   "There are no refunds for partial periods, except where the law requires one. The maintainer may refund at their discretion.",
   "Access may be revoked for misuse such as sharing links. Revoking cancels that subscription and ends access. You may subscribe again later.",
-  "Free access for students, educators and academics is separate and is reviewed by hand.",
+  "Free access for students and educators is separate, is reviewed by hand, and is verified against a school email address.",
 ];
 
 /** Privacy notice for dataset access requests (final; bump DATASET_TERMS_VERSION in lib/dataset-grants.ts whenever this text changes). */

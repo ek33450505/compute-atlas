@@ -11,13 +11,13 @@ vi.mock("../../lib/db/client");
 
 import * as dbClient from "../../lib/db/client";
 import {
-  DISCOVERY_STALE_HOURS_DEFAULT,
   fetchHeartbeatRow,
   HeartbeatDegradedError,
   HeartbeatMissingError,
   HeartbeatStaleError,
   parseStaleHoursEnv,
   runHeartbeatCheck,
+  ZERO_YIELD_RUNS_ALARM,
   type HeartbeatFreshnessReport,
 } from "./check-heartbeat";
 import type { DiscoveryHeartbeatRow } from "../../lib/db/schema";
@@ -62,13 +62,20 @@ afterEach(() => {
 // ---------------------------------------------------------------------------
 
 describe("parseStaleHoursEnv", () => {
-  it("returns the default (84) when unset", () => {
-    expect(parseStaleHoursEnv(undefined)).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
-    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBe(84); // must match run.sh's own default
+  it("returns the day-aware budget when unset (Mon 84, Tue-Sat 36, Sun 60)", () => {
+    // Noon New York (EST, UTC-5) on Mon 2026-11-16 .. Sun 2026-11-22.
+    const got = [16, 17, 18, 19, 20, 21, 22].map((d) =>
+      parseStaleHoursEnv(undefined, new Date(`2026-11-${d}T17:00:00Z`))
+    );
+    expect(got).toEqual([84, 36, 36, 36, 36, 36, 60]);
   });
 
-  it("returns the default when set to an empty string", () => {
-    expect(parseStaleHoursEnv("")).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
+  it("returns the day-aware budget when set to an empty string", () => {
+    expect(parseStaleHoursEnv("", new Date("2026-11-17T17:00:00Z"))).toBe(36);
+  });
+
+  it("a set, valid value is a fixed override on every day", () => {
+    expect(parseStaleHoursEnv("12", new Date("2026-11-16T17:00:00Z"))).toBe(12);
   });
 
   it("respects a custom numeric threshold", () => {
@@ -76,12 +83,17 @@ describe("parseStaleHoursEnv", () => {
   });
 
   it("throws — rather than silently falling back — on an unparseable value", () => {
-    expect(() => parseStaleHoursEnv("not-a-number")).toThrow(/not a valid positive number/);
+    expect(() => parseStaleHoursEnv("not-a-number")).toThrow(/not a positive whole number/);
   });
 
   it("throws on a non-positive value", () => {
-    expect(() => parseStaleHoursEnv("0")).toThrow(/not a valid positive number/);
-    expect(() => parseStaleHoursEnv("-5")).toThrow(/not a valid positive number/);
+    expect(() => parseStaleHoursEnv("0")).toThrow(/not a positive whole number/);
+    expect(() => parseStaleHoursEnv("-5")).toThrow(/not a positive whole number/);
+  });
+
+  it("throws on a non-integer value, matching run.sh's integer-only rule", () => {
+    expect(() => parseStaleHoursEnv("1.5")).toThrow(/not a positive whole number/);
+    expect(() => parseStaleHoursEnv("12h")).toThrow(/not a positive whole number/);
   });
 });
 
@@ -166,6 +178,17 @@ describe("runHeartbeatCheck", () => {
     await expect(runHeartbeatCheck(36, NOW)).rejects.toThrow(HeartbeatDegradedError);
   });
 
+  it("fails a fresh zero_yield heartbeat with HeartbeatDegradedError naming zero_yield", async () => {
+    expect(ZERO_YIELD_RUNS_ALARM).toBe(5);
+    mockSelectResult([makeRow({ lastRunAt: new Date("2026-09-05T00:00:00Z"), status: "zero_yield" })]);
+
+    const err = await runHeartbeatCheck(36, NOW).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(HeartbeatDegradedError);
+    expect((err as HeartbeatDegradedError).message).toMatch(/status="zero_yield"/);
+    expect((err as HeartbeatDegradedError).message).toMatch(/staged nothing/);
+    expect((err as HeartbeatDegradedError).message).not.toMatch(/OAuth/);
+  });
+
   it("throws HeartbeatStaleError when last_run_at is older than the threshold", async () => {
     // 48h before NOW, threshold 36h -> stale
     mockSelectResult([makeRow({ lastRunAt: new Date("2026-09-03T12:00:00Z"), status: "ok" })]);
@@ -242,5 +265,53 @@ describe("runHeartbeatCheck", () => {
 
     await expect(runHeartbeatCheck(36, NOW)).rejects.toThrow(HeartbeatMissingError);
     // REGRESSION GUARD: passes before and after.
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Day-aware default (no env, no explicit threshold). On the evening of a missed
+// day the previous day's row is ~26-35h old, inside the 36h budget, and the
+// following day's run refreshes the row before that evening's watchdog, so a
+// single missed run is not visible here; a stale mid-week row means two
+// consecutive publishes were missed. Times are New York wall-clock (EST, UTC-5, in Nov).
+// ---------------------------------------------------------------------------
+
+describe("runHeartbeatCheck with the day-aware default", () => {
+  const ny = (day: number, hour: number) =>
+    new Date(Date.UTC(2026, 10, day, hour + 5, 0, 0));
+
+  it("flags a Tue 16:00 heartbeat checked Thu 20:00 (52h > 36h; Wed and Thu publishes both missing)", async () => {
+    mockSelectResult([makeRow({ lastRunAt: ny(17, 16) })]);
+    const err = await runHeartbeatCheck(undefined, ny(19, 20)).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(HeartbeatStaleError);
+    expect((err as HeartbeatStaleError).report.thresholdHours).toBe(36);
+    expect((err as HeartbeatStaleError).report.ageHours).toBeCloseTo(52, 5);
+  });
+
+  it("does not require today's run: same heartbeat checked Wed 21:00 passes (29h <= 36h)", async () => {
+    mockSelectResult([makeRow({ lastRunAt: ny(17, 16) })]);
+    await expect(runHeartbeatCheck(undefined, ny(18, 21))).resolves.toMatchObject({
+      thresholdHours: 36,
+    });
+  });
+
+  it("Fri 16:00 heartbeat checked Mon 21:00 passes (77h <= 84h)", async () => {
+    mockSelectResult([makeRow({ lastRunAt: ny(20, 16) })]);
+    await expect(runHeartbeatCheck(undefined, ny(23, 21))).resolves.toMatchObject({
+      thresholdHours: 84,
+    });
+  });
+
+  it("Fri 16:00 heartbeat checked Tue 21:00 is stale (101h > 36h)", async () => {
+    mockSelectResult([makeRow({ lastRunAt: ny(20, 16) })]);
+    await expect(runHeartbeatCheck(undefined, ny(24, 21))).rejects.toThrow(HeartbeatStaleError);
+  });
+
+  it("a set DISCOVERY_STALE_HOURS stays a fixed override", async () => {
+    vi.stubEnv("DISCOVERY_STALE_HOURS", "100");
+    mockSelectResult([makeRow({ lastRunAt: ny(17, 16) })]);
+    await expect(runHeartbeatCheck(undefined, ny(19, 20))).resolves.toMatchObject({
+      thresholdHours: 100,
+    });
   });
 });

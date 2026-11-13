@@ -145,7 +145,8 @@ Every candidate source URL is fetched and mechanically checked against the claim
 it is cited for before that candidate can become a `pending` submission. The
 gate lives in `submit-candidates.ts` and is **on by default** — `verify-source.ts`
 runs the check, `ollama-client.ts` talks to a local Ollama instance, and
-`fetch-page-text.ts` (behind `net-guard.ts`) does the SSRF-guarded fetch.
+`fetch-page-text.ts` (behind `net-guard.ts`) does the SSRF-guarded fetch, and
+PDF sources are read through `pdftotext -layout` (`fetch-pdf-text.ts`).
 
 **Why a local model.** Measured beforehand: a local model is unreliable at
 *proposing* facts — 0/5 source URLs survived an open-ended discovery test, every
@@ -180,12 +181,12 @@ typo in `OLLAMA_VERIFY_MODEL`).
 One exception: a single model call that hits the per-call timeout
 (`OLLAMA_TIMEOUT_MS`) is flagged `modelTimedOut` on its result. The submit gate
 then probes Ollama (`GET /api/tags` within 5 s, verify model present). If the
-probe is healthy, that source does not verify and the remaining sources are
-still checked: if another source verified the candidate stages normally; if
-another escalated it stages with an escalation note that also names the
-timed-out URL; if none did, the candidate is held for manual review (counted in
-`skippedUnverified`, logged as `skip unverified: <id> — verification call timed
-out while Ollama was healthy …`) and the run continues. If the probe fails, the
+probe is healthy, that URL is dropped and the remaining sources are still
+checked: if another source verified the candidate, it stages with the timed-out
+URL removed and listed in its verdict note; if none did, the candidate is held
+for manual review (counted in `skippedUnverified`, logged as `skip unverified:
+<id> — verification call timed out while Ollama was healthy …`) and the run
+continues. If the probe fails, the
 run aborts as above (a probe that throws counts as failed). At most 3 such
 timeouts are tolerated per `runSubmit` invocation; the 4th aborts, because Ollama is then degraded. Any other
 `unavailable` cause (network error, non-2xx, malformed or empty content) aborts
@@ -254,8 +255,13 @@ request list, an RTO's generation queue) rather than the aggregator.
 
 ## Safety properties
 
-- **Staging-only:** the pipeline's only write is `POST /api/submissions`. It
-  reads the existing facilities directly from Neon via `DATABASE_URL`, falling
+- **Staging-only:** the discovery submit step writes only through
+  `POST /api/submissions`. The pipeline also has other writers, all using the
+  owner `DATABASE_URL` through `lib/db`: the leads lane (`createSubmission`,
+  `promoteLead`), `publish-heartbeat.ts`, and the PII retention prune
+  (`scripts/retention-prune.ts`, run by `run.sh`). None of them publishes a
+  facility. The pipeline reads the existing facilities directly from Neon via
+  `DATABASE_URL`, falling
   back loudly to `data/facilities.json`, and never edits `data/facilities.json`.
   Promotion to a live facility (new or updated) happens only via `npm run submissions --
   approve <id>`, a deliberate human action.
@@ -294,7 +300,12 @@ request list, an RTO's generation queue) rather than the aggregator.
   (escape hatch / tests).
 - **Fail-loud source verification:** every candidate's source URLs are fetched
   and mechanically checked against the claim before staging (see the gate
-  above). If the local Ollama model is unreachable or not pulled, the check
+  above). A candidate stages only if at least one URL verifies. Rejected and
+  timed-out URLs are dropped from what is staged. An `escalate` URL (too large,
+  or unreadable even through the PDF path) is kept, labelled unverified, only
+  when another URL verified. A candidate whose URLs all escalate is not staged,
+  because an escalation is not mechanical verification.
+  If the local Ollama model is unreachable or not pulled, the check
   returns `unavailable` and the run **aborts** — it never falls back to
   submitting unverified candidates (a lone per-call timeout with a healthy Ollama
   holds that one candidate instead; see "When Ollama is unreachable").
@@ -313,7 +324,8 @@ request list, an RTO's generation queue) rather than the aggregator.
   `discovery-logs/heartbeat.json` — top-level `lastRunAt`, `status`
   (`ok` | `degraded`) and `failureCount`, plus a `states[]` array of
   `{ runId, state, claudeStatus, elapsedSecs }`. A stale `lastRunAt` means the
-  scheduled job isn't running (a launchd sleep-skip or crash); `claudeStatus:
+  scheduled job did not run: the Mac was off (or asleep long enough that the run has not
+  happened yet), the job is unloaded, or a run crashed; `claudeStatus:
   no_array` means the run reached `claude` but got a session-limit/prose reply
   rather than candidates. A manual dry-run deliberately does not write the
   heartbeat, so it never masks a real launchd failure.
@@ -372,7 +384,8 @@ request list, an RTO's generation queue) rather than the aggregator.
   runs. It cannot detect "launchd never fired at all" — that is the stale-row
   case the off-machine watchdog owns. `run.sh`'s stale-heartbeat check is the
   on-machine partial mitigation: on startup, a previous `lastRunAt` older than
-  `DISCOVERY_STALE_HOURS` (default 84) is logged as a WARN and passed to the
+  the day-aware budget (Mon 84h, Tue-Sat 36h, Sun 60h; a set
+  `DISCOVERY_STALE_HOURS` overrides it) is logged as a WARN and passed to the
   same best-effort `notify()`, so missed days surface in the run log of the next
   run that happens.
 - **The wall-clock cap is enforced, and its failure is detected.**
@@ -393,21 +406,64 @@ request list, an RTO's generation queue) rather than the aggregator.
   `discovery-logs/source-health-<timestamp>.json`. Current implementation is
   FLAG-ONLY: no admin UI or automated actions yet (fast-follow planned).
 
+## What the run harness guarantees
+
+`scripts/discovery/run.sh` is the only entry point launchd uses. Its operator
+procedures are in `docs/discovery-runbook.md`; the guarantees are these:
+
+- **Run lock and crash recovery.** One live run at a time: `discovery-logs/run.lock/`
+  records the owner's pid and start time. A run refuses when the owner is alive or
+  cannot be confirmed dead. A dead owner's lock is taken over. If a run exits uncleanly
+  after it has advanced the cursor, the exit trap rewinds the cursor to the first state
+  without a status, or to an earlier state with a re-queueable status (`find_requeue_index`),
+  publishes a `crashed` heartbeat, and keeps the exit path inside
+  launchd's ~20 s exit timeout (about 12 s in total).
+- **Preflight gates before the cursor moves.** The git guard (branch `main`, no merge or
+  rebase in progress, no tracked changes except the generated files listed in the runbook)
+  and `scripts/discovery/preflight.ts` run before any state is consumed. A config failure
+  (exit 1) refuses the run; an environmental failure (exit 3) skips it with status
+  `skipped_env` (exit 75). Either way the cursor is untouched and a heartbeat is
+  published.
+- **At-most-once submits with retries.** `submit-candidates.ts` checkpoints each
+  candidate as `in_flight` in its run log before the POST. A resume (`--resume-from-log`)
+  skips anything already `submitted` or `in_flight`, so a crash mid-POST is not replayed.
+  Exit 3 means the gate or API was unavailable; the attempt is queued in
+  `discovery-logs/resubmit-queue` and retried on a later run. Overlap between separate
+  research runs is accepted and is not de-duplicated.
+- **Yield and zero-yield alarm.** The heartbeat records per-state yield. The streak moves only
+  on a run where every batch state is `ok` and every submitted count is known; a failing or
+  refused run carries the streak unchanged. Five consecutive zero-yield runs publish
+  `zero_yield`.
+- **Lane cursors.** Field extraction and verification each keep their own cursor file.
+  The extract cursor advances only when extraction succeeded and the submit then either
+  exited 0 or had nothing to submit. Exit 3 promotes only if `queue_resubmit` actually
+  queued the file. Exit 1 promotes unless the run log shows `apiAuthRejected > 0` or is
+  unreadable. Any other exit does not promote. The verify cursor advances on success
+  alone (read-only lane). A write failure keeps the old cursor. Deleting a cursor file
+  restarts that lane from the start of the table.
+
 ## Cost model and cadence
 
 The discovery step (`claude -p`) uses your Claude subscription (Claude Code
 CLI), not the metered Anthropic API — a normal interactive session's quota.
-Each run does exactly one bounded, single-session research call for one
-state, capped to `--max` submissions (new + updated combined, default 5).
-There is no fan-out, no multi-agent workflow, and no `/data-wave` invocation
-from this pipeline.
+Each run processes `STATES_PER_RUN` states (default 4 in `run.sh`), and each
+state gets one bounded, single-session research call. Each state's submit call
+is capped by `--max`, which `run.sh` sets to `MAX_CANDIDATES` when that is set
+and otherwise to the computed review cap: 25 during the burst window (20 days
+from 2026-07-30) and 30 after it (`compute_cap` in `run.sh`). The cap is shared
+across net-new discovery and status refreshes in that call (`submit-candidates.ts`,
+`runSubmit`, which processes those first). Enrichment is a separate
+`submit-candidates.ts` invocation with its own `--max` (the same value; `run.sh`
+enrichment submit). There is no
+fan-out, no multi-agent workflow, and no `/data-wave` invocation from this
+pipeline.
 
 **Cadence:** The combined-pass model runs Mon-Fri via launchd (Mon/Wed/Fri until 2026-11-12), processing
 `STATES_PER_RUN` states per invocation (default **4** since 2026-11-12; 3 from
 2026-10-09; 2 from 2026-08-14) from a rotation cursor. Moving to Mon-Fri and
 raising it 3 → 4 was the owner's decision on 2026-11-12; 4-state run times are
-not yet measured, and the 84h staleness budgets are unchanged (the longest gap
-is still Fri -> Mon, 72h). Raising it to 3 was Ed's
+not yet measured, and the staleness budget is day-aware (Mon 84h, Tue-Sat 36h, Sun 60h;
+the watchdog workflow's own freshness stays a flat 84h). Raising it to 3 was Ed's
 decision on 2026-10-09, based on zero OVERRUN warnings since 2026-09-16 and
 2-state batches taking 68–118 min (`run.sh` comment at `STATES_PER_RUN`). The
 2026-10-05..07 failures were an expired Claude login, not load. The reasoning

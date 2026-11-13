@@ -1,7 +1,9 @@
 #!/usr/bin/env bats
-# Coverage for scripts/discovery/fetch-url.sh (GET-only curl wrapper). HOME is
-# isolated and `curl` is a PATH shim that logs argv one element per line, so
-# no test ever touches the network.
+# Coverage for scripts/discovery/fetch-url.sh (GET-only fetch wrapper). HOME is
+# isolated and `curl` is a PATH shim that must never run. Every URL here is
+# refused before any connection, so no test touches the network; the allowed
+# path and the redirect/DNS guards are covered in fetch-url.test.ts with an
+# injected fetch and resolver (the CLI has no seam to relax the guard).
 
 setup() {
 	REPO_ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/../.." && pwd)"
@@ -23,20 +25,6 @@ SHIM
 
 teardown() {
 	rm -rf "$TEST_TMP"
-}
-
-@test "valid https URL: -q first, -- before the URL, URL last" {
-	run "$FETCH" "https://example.com/a?b=1"
-	[ "$status" -eq 0 ]
-	[ "$(sed -n 1p "$CURL_LOG")" = "-q" ]
-	[ "$(tail -n 2 "$CURL_LOG" | head -n 1)" = "--" ]
-	[ "$(tail -n 1 "$CURL_LOG")" = "https://example.com/a?b=1" ]
-}
-
-@test "valid plain http URL is accepted" {
-	run "$FETCH" "http://example.com/x"
-	[ "$status" -eq 0 ]
-	[ "$(tail -n 1 "$CURL_LOG")" = "http://example.com/x" ]
 }
 
 @test "no arguments: exit 2, curl not called" {
@@ -87,23 +75,6 @@ teardown() {
 	[ ! -e "$CURL_LOG" ]
 }
 
-@test "accepted URL: argv contains no upload/config/output flags" {
-	run "$FETCH" "https://example.com/x"
-	[ "$status" -eq 0 ]
-	for flag in -d -F -T -K -o -H --data --data-binary --upload-file --config; do
-		[ "$(grep -cxF -- "$flag" "$CURL_LOG")" -eq 0 ]
-	done
-}
-
-@test "accepted URL: pinned protocol, redirect and glob flags" {
-	run "$FETCH" "https://example.com/x"
-	[ "$status" -eq 0 ]
-	grep -qxF -- "-g" "$CURL_LOG"
-	[ "$(grep -xF -A1 -- "--proto" "$CURL_LOG" | sed -n 2p)" = "=http,https" ]
-	[ "$(grep -xF -A1 -- "--proto-redir" "$CURL_LOG" | sed -n 2p)" = "=http,https" ]
-	[ "$(grep -xF -A1 -- "--max-redirs" "$CURL_LOG" | sed -n 2p)" = "10" ]
-}
-
 @test "URL containing a control character (SOH): exit 2, curl not called" {
 	run "$FETCH" $'https://example.com/a\x01b'
 	[ "$status" -eq 2 ]
@@ -116,8 +87,29 @@ teardown() {
 	[ ! -e "$CURL_LOG" ]
 }
 
-@test "@ inside a path is accepted" {
-	run "$FETCH" "https://medium.com/@someone/post"
-	[ "$status" -eq 0 ]
-	[ "$(tail -n 1 "$CURL_LOG")" = "https://medium.com/@someone/post" ]
+# The private-address guard: refused (exit 2) before any connection.
+@test "private/loopback/metadata/localhost literals are refused with a reason" {
+	for u in http://127.0.0.1:11434/ "http://[::1]/" http://169.254.169.254/latest/meta-data/ \
+		http://10.0.0.1/ http://192.168.1.1/ http://100.64.0.1/ http://localhost/ \
+		"http://[::ffff:127.0.0.1]/" http://0x7f.1/; do
+		run "$FETCH" "$u"
+		[ "$status" -eq 2 ]
+		[[ "$output" == *"refused"* ]]
+	done
+	[ ! -e "$CURL_LOG" ]
+}
+
+@test "fullwidth, percent-encoded and userinfo authorities are refused" {
+	for u in $'http://\uff11\uff12\uff17.0.0.1/' "http://127%2E0.0.1/" "http://%6c%6f%63alhost/" \
+		"http://example.com@127.0.0.1/" "http://127.0.0.1%40example.com/"; do
+		run "$FETCH" "$u"
+		[ "$status" -eq 2 ]
+		[[ "$output" == *"refused"* ]]
+	done
+}
+
+@test "@ inside a path is not mistaken for userinfo (guard refuses the loopback host)" {
+	run "$FETCH" "http://127.0.0.1/@someone/post"
+	[ "$status" -eq 2 ]
+	[[ "$output" == *"blocked host"* ]]
 }

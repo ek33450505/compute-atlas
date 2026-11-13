@@ -51,8 +51,9 @@ export default function AccessPage() {
         title="Dataset access"
         dek={
           <>
-            The full Compute Atlas dataset, updated weekly, is free for students, educators
-            and academics. Every request is reviewed by hand.
+            The full Compute Atlas dataset, updated weekly, is free for students and
+            educators. Every request is reviewed by hand, against your school email address;
+            requests from personal addresses (Gmail, Outlook and similar) are declined.
           </>
         }
       />

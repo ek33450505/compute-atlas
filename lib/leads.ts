@@ -108,6 +108,21 @@ export async function listLeadsForAdmin(status?: string): Promise<AdminLeadRow[]
 }
 
 /**
+ * The discovery lane's queue: `new` leads, OLDEST first, limited in SQL
+ * (leads_status_idx / leads_created_at_idx) so a stuck old lead cannot starve
+ * behind newer tips and the whole table is never loaded.
+ */
+export async function listNewLeadsOldestFirst(limit: number): Promise<AdminLeadRow[]> {
+  const db = getDb();
+  return db
+    .select(ADMIN_LEAD_COLUMNS)
+    .from(leadsTable)
+    .where(eq(leadsTable.status, "new"))
+    .orderBy(asc(leadsTable.createdAt), asc(leadsTable.id))
+    .limit(limit);
+}
+
+/**
  * The review outcome of every submission linked to each of the given leads,
  * keyed by lead id, in ONE query. A lead has two link paths and both are needed:
  *
@@ -216,6 +231,26 @@ export async function updateLeadStatus(
 }
 
 /**
+ * Defers a lead ONLY while it is still `new`, in one conditional UPDATE. For the
+ * discovery lane, whose defer must never overwrite a concurrent human decision
+ * or flip a `promoted` lead whose ambiguous promote error actually committed.
+ * Zero rows updated -> 409 "Lead is no longer new" (404 if the lead is gone).
+ */
+export async function deferLeadIfNew(id: string, reviewNote: string): Promise<LeadActionResult> {
+  const db = getDb();
+  const [updated] = await db
+    .update(leadsTable)
+    .set({ status: "deferred", reviewedAt: new Date(), reviewNote })
+    .where(and(eq(leadsTable.id, id), eq(leadsTable.status, "new")))
+    .returning();
+  if (updated) return { ok: true, lead: updated };
+  const rows = await db.select({ id: leadsTable.id }).from(leadsTable).where(eq(leadsTable.id, id));
+  return rows[0]
+    ? { ok: false, status: 409, error: "Lead is no longer new" }
+    : { ok: false, status: 404, error: "Lead not found" };
+}
+
+/**
  * Promotes a lead directly to `promoted`, recording the submission id it was
  * staged into. Used by the discovery leads-lane operator tool
  * (scripts/discovery/leads-lane.ts) after `createSubmission` succeeds — a
@@ -266,7 +301,7 @@ export async function promoteLead(
 
 /**
  * Returns a lead to `new` — the only way back into the discovery lane's queue
- * (`scripts/discovery/leads-lane.ts` queues `listLeadsForAdmin("new")` only, so
+ * (`scripts/discovery/leads-lane.ts` queues `listNewLeadsOldestFirst` only, so
  * every other status is a one-way door out of it). Kept as a sibling of
  * `promoteLead` rather than an optional param on `updateLeadStatus` for the same
  * reason: this caller needs two behaviours the three admin triage actions must

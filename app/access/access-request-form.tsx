@@ -14,7 +14,7 @@ import { HoneypotField, issuesToFieldMap } from "@/components/contribute/contrib
 // is education-only, so everyone else files under "commercial", which the server redirects to the
 // paid tier. The other enum values stay valid for existing rows.
 export const DATASET_CATEGORY_OPTIONS = [
-  { value: "academic", label: "Student, educator or academic" },
+  { value: "academic", label: "Student or educator" },
   { value: "commercial", label: "Something else (business, journalism, nonprofit, government)" },
 ] as const;
 
@@ -443,7 +443,7 @@ export function AccessRequestForm({ termsVersion, commercialTier }: { termsVersi
             <div role="status" aria-live="polite" className="empty:absolute">
               {showCommercialNote ? (
                 <p id="access-commercial-note" className="text-sm text-muted-foreground">
-                  Free access is for students, educators and academics.
+                  Free for students and educators. We verify each request against your school email address; requests from personal addresses (Gmail, Outlook and similar) are declined.
                   Everyone else can get the full dataset through{" "}
                   <Link
                     href={COMMERCIAL_PATH}

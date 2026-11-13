@@ -34,6 +34,19 @@ export interface HeartbeatStateEntry {
   state: string;
   claudeStatus: string;
   elapsedSecs: number;
+  /** Yield of this state's submit step (A-OPS-07). Optional: absent in old heartbeat.json files.
+   * `states` is an opaque jsonb column, so these need no migration. */
+  submitted?: number;
+  discovered?: number;
+  skippedUnreachable?: number;
+}
+
+/** Optional per-state yield fields, each a non-negative integer when present. */
+const STATE_YIELD_FIELDS = ["submitted", "discovered", "skippedUnreachable"] as const;
+
+/** True for a non-negative safe integer. */
+function isCount(n: unknown): n is number {
+  return typeof n === "number" && Number.isSafeInteger(n) && n >= 0;
 }
 
 /** Shape of discovery-logs/heartbeat.json as written by run.sh. */
@@ -42,6 +55,11 @@ export interface HeartbeatFile {
   status: string; // "ok" | "degraded"
   failureCount: number;
   states: HeartbeatStateEntry[];
+  /** Run-level zero-yield streak, computed by run.sh from the previous LOCAL heartbeat.json (A-OPS-07).
+   * Validated here but deliberately NEVER published: `discovery_heartbeat` has no column for it and none
+   * is wanted. At `ZERO_YIELD_RUNS_ALARM` (check-heartbeat.ts) run.sh sets `status` to "zero_yield"
+   * instead, which `status: string` carries unchanged. */
+  consecutiveZeroYieldRuns?: number;
 }
 
 /** The row shape upserted into discoveryHeartbeatTable. */
@@ -93,11 +111,27 @@ export function readHeartbeatFile(filePath: string): HeartbeatFile {
     throw new Error(`publish-heartbeat: ${filePath} is missing required array field "states"`);
   }
 
+  if (obj.consecutiveZeroYieldRuns !== undefined && !isCount(obj.consecutiveZeroYieldRuns)) {
+    throw new Error(`publish-heartbeat: ${filePath} field "consecutiveZeroYieldRuns" must be a non-negative integer`);
+  }
+  obj.states.forEach((entry: unknown, i: number) => {
+    const e = entry as Record<string, unknown> | null;
+    if (!e || typeof e !== "object") {
+      throw new Error(`publish-heartbeat: ${filePath} states[${i}] is not an object`);
+    }
+    for (const field of STATE_YIELD_FIELDS) {
+      if (e[field] !== undefined && !isCount(e[field])) {
+        throw new Error(`publish-heartbeat: ${filePath} states[${i}].${field} must be a non-negative integer`);
+      }
+    }
+  });
+
   return {
     lastRunAt: obj.lastRunAt,
     status: obj.status,
     failureCount: obj.failureCount,
     states: obj.states as HeartbeatStateEntry[],
+    ...(obj.consecutiveZeroYieldRuns !== undefined ? { consecutiveZeroYieldRuns: obj.consecutiveZeroYieldRuns } : {}),
   };
 }
 

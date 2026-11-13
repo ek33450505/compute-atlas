@@ -29,6 +29,7 @@
     "check:schema": "tsx --env-file=.env.local scripts/check-schema-drift.ts",
     "check:heartbeat": "tsx --env-file=.env.local scripts/discovery/check-heartbeat.ts",
     "check:digest": "tsx --env-file=.env.local scripts/discovery/check-digest-status.ts",
+    "check:cron": "tsx --env-file=.env.local scripts/ops/check-cron-freshness.ts",
     "ops:ci-monitor-role": "tsx --env-file=.env.local scripts/ops/create-ci-monitor-role.ts",
     "check:googlebot": "tsx scripts/check-googlebot-access.ts",
     "nhd:debt": "tsx scripts/update-nhd-debt.ts",

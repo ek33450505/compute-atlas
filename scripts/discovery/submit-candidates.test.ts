@@ -13,13 +13,24 @@ import {
   submissionToken,
   verificationEnabled,
   exitCodeForSummary,
+  EXIT_GATE_UNAVAILABLE,
+  API_AUTH_REJECTED_MESSAGE,
+  candidateHash,
+  loadResumeLog,
+  VERIFY_DISABLED_REFUSAL,
+  requireVerifyViolation,
+  fetchTextWithPdfRetry,
   main,
   VerificationGateUnavailableError,
+  CheckpointWriteError,
+  exitCodeForAbort,
   type RunSubmitOptions,
   type RunSubmitSummary,
 } from "./submit-candidates";
 import type { Facility } from "../../lib/schema";
-import type { VerifyClaim, VerificationResult } from "./verify-source";
+import { verifySource, type VerifyClaim, type VerificationResult } from "./verify-source";
+import type { FetchPageTextResult } from "./fetch-page-text";
+import type { FetchPdfTextResult } from "./fetch-pdf-text";
 
 // main() reads the live index through the shared loader (Neon); stub it so these
 // tests never touch a database or the real tmp snapshot cache.
@@ -72,6 +83,22 @@ function makeCandidate(overrides: Record<string, unknown> = {}) {
     ],
     lastUpdated: "2026-07-13",
     ...overrides,
+  };
+}
+
+/**
+ * A facility candidate whose payload `sources` AND `provenance.sources` both
+ * cite exactly `urls`. The gate verifies the union of the two lists, so tests
+ * that script verdicts per URL must keep them aligned or the default payload
+ * URL (https://example.com/new) becomes an unscripted extra source.
+ */
+function makeCandidateWithUrls(id: string, urls: string[]) {
+  return {
+    facility: makeCandidate({
+      id,
+      sources: urls.map((url) => ({ url, label: `Source ${url}`, retrievedAt: "2026-07-01", kind: "press" })),
+    }),
+    provenance: { sources: urls },
   };
 }
 
@@ -438,17 +465,15 @@ describe("runSubmit — verification gate (facility seam)", () => {
     logSpy.mockRestore();
   });
 
-  it("submits when at least one of several sources verifies, even if others reject", async () => {
+  it("stages a candidate with one verified and one dead URL, dropping the dead one from payload and provenance and noting it", async () => {
     const fetchImpl = makeFetch([{ ok: true }]);
-    const verifyImpl = makeVerifyImpl((url) => ({
-      verdict: url.endsWith("/good") ? "verified" : "rejected",
-    }));
-    const candidate = {
-      facility: makeCandidate({ id: "multi-source-1" }),
-      provenance: { sources: ["https://example.com/bad", "https://example.com/good"] },
-    };
+    const verifyImpl = makeVerifyImpl((url) =>
+      url.endsWith("/good")
+        ? { verdict: "verified" }
+        : { verdict: "rejected", reason: "page not found", transportFailure: { reason: "http_error", httpStatus: 404 } }
+    );
 
-    const summary = await runSubmit([candidate], baseOpts(), {
+    const summary = await runSubmit([makeCandidateWithUrls("multi-source-1", ["https://example.com/dead", "https://example.com/good"])], baseOpts(), {
       fetchImpl,
       existingFacilities: [],
       verifyImpl,
@@ -457,28 +482,167 @@ describe("runSubmit — verification gate (facility seam)", () => {
     expect(summary.submitted).toBe(1);
     expect(summary.skippedUnverified).toBe(0);
     expect(verifyImpl).toHaveBeenCalledTimes(2);
+    const body = JSON.parse((fetchImpl.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.payload.sources.map((s: { url: string }) => s.url)).toEqual(["https://example.com/good"]);
+    expect(body.provenance.sources).toEqual(["https://example.com/good"]);
+    expect(body.provenance.note).toContain("https://example.com/dead DROPPED (rejected: http_error_404)");
+    expect(body.provenance.note).toContain("https://example.com/good kept (verified)");
   });
 
-  it("submits a candidate whose sources are unverified-but-escalated, surfacing the escalation in the provenance note", async () => {
+  it("skips as unverified when every published URL is dead", async () => {
     const fetchImpl = makeFetch([{ ok: true }]);
-    const verifyImpl = makeVerifyImpl(() => ({ verdict: "escalate", reason: "too_large" }));
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "rejected" }));
+
+    const summary = await runSubmit([makeCandidateWithUrls("all-dead-1", ["https://example.com/a", "https://example.com/b"])], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [],
+      verifyImpl,
+    });
+
+    expect(summary.submitted).toBe(0);
+    expect(summary.skippedUnverified).toBe(1);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("verifies a payload URL that is absent from provenance.sources, and drops it when it fails", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url === "https://example.com/prov" ? "verified" : "rejected" }));
     const candidate = {
-      facility: makeCandidate({ id: "escalate-1" }),
-      provenance: { sources: ["https://example.com/escalate"] },
+      facility: makeCandidate({
+        id: "payload-only-1",
+        sources: [
+          { url: "https://example.com/prov", label: "A", retrievedAt: "2026-07-01", kind: "press" },
+          { url: "https://example.com/payload-only", label: "B", retrievedAt: "2026-07-01", kind: "press" },
+        ],
+      }),
+      provenance: { sources: ["https://example.com/prov"] },
     };
 
-    const summary = await runSubmit([candidate], baseOpts(), {
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl });
+
+    expect(verifyImpl.mock.calls.map(([u]) => u)).toEqual(["https://example.com/prov", "https://example.com/payload-only"]);
+    expect(summary.submitted).toBe(1);
+    const body = JSON.parse((fetchImpl.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.payload.sources.map((s: { url: string }) => s.url)).toEqual(["https://example.com/prov"]);
+  });
+
+  it("skips as unverified when the only verified URL is not in the payload (payload sources all dead)", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url === "https://example.com/prov-only" ? "verified" : "rejected" }));
+    const candidate = {
+      facility: makeCandidate({ id: "payload-dead-1" }),
+      provenance: { sources: ["https://example.com/prov-only"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl });
+
+    expect(summary.submitted).toBe(0);
+    expect(summary.skippedUnverified).toBe(1);
+    expect(summary.skippedRestrictedSource).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("remaps citation indices when a dropped source precedes a cited one", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url.endsWith("/good") ? "verified" : "rejected" }));
+    const candidate = {
+      facility: makeCandidate({
+        id: "remap-1",
+        sources: [
+          { url: "https://example.com/dead", label: "A", retrievedAt: "2026-07-01", kind: "press" },
+          { url: "https://example.com/good", label: "B", retrievedAt: "2026-07-01", kind: "press" },
+        ],
+        statusHistory: [{ status: "proposed", date: "2026-07-01", sourceIndex: 1 }],
+      }),
+      provenance: { sources: ["https://example.com/good"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl });
+
+    expect(summary.submitted).toBe(1);
+    const body = JSON.parse((fetchImpl.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.payload.statusHistory[0].sourceIndex).toBe(0);
+    expect(body.payload.sources[0].url).toBe("https://example.com/good");
+  });
+
+  it("skips as unverified (not restricted) when a citation points at a dropped source", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url.endsWith("/good") ? "verified" : "rejected" }));
+    const candidate = {
+      facility: makeCandidate({
+        id: "cited-dead-1",
+        sources: [
+          { url: "https://example.com/dead", label: "A", retrievedAt: "2026-07-01", kind: "press" },
+          { url: "https://example.com/good", label: "B", retrievedAt: "2026-07-01", kind: "press" },
+        ],
+        statusHistory: [{ status: "proposed", date: "2026-07-01", sourceIndex: 0 }],
+      }),
+      provenance: { sources: ["https://example.com/good"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl });
+
+    expect(summary.submitted).toBe(0);
+    expect(summary.skippedUnverified).toBe(1);
+    expect(summary.skippedRestrictedSource).toBe(0);
+  });
+
+  it("verifies and strips on the status_update path too", async () => {
+    const fetchImpl = makeFetch([{ ok: true }, { ok: true }]);
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url.endsWith("/dead") ? "rejected" : "verified" }));
+    const candidate = {
+      statusUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        status: "under_construction",
+        date: "2026-07-16",
+        note: "groundbreaking confirmed",
+        sources: [
+          { url: "https://example.com/dead", label: "A", retrievedAt: "2026-07-01", kind: "press" },
+          { url: "https://example.com/live", label: "B", retrievedAt: "2026-07-01", kind: "press" },
+        ],
+      },
+      provenance: { sources: ["https://example.com/live"] },
+    };
+
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [EXISTING_FACILITY], verifyImpl });
+
+    expect(summary.submitted).toBe(1);
+    const body = JSON.parse((fetchImpl.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.payload.sources.map((s: { url: string }) => s.url)).toEqual(["https://example.com/live"]);
+    expect(verifyImpl.mock.calls.map(([u]) => u)).toEqual(["https://example.com/dead", "https://example.com/live"]);
+  });
+
+  it("keeps an escalated URL only because another URL verified, labelling it unverified in the note", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const verifyImpl = makeVerifyImpl((url) =>
+      url.endsWith("/big") ? { verdict: "escalate", reason: "too_large" } : { verdict: "verified" }
+    );
+
+    const summary = await runSubmit([makeCandidateWithUrls("escalate-1", ["https://example.com/big", "https://example.com/good"])], baseOpts(), {
       fetchImpl,
       existingFacilities: [],
       verifyImpl,
     });
 
     expect(summary.submitted).toBe(1);
-    expect(summary.skippedUnverified).toBe(0);
-    const [, init] = fetchImpl.mock.calls[0];
-    const body = JSON.parse(init!.body as string);
-    expect(body.provenance.note).toMatch(/escalat/i);
-    expect(body.provenance.note).toContain("https://example.com/escalate");
+    const body = JSON.parse((fetchImpl.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.provenance.note).toContain("https://example.com/big kept (unverified (escalated: unconfirmed))");
+    expect(body.payload.sources.map((s: { url: string }) => s.url)).toEqual(["https://example.com/big", "https://example.com/good"]);
+  });
+
+  it("does not stage a candidate whose only outcome is an escalation (an escalation is not verification)", async () => {
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "escalate", reason: "too_large" }));
+
+    const summary = await runSubmit([makeCandidateWithUrls("escalate-only-1", ["https://example.com/escalate"])], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [],
+      verifyImpl,
+    });
+
+    expect(summary.submitted).toBe(0);
+    expect(summary.skippedUnverified).toBe(1);
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
   // verify-source.ts's escalate/unavailable verdicts are expected to fire far
@@ -489,30 +653,26 @@ describe("runSubmit — verification gate (facility seam)", () => {
   // DIFFERENT reason string / a MIXED result set than the tests above, to
   // demonstrate the behavior generalizes rather than just happening to match
   // one hardcoded example.
-  it("survives on escalate even when mixed with rejected sources, and the note reports only the escalated ones", async () => {
+  it("with verified + escalated + rejected URLs, the note names all three outcomes and only the rejected one is dropped", async () => {
     const fetchImpl = makeFetch([{ ok: true }]);
-    const verifyImpl = makeVerifyImpl((url) => ({
-      verdict: url.endsWith("/rejected") ? "rejected" : "escalate",
-      reason: url.endsWith("/rejected") ? "quote not found on page" : "page truncated by context window; model said not_mentioned",
-    }));
-    const candidate = {
-      facility: makeCandidate({ id: "mixed-escalate-1" }),
-      provenance: { sources: ["https://example.com/rejected", "https://example.com/truncated"] },
-    };
-
-    const summary = await runSubmit([candidate], baseOpts(), {
-      fetchImpl,
-      existingFacilities: [],
-      verifyImpl,
+    const verifyImpl = makeVerifyImpl((url) => {
+      if (url.endsWith("/rejected")) return { verdict: "rejected", reason: "quote not found on page" };
+      if (url.endsWith("/truncated")) return { verdict: "escalate", reason: "page truncated by context window; model said not_mentioned" };
+      return { verdict: "verified" };
     });
 
+    const summary = await runSubmit(
+      [makeCandidateWithUrls("mixed-escalate-1", ["https://example.com/rejected", "https://example.com/truncated", "https://example.com/ok"])],
+      baseOpts(),
+      { fetchImpl, existingFacilities: [], verifyImpl }
+    );
+
     expect(summary.submitted).toBe(1);
-    expect(summary.skippedUnverified).toBe(0);
-    expect(verifyImpl).toHaveBeenCalledTimes(2);
-    const [, init] = fetchImpl.mock.calls[0];
-    const body = JSON.parse(init!.body as string);
-    expect(body.provenance.note).toContain("https://example.com/truncated");
-    expect(body.provenance.note).not.toContain("https://example.com/rejected");
+    expect(verifyImpl).toHaveBeenCalledTimes(3);
+    const body = JSON.parse((fetchImpl.mock.calls[0][1] as RequestInit).body as string);
+    expect(body.provenance.note).toContain("https://example.com/rejected DROPPED (rejected: content_mismatch)");
+    expect(body.provenance.note).toContain("https://example.com/truncated kept (unverified (escalated: unconfirmed))");
+    expect(body.provenance.sources).toEqual(["https://example.com/truncated", "https://example.com/ok"]);
   });
 
   it("skips the verification gate entirely in dry-run mode", async () => {
@@ -596,8 +756,8 @@ describe("runSubmit — verification gate: per-call model timeout", () => {
 
   function slowThenGood() {
     return [
-      { facility: makeCandidate({ id: "slow-1" }), provenance: { sources: [SLOW_URL] } },
-      { facility: makeCandidate({ id: "good-2" }), provenance: { sources: ["https://example.com/good"] } },
+      makeCandidateWithUrls("slow-1", [SLOW_URL]),
+      makeCandidateWithUrls("good-2", ["https://example.com/good"]),
     ];
   }
 
@@ -665,10 +825,7 @@ describe("runSubmit — verification gate: per-call model timeout", () => {
       reason: "model call failed: timeout",
       modelTimedOut: true,
     }));
-    const four = [1, 2, 3, 4].map((n) => ({
-      facility: makeCandidate({ id: `slow-${n}` }),
-      provenance: { sources: [`https://example.com/slow-${n}`] },
-    }));
+    const four = [1, 2, 3, 4].map((n) => makeCandidateWithUrls(`slow-${n}`, [`https://example.com/slow-${n}`]));
     const partial: RunSubmitSummary[] = [];
 
     await expect(
@@ -699,24 +856,27 @@ describe("runSubmit — verification gate: per-call model timeout", () => {
     ).rejects.toThrow(/timeout budget/);
   });
 
-  it("stages with a note naming the timed-out URL when a sibling source escalates", async () => {
+  it("stages with a note naming the timed-out URL (dropped) when a third source verifies and a sibling escalates", async () => {
     const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
     const probeOllama = vi.fn(async () => ({ ok: true as const }));
     const verifyImpl = makeVerifyImpl((url) =>
       url === SLOW_URL
         ? { verdict: "unavailable", reason: "model call failed: timeout", modelTimedOut: true }
-        : { verdict: "escalate", reason: "page too large" }
+        : url.endsWith("/big")
+          ? { verdict: "escalate", reason: "page too large" }
+          : { verdict: "verified" }
     );
     const summary = await runSubmit(
-      [{ facility: makeCandidate({ id: "esc-1" }), provenance: { sources: [SLOW_URL, "https://example.com/big"] } }],
+      [makeCandidateWithUrls("esc-1", [SLOW_URL, "https://example.com/big", "https://example.com/ok"])],
       baseOpts(),
       { fetchImpl, existingFacilities: [], verifyImpl, probeOllama }
     );
     expect(summary.submittedIds).toEqual(["esc-1"]);
     const body = JSON.parse(String((fetchImpl.mock.calls[0][1] as RequestInit).body));
-    const text = JSON.stringify(body);
-    expect(text).toContain("https://example.com/big");
-    expect(text).toMatch(/timed out while Ollama was healthy for: https:\/\/example\.com\/slow/);
+    const note: string = body.provenance.note;
+    expect(note).toContain("https://example.com/big kept (unverified (escalated: unconfirmed))");
+    expect(note).toMatch(/https:\/\/example\.com\/slow DROPPED \(timed_out\)/);
+    expect(body.provenance.sources).not.toContain(SLOW_URL);
   });
 
   it("treats a probe that throws as unhealthy and aborts", async () => {
@@ -734,7 +894,7 @@ describe("runSubmit — verification gate: per-call model timeout", () => {
     const fetchImpl = makeFetch([{ ok: true, body: { id: "sub-1" } }]);
     const probeOllama = vi.fn(async () => ({ ok: true as const }));
     const summary = await runSubmit(
-      [{ facility: makeCandidate({ id: "mixed-1" }), provenance: { sources: [SLOW_URL, "https://example.com/good"] } }],
+      [makeCandidateWithUrls("mixed-1", [SLOW_URL, "https://example.com/good"])],
       baseOpts(),
       { fetchImpl, existingFacilities: [], verifyImpl: timeoutImpl(), probeOllama }
     );
@@ -909,14 +1069,14 @@ describe("runSubmit — status_update intents", () => {
     );
   });
 
-  it("gates the status_update seam — an EMPTY provenance.sources produces a non-empty skip-unverified reason, never a dangling '— '", async () => {
+  it("gates the status_update seam — an EMPTY provenance.sources still verifies the intent's own sources, with a non-empty skip-unverified reason", async () => {
     const fetchImpl = makeFetch([]);
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
-    // provenance.sources is empty — the intent's own `sources` field (inside
-    // makeStatusUpdate()) is unrelated and stays non-empty so this candidate
-    // reaches the verification gate instead of failing schema validation.
+    // provenance.sources is empty, but the intent's own `sources` (inside
+    // makeStatusUpdate()) are published, so they are what the gate verifies.
     const verifyImpl = makeVerifyImpl(() => ({ verdict: "rejected" }));
-    const candidate = { statusUpdate: makeStatusUpdate(), provenance: { sources: [] } };
+    const statusUpdate = makeStatusUpdate();
+    const candidate = { statusUpdate, provenance: { sources: [] } };
 
     const summary = await runSubmit([candidate], baseOpts(), {
       fetchImpl,
@@ -927,8 +1087,7 @@ describe("runSubmit — status_update intents", () => {
     expect(summary.skippedUnverified).toBe(1);
     expect(summary.submitted).toBe(0);
     expect(fetchImpl).not.toHaveBeenCalled();
-    // Nothing to iterate over, so the injected verifyImpl is never reached.
-    expect(verifyImpl).not.toHaveBeenCalled();
+    expect(verifyImpl).toHaveBeenCalledTimes(statusUpdate.sources.length);
 
     const skipLine = logSpy.mock.calls
       .map(([msg]) => msg)
@@ -936,7 +1095,7 @@ describe("runSubmit — status_update intents", () => {
     expect(skipLine).toBeDefined();
     const afterDash = (skipLine as string).split("—")[1]?.trim() ?? "";
     expect(afterDash.length).toBeGreaterThan(0);
-    expect(afterDash.toLowerCase()).toContain("no sources");
+    expect(afterDash).toContain(statusUpdate.sources[0].url);
     logSpy.mockRestore();
   });
 });
@@ -1290,7 +1449,7 @@ describe("runSubmit — restricted-source guard", () => {
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  it("logs a 'stripped restricted source(s)' line naming the facility id and URL when a strip succeeds — NOT counted as a skip", async () => {
+  it("logs a 'stripped restricted/unverified source(s)' line naming the facility id and URL when a strip succeeds — NOT counted as a skip", async () => {
     const fetchImpl = makeFetch([{ ok: true }]);
     const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
     const candidate = {
@@ -1310,7 +1469,7 @@ describe("runSubmit — restricted-source guard", () => {
     expect(summary.skippedRestrictedSource).toBe(0);
     const strippedLine = logSpy.mock.calls
       .map(([msg]) => msg)
-      .find((msg) => typeof msg === "string" && msg.startsWith("stripped restricted source(s)"));
+      .find((msg) => typeof msg === "string" && msg.startsWith("stripped restricted/unverified source(s)"));
     expect(strippedLine).toBeDefined();
     expect(strippedLine).toContain("logged-strip-tx");
     expect(strippedLine).toContain(RESTRICTED_URL);
@@ -1620,9 +1779,10 @@ describe("runSubmitAndLog", () => {
       (s) => logged.push(s)
     );
 
-    expect(logged).toHaveLength(1);
-    expect(logged[0]).toBe(summary);
-    expect(logged[0].submitted).toBe(1);
+    // checkpoints (in_flight, settled) precede the final write, which is the live summary itself
+    expect(logged.length).toBeGreaterThanOrEqual(1);
+    expect(logged[logged.length - 1]).toBe(summary);
+    expect(logged[logged.length - 1].submitted).toBe(1);
   });
 
   // The defect: `writeLog` sat AFTER `runSubmit` returned, so an abort wrote
@@ -1648,11 +1808,11 @@ describe("runSubmitAndLog", () => {
       )
     ).rejects.toThrow(VerificationGateUnavailableError);
 
-    expect(logged).toHaveLength(1);
-    expect(logged[0].runId).toBe("aborted-run");
-    expect(logged[0].discovered).toBe(2);
-    expect(logged[0].submitted).toBe(1);
-    expect(logged[0].submittedIds).toEqual(["staged-first-tx"]);
+    const last = logged[logged.length - 1];
+    expect(last.runId).toBe("aborted-run");
+    expect(last.discovered).toBe(2);
+    expect(last.submitted).toBe(1);
+    expect(last.submittedIds).toEqual(["staged-first-tx"]);
   });
 
   it("rethrows the original abort error unchanged (exit semantics unaffected)", async () => {
@@ -1789,9 +1949,15 @@ function makeSummary(overrides: Partial<RunSubmitSummary> = {}): RunSubmitSummar
     skippedInvalid: 0,
     skippedOverCap: 0,
     skippedUnverified: 0,
+    skippedResumed: 0,
+    resumedInFlight: 0,
+    skippedUnreachable: 0,
+    apiAuthRejected: 0,
+    apiUnavailable: 0,
     skippedRestrictedSource: 0,
     errors: 0,
     submittedIds: [],
+    candidateOutcomes: [],
     ...overrides,
   };
 }
@@ -1966,6 +2132,14 @@ describe("main — exit code wiring", () => {
     expect(exitCode).not.toBe(0);
   });
 
+  // A 4xx is one candidate rejected (exit 1); a 5xx is the API being down (exit 3).
+  it("exits 1 for a per-candidate 4xx rejection but EXIT_GATE_UNAVAILABLE for a 5xx", async () => {
+    expect((await runMain(422)).exitCode).toBe(1);
+    const down = await runMain(503);
+    expect(down.exitCode).toBe(EXIT_GATE_UNAVAILABLE);
+    expect(printedSummary(down.logs).apiUnavailable).toBe(1);
+  });
+
   // The summary JSON is the diagnosis, so it has to survive the failure it
   // describes: printed BEFORE the exit, not swallowed by it.
   it("still prints the summary JSON on the failing path", async () => {
@@ -2044,7 +2218,7 @@ describe("main — aborts on a stale facility index", () => {
 
     try {
       await expect(main()).rejects.toThrow(/^process\.exit\(/);
-      expect(exitCode).toBe(1);
+      expect(exitCode).toBe(EXIT_GATE_UNAVAILABLE);
       expect(submissionsCalls).toHaveLength(0);
       expect(errors.some((line) => line.includes("57P01") && line.includes("stale"))).toBe(true);
     } finally {
@@ -2070,5 +2244,841 @@ describe("stripCuratedFields also strips notRecorded", () => {
     }) as Record<string, unknown>;
     expect("notRecorded" in stripped).toBe(false);
     expect(stripped.id).toBe("x");
+  });
+});
+
+describe("fetchTextWithPdfRetry — PDF sources reach the verifier", () => {
+  const PDF_URL = "https://example.com/permit";
+  const PDF_TEXT = "Ridgeline Data Center is operated by Example Corp with 1200 MW planned.";
+  const pdfOk: FetchPdfTextResult = {
+    ok: true,
+    text: PDF_TEXT,
+    finalUrl: PDF_URL,
+    httpStatus: 200,
+    contentType: "application/pdf",
+  };
+  const badType: FetchPageTextResult = { ok: false, reason: "bad_content_type", httpStatus: 200 };
+
+  it("verifies a PDF source end to end: page fetch refuses it, the PDF path supplies the text, verify-source verifies it", async () => {
+    const fetchPdfTextImpl = vi.fn(async () => pdfOk);
+    const result = await verifySource(
+      PDF_URL,
+      { entityName: "Ridgeline Data Center" },
+      {
+        fetchPageTextImpl: (u) =>
+          fetchTextWithPdfRetry(u, { fetchPageTextImpl: async () => badType, fetchPdfTextImpl }),
+        callOllamaImpl: vi.fn(async () => ({
+          ok: true as const,
+          data: { verdict: "supports" as const, quote: "Ridgeline Data Center is operated by Example Corp" },
+        })),
+      }
+    );
+    expect(fetchPdfTextImpl).toHaveBeenCalledTimes(1);
+    expect(result.verdict).toBe("verified");
+  });
+
+  it("still escalates when the PDF path cannot read it either (original bad_content_type returned)", async () => {
+    const result = await fetchTextWithPdfRetry(PDF_URL, {
+      fetchPageTextImpl: async () => badType,
+      fetchPdfTextImpl: async () => ({ ok: false, reason: "pdf_extractor_unavailable" }),
+    });
+    expect(result).toEqual(badType);
+  });
+
+  it("does not touch the PDF path for a page that fetched fine or failed for another reason", async () => {
+    const fetchPdfTextImpl = vi.fn(async () => pdfOk);
+    const okPage: FetchPageTextResult = { ok: true, text: "x", finalUrl: PDF_URL, httpStatus: 200 };
+    expect(await fetchTextWithPdfRetry(PDF_URL, { fetchPageTextImpl: async () => okPage, fetchPdfTextImpl })).toEqual(okPage);
+    const dead: FetchPageTextResult = { ok: false, reason: "http_error", httpStatus: 404 };
+    expect(await fetchTextWithPdfRetry(PDF_URL, { fetchPageTextImpl: async () => dead, fetchPdfTextImpl })).toEqual(dead);
+    expect(fetchPdfTextImpl).not.toHaveBeenCalled();
+  });
+});
+
+describe("runSubmit — gate hardening (note safety, counters, canonical URLs, cap order)", () => {
+  const okFetch = () => makeFetch([{ ok: true }]);
+  const body = (f: ReturnType<typeof makeFetch>) => JSON.parse((f.mock.calls[0][1] as RequestInit).body as string);
+
+  it("never puts a rejected source's page-sourced text into provenance.note", async () => {
+    const fetchImpl = okFetch();
+    const PAGE_TEXT = "SECRET-PAGE-QUOTE-FRAGMENT";
+    const verifyImpl = makeVerifyImpl((url) =>
+      url.endsWith("/good")
+        ? { verdict: "verified" }
+        : url.endsWith("/big")
+          ? { verdict: "escalate", reason: `snapshot check — ${PAGE_TEXT}` }
+          : { verdict: "rejected", reason: `quote fragment not found verbatim on the page: "${PAGE_TEXT}"` }
+    );
+    await runSubmit(
+      [makeCandidateWithUrls("note-safe-1", ["https://example.com/bad", "https://example.com/big", "https://example.com/good"])],
+      baseOpts(),
+      { fetchImpl, existingFacilities: [], verifyImpl }
+    );
+    const note: string = body(fetchImpl).provenance.note;
+    expect(note).toContain("https://example.com/bad DROPPED (rejected: content_mismatch)");
+    expect(JSON.stringify(body(fetchImpl))).not.toContain(PAGE_TEXT);
+  });
+
+  it("labels a licence-restricted source rejected: restricted_source, not content_mismatch", async () => {
+    const fetchImpl = okFetch();
+    const RESTRICTED = "https://www.interconnection.fyi/queue/9";
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url.endsWith("/good") ? "verified" : "rejected" }));
+    await runSubmit([makeCandidateWithUrls("restricted-code-1", [RESTRICTED, "https://example.com/good"])], baseOpts(), {
+      fetchImpl,
+      existingFacilities: [],
+      verifyImpl,
+    });
+    const note: string = body(fetchImpl).provenance.note;
+    expect(note).toContain(`${RESTRICTED} DROPPED (rejected: restricted_source)`);
+    expect(note).not.toContain("content_mismatch");
+  });
+
+  it("bounds the note: long URLs are truncated and the total is capped with '+N more'", async () => {
+    const fetchImpl = okFetch();
+    const urls = ["https://example.com/good", ...Array.from({ length: 30 }, (_, i) => `https://example.com/${i}/${"x".repeat(400)}`)];
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url.endsWith("/good") ? "verified" : "rejected" }));
+    await runSubmit([makeCandidateWithUrls("note-cap-1", urls)], baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl });
+    const note: string = body(fetchImpl).provenance.note;
+    expect(note.length).toBeLessThanOrEqual(2_000);
+    expect(note).toMatch(/; \+\d+ more$/);
+    expect(note).not.toContain("x".repeat(250));
+  });
+
+  it("counts a citation to a RESTRICTED source as restricted even when another source was dropped unverified", async () => {
+    const fetchImpl = okFetch();
+    const RESTRICTED = "https://www.interconnection.fyi/queue/1";
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url.endsWith("/good") ? "verified" : "rejected" }));
+    const candidate = {
+      facility: makeCandidate({
+        id: "mixed-strip-1",
+        sources: [
+          { url: RESTRICTED, label: "A", retrievedAt: "2026-07-01", kind: "iso_queue" },
+          { url: "https://example.com/dead", label: "B", retrievedAt: "2026-07-01", kind: "press" },
+          { url: "https://example.com/good", label: "C", retrievedAt: "2026-07-01", kind: "press" },
+        ],
+        statusHistory: [{ status: "proposed", date: "2026-07-01", sourceIndex: 0 }],
+      }),
+      provenance: { sources: ["https://example.com/good"] },
+    };
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl });
+    expect(summary.skippedRestrictedSource).toBe(1);
+    expect(summary.skippedUnverified).toBe(0);
+  });
+
+  it("shares one verdict between spellings of the same URL (trailing slash, case, fragment) and drops/keeps them together", async () => {
+    const fetchImpl = okFetch();
+    const verifyImpl = makeVerifyImpl((url) => ({ verdict: url.includes("good") ? "verified" : "rejected" }));
+    const candidate = {
+      facility: makeCandidate({
+        id: "canon-1",
+        sources: [
+          { url: "https://example.com/good/", label: "A", retrievedAt: "2026-07-01", kind: "press" },
+          { url: "https://example.com/dead", label: "B", retrievedAt: "2026-07-01", kind: "press" },
+        ],
+      }),
+      provenance: { sources: ["https://EXAMPLE.com/good", "https://example.com/dead/#frag"] },
+    };
+    const summary = await runSubmit([candidate], baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl });
+    expect(verifyImpl).toHaveBeenCalledTimes(2);
+    expect(summary.submitted).toBe(1);
+    const b = body(fetchImpl);
+    expect(b.payload.sources.map((s: { url: string }) => s.url)).toEqual(["https://example.com/good/"]);
+    expect(b.provenance.sources).toEqual(["https://EXAMPLE.com/good"]);
+  });
+
+  it("makes zero verify calls for a candidate that is over the --max cap", async () => {
+    const fetchImpl = makeFetch([{ ok: true }, { ok: true }]);
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "verified" }));
+    const summary = await runSubmit(
+      [makeCandidateWithUrls("cap-a", ["https://example.com/a"]), makeCandidateWithUrls("cap-b", ["https://example.com/b"])],
+      baseOpts({ max: 1 }),
+      { fetchImpl, existingFacilities: [], verifyImpl }
+    );
+    expect(summary.submitted).toBe(1);
+    expect(summary.skippedOverCap).toBe(1);
+    expect(verifyImpl.mock.calls.map(([u]) => u)).toEqual(["https://example.com/a"]);
+  });
+});
+
+describe("fetchTextWithPdfRetry — throwing PDF path", () => {
+  it("returns the original bad_content_type (escalation) when fetchPdfText throws", async () => {
+    const badType: FetchPageTextResult = { ok: false, reason: "bad_content_type", httpStatus: 200 };
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const result = await fetchTextWithPdfRetry("https://example.com/x.pdf", {
+      fetchPageTextImpl: async () => badType,
+      fetchPdfTextImpl: async () => {
+        throw new Error("EACCES: mkdtemp failed");
+      },
+    });
+    logSpy.mockRestore();
+    expect(result).toEqual(badType);
+  });
+});
+
+// --- Wave 5 A-OPS-06/07/08: outage exit code, unreachable yield, gate refusal ---
+
+describe("exitCodeForSummary — outage classification", () => {
+  it("exits EXIT_GATE_UNAVAILABLE (3) when the intake API was unavailable, even alongside other errors", () => {
+    expect(EXIT_GATE_UNAVAILABLE).toBe(3);
+    expect(exitCodeForSummary(makeSummary({ errors: 4, apiUnavailable: 1, submitted: 6 }))).toBe(3);
+  });
+
+  it("exits 1 for plain errors with no outage", () => {
+    expect(exitCodeForSummary(makeSummary({ errors: 2, submitted: 8 }))).toBe(1);
+  });
+
+  it("exits 3 when skippedUnreachable is a majority and >= 3, even with zero errors", () => {
+    expect(exitCodeForSummary(makeSummary({ discovered: 5, submitted: 0, skippedUnreachable: 3 }))).toBe(3);
+  });
+
+  it.each([
+    ["exactly half", { discovered: 6, skippedUnreachable: 3 }],
+    ["a majority below the minimum of 3", { discovered: 3, skippedUnreachable: 2 }],
+  ])("exits 0 when skippedUnreachable is %s", (_label, over) => {
+    expect(exitCodeForSummary(makeSummary({ submitted: 0, ...over }))).toBe(0);
+  });
+});
+
+describe("runSubmit — API availability and unreachable sources", () => {
+  const cands = (n: number) =>
+    Array.from({ length: n }, (_, i) => makeCandidateWithUrls(`fac-${i}-tx`, [`https://example.com/s${i}`]));
+  const sleepImpl = async () => {};
+
+  it.each([[500], [502], [403], [408], [429]])("counts a %i POST as apiUnavailable", async (status) => {
+    const fetchImpl = makeFetch([{ ok: false, status }]);
+    const summary = await runSubmit(cands(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.errors).toBe(1);
+    expect(summary.apiUnavailable).toBe(1);
+  });
+
+  it("treats a 401 as a CONFIG error: apiAuthRejected, not apiUnavailable, remaining POSTs skipped, exit 1", async () => {
+    const fetchImpl = makeFetch([{ ok: false, status: 401 }]);
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const summary = await runSubmit(cands(3), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(errSpy).toHaveBeenCalledWith(API_AUTH_REJECTED_MESSAGE);
+    errSpy.mockRestore();
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(summary.errors).toBe(3);
+    expect(summary.apiAuthRejected).toBe(3);
+    expect(summary.apiUnavailable).toBe(0);
+    expect(exitCodeForSummary(summary)).toBe(1);
+  });
+
+  it("does not count a 400/422 per-candidate rejection as apiUnavailable", async () => {
+    const fetchImpl = makeFetch([{ ok: false, status: 422 }]);
+    const summary = await runSubmit(cands(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.errors).toBe(1);
+    expect(summary.apiUnavailable).toBe(0);
+  });
+
+  it("reports a partial batch: earlier POSTs stay counted, the outage is flagged, exit is 3", async () => {
+    const fetchImpl = makeFetch([{ ok: true }, { ok: false, status: 503 }, { ok: false, status: 503 }]);
+    const summary = await runSubmit(cands(3), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.submitted).toBe(1);
+    expect(summary.apiUnavailable).toBe(2);
+    expect(exitCodeForSummary(summary)).toBe(EXIT_GATE_UNAVAILABLE);
+  });
+
+  it("counts a thrown fetch (transport failure) as apiUnavailable", async () => {
+    const fetchImpl = vi.fn(async () => {
+      throw new Error("socket hang up");
+    }) as unknown as typeof fetch;
+    const summary = await runSubmit(cands(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.apiUnavailable).toBe(1);
+  });
+
+  it("counts a candidate whose every source failed with network_error as skippedUnreachable, not skippedUnverified", async () => {
+    const verifyImpl = makeVerifyImpl(() => ({
+      verdict: "rejected",
+      transportFailure: { reason: "network_error" },
+    }));
+    const fetchImpl = makeFetch([{ ok: true }]);
+    const summary = await runSubmit(cands(3), baseOpts(), { fetchImpl, existingFacilities: [], verifyImpl, sleepImpl });
+    expect(summary.skippedUnreachable).toBe(3);
+    expect(summary.skippedUnverified).toBe(0);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(exitCodeForSummary(summary)).toBe(EXIT_GATE_UNAVAILABLE);
+  });
+
+  it("keeps a dead link (http_error) and a content mismatch in skippedUnverified", async () => {
+    const verifyImpl = makeVerifyImpl((url) =>
+      url.endsWith("s0")
+        ? { verdict: "rejected", transportFailure: { reason: "http_error", httpStatus: 404 } }
+        : { verdict: "rejected" }
+    );
+    const summary = await runSubmit(cands(2), baseOpts(), {
+      fetchImpl: makeFetch([{ ok: true }]),
+      existingFacilities: [],
+      verifyImpl,
+      sleepImpl,
+    });
+    expect(summary.skippedUnverified).toBe(2);
+    expect(summary.skippedUnreachable).toBe(0);
+  });
+
+  it("does not call a candidate unreachable when only some of its sources failed the network", async () => {
+    const verifyImpl = makeVerifyImpl((url) =>
+      url.endsWith("a") ? { verdict: "rejected", transportFailure: { reason: "network_error" } } : { verdict: "rejected" }
+    );
+    const summary = await runSubmit(
+      [makeCandidateWithUrls("mixed-tx", ["https://example.com/a", "https://example.com/b"])],
+      baseOpts(),
+      { fetchImpl: makeFetch([{ ok: true }]), existingFacilities: [], verifyImpl, sleepImpl }
+    );
+    expect(summary.skippedUnverified).toBe(1);
+    expect(summary.skippedUnreachable).toBe(0);
+  });
+});
+
+describe("main — gate unavailable and refused-gate exits", () => {
+  async function runMainWith(env: Record<string, string | undefined>, loaded: unknown) {
+    const logDir = mkdtempSync(path.join(tmpdir(), "submit-candidates-gate-"));
+    const inputPath = path.join(logDir, "candidates.json");
+    writeFileSync(inputPath, JSON.stringify([]));
+    const saved = { ...process.env };
+    const originalArgv = process.argv;
+    Object.assign(process.env, { DISCOVERY_LOG_DIR: logDir, API_ADMIN_TOKEN: "t" });
+    for (const [k, v] of Object.entries(env)) {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    }
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=gate", "--base-url=http://api.test"];
+    loadFacilitiesMock.mockResolvedValue(loaded);
+    const errors: string[] = [];
+    const errSpy = vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
+      errors.push(a.map(String).join(" "));
+    });
+    vi.spyOn(console, "log").mockImplementation(() => {});
+    let exitCode: number | undefined;
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation(((code?: number) => {
+      exitCode = code;
+      throw new Error(`process.exit(${code})`);
+    }) as never);
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(/);
+      return { exitCode, errors };
+    } finally {
+      exitSpy.mockRestore();
+      errSpy.mockRestore();
+      vi.restoreAllMocks();
+      process.argv = originalArgv;
+      for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k];
+      Object.assign(process.env, saved);
+      rmSync(logDir, { recursive: true, force: true });
+    }
+  }
+
+  const liveIndex = { facilities: [], source: "db", cached: false };
+
+  it("refuses to run (exit 1, a config error, fixed message) when VERIFY_SOURCES_ENABLED=false under DISCOVERY_REQUIRE_VERIFY=1", async () => {
+    const { exitCode, errors } = await runMainWith(
+      { VERIFY_SOURCES_ENABLED: "false", DISCOVERY_REQUIRE_VERIFY: "1" },
+      liveIndex
+    );
+    expect(exitCode).toBe(1);
+    expect(errors).toContain(VERIFY_DISABLED_REFUSAL);
+    expect(VERIFY_DISABLED_REFUSAL).toContain("VERIFY_SOURCES_ENABLED=false");
+  });
+
+  it("still lets a manual run (no DISCOVERY_REQUIRE_VERIFY) opt out of the gate", async () => {
+    const { exitCode } = await runMainWith(
+      { VERIFY_SOURCES_ENABLED: "false", DISCOVERY_REQUIRE_VERIFY: undefined },
+      liveIndex
+    );
+    expect(exitCode).toBe(0);
+  });
+
+  it("requireVerifyViolation needs BOTH the scheduler flag and a disabled gate", () => {
+    expect(requireVerifyViolation({ DISCOVERY_REQUIRE_VERIFY: "1", VERIFY_SOURCES_ENABLED: "false" })).toBe(true);
+    expect(requireVerifyViolation({ DISCOVERY_REQUIRE_VERIFY: "1" })).toBe(false);
+    expect(requireVerifyViolation({ DISCOVERY_REQUIRE_VERIFY: "1", VERIFY_SOURCES_ENABLED: "true" })).toBe(false);
+    expect(requireVerifyViolation({ VERIFY_SOURCES_ENABLED: "false" })).toBe(false);
+    expect(requireVerifyViolation({ DISCOVERY_REQUIRE_VERIFY: "0", VERIFY_SOURCES_ENABLED: "false" })).toBe(false);
+  });
+});
+
+// --- resubmit: --resume-from-log ---------------------------------------------
+
+describe("per-candidate outcomes and --resume-from-log", () => {
+  const sleepImpl = async () => {};
+  const raw = (n: number) =>
+    Array.from({ length: n }, (_, i) => makeCandidateWithUrls(`fac-${i}-tx`, [`https://example.com/s${i}`]));
+  const ok = (id: string) => ({ ok: true, body: { id } });
+
+  function writeLogFile(summary: RunSubmitSummary): string {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-log-"));
+    const file = path.join(dir, "run.json");
+    writeFileSync(file, JSON.stringify(summary));
+    return file;
+  }
+
+  it("records a hash, an index and an outcome per candidate, with the submission id", async () => {
+    const candidates = raw(3);
+    const fetchImpl = makeFetch([ok("sub-0"), { ok: false, status: 503 }, { ok: false, status: 503 }]);
+    const summary = await runSubmit(candidates, baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(summary.candidateOutcomes.map((r) => [r.index, r.outcome])).toEqual([
+      [0, "submitted"],
+      [1, "error"],
+      [2, "error"],
+    ]);
+    expect(summary.candidateOutcomes[0]).toMatchObject({ hash: candidateHash(candidates[0]), submissionId: "sub-0" });
+  });
+
+  it("marks candidates never reached as not_attempted in the partial summary of an aborted run", async () => {
+    const candidates = raw(2);
+    let partial: RunSubmitSummary | undefined;
+    const verifyImpl = makeVerifyImpl(() => ({ verdict: "unavailable" }));
+    await expect(
+      runSubmit(candidates, baseOpts(), {
+        fetchImpl: makeFetch([ok("x")]),
+        existingFacilities: [],
+        verifyImpl,
+        sleepImpl,
+        onSummaryInit: (s) => {
+          partial = s;
+        },
+      })
+    ).rejects.toThrow(VerificationGateUnavailableError);
+    expect(partial!.candidateOutcomes.map((r) => r.outcome)).toEqual(["not_attempted", "not_attempted"]);
+  });
+
+  it("resume skips previously submitted candidates and retries the rest", async () => {
+    const candidates = raw(3);
+    const first = await runSubmit(candidates, baseOpts(), {
+      fetchImpl: makeFetch([ok("sub-0"), { ok: false, status: 503 }, { ok: false, status: 503 }]),
+      existingFacilities: [],
+      sleepImpl,
+    });
+    const resumeSubmitted = loadResumeLog(writeLogFile(first), candidates);
+    expect([...resumeSubmitted.keys()]).toEqual([0]);
+
+    const fetchImpl = makeFetch([ok("sub-1"), ok("sub-2")]);
+    const second = await runSubmit(candidates, baseOpts({ resumeSubmitted }), { fetchImpl, existingFacilities: [], sleepImpl });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    const posted = fetchImpl.mock.calls.map(([, init]) => JSON.parse(init!.body as string).payload.id);
+    expect(posted).toEqual(["fac-1-tx", "fac-2-tx"]);
+    expect(second.skippedResumed).toBe(1);
+    expect(second.submitted).toBe(2);
+  });
+
+  it("a resume of a resume still skips the first attempt's submissions", async () => {
+    const candidates = raw(3);
+    const first = await runSubmit(candidates, baseOpts(), {
+      fetchImpl: makeFetch([ok("sub-0"), { ok: false, status: 503 }, { ok: false, status: 503 }]),
+      existingFacilities: [],
+      sleepImpl,
+    });
+    const second = await runSubmit(candidates, baseOpts({ resumeSubmitted: loadResumeLog(writeLogFile(first), candidates) }), {
+      fetchImpl: makeFetch([ok("sub-1"), { ok: false, status: 503 }]),
+      existingFacilities: [],
+      sleepImpl,
+    });
+    expect(second.candidateOutcomes[0]).toMatchObject({ outcome: "submitted", submissionId: "sub-0", carriedForward: true });
+
+    const fetchImpl = makeFetch([ok("sub-2")]);
+    const third = await runSubmit(candidates, baseOpts({ resumeSubmitted: loadResumeLog(writeLogFile(second), candidates) }), {
+      fetchImpl,
+      existingFacilities: [],
+      sleepImpl,
+    });
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(third.skippedResumed).toBe(2);
+    expect(third.candidateOutcomes.map((r) => r.outcome)).toEqual(["submitted", "submitted", "submitted"]);
+  });
+
+  it("refuses a log that belongs to a different candidates file", async () => {
+    const candidates = raw(2);
+    const log = await runSubmit(candidates, baseOpts(), {
+      fetchImpl: makeFetch([ok("a"), ok("b")]),
+      existingFacilities: [],
+      sleepImpl,
+    });
+    const file = writeLogFile(log);
+    const changed = [candidates[0], makeCandidateWithUrls("other-tx", ["https://example.com/other"])];
+    expect(() => loadResumeLog(file, changed)).toThrow(/does not belong/);
+    expect(() => loadResumeLog(file, raw(3))).toThrow(/lists 2 candidates/);
+    expect(() => loadResumeLog(writeLogFile(makeSummary()), candidates)).toThrow(/lists 0 candidates/);
+    expect(() => loadResumeLog("/nonexistent/log.json", candidates)).toThrow(/could not read/);
+  });
+
+  it("main exits 1 with the mismatch message when the resume log does not match", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-main-"));
+    const inputPath = path.join(dir, "candidates.json");
+    writeFileSync(inputPath, JSON.stringify(raw(2)));
+    const logPath = writeLogFile(makeSummary({ candidateOutcomes: [{ index: 0, hash: "bad", outcome: "submitted" }] }));
+    const saved = { ...process.env };
+    const argv = process.argv;
+    process.env.API_ADMIN_TOKEN = "t";
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=r", `--resume-from-log=${logPath}`];
+    const errors: string[] = [];
+    vi.spyOn(console, "error").mockImplementation((...a: unknown[]) => {
+      errors.push(a.map(String).join(" "));
+    });
+    let exitCode: number | undefined;
+    vi.spyOn(process, "exit").mockImplementation(((c?: number) => {
+      exitCode = c;
+      throw new Error(`process.exit(${c})`);
+    }) as never);
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(1\)$/);
+      expect(exitCode).toBe(1);
+      expect(errors.join("\n")).toMatch(/--resume-from-log/);
+    } finally {
+      vi.restoreAllMocks();
+      process.argv = argv;
+      for (const k of Object.keys(process.env)) if (!(k in saved)) delete process.env[k];
+      Object.assign(process.env, saved);
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("durable checkpoints and in_flight resume", () => {
+  const sleepImpl = async () => {};
+  const raw = (n: number) =>
+    Array.from({ length: n }, (_, i) => makeCandidateWithUrls(`fac-${i}-tx`, [`https://example.com/s${i}`]));
+  const ok = (id: string) => ({ ok: true, body: { id } });
+  const snap = (s: RunSubmitSummary): RunSubmitSummary => JSON.parse(JSON.stringify(s));
+
+  function writeLogFile(summary: RunSubmitSummary): string {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-log-"));
+    const file = path.join(dir, "run.json");
+    writeFileSync(file, JSON.stringify(summary));
+    return file;
+  }
+
+  it("checkpoints in_flight before each POST and submitted right after it", async () => {
+    const candidates = raw(2);
+    const snaps: RunSubmitSummary[] = [];
+    const seenAtPost: string[][] = [];
+    const fetchImpl = makeFetch([ok("sub-0"), ok("sub-1")]);
+    fetchImpl.mockImplementation(async () => {
+      // the last checkpoint at the moment the POST leaves: a SIGKILL here is what the log must survive
+      seenAtPost.push(snaps[snaps.length - 1].candidateOutcomes.map((r) => r.outcome));
+      return { ok: true, status: 201, json: async () => ({ id: `sub-${seenAtPost.length - 1}` }), text: async () => "" } as unknown as Response;
+    });
+    await runSubmit(candidates, baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl, checkpoint: (s) => snaps.push(snap(s)) });
+    expect(seenAtPost[0]).toEqual(["in_flight", "not_attempted"]);
+    expect(seenAtPost[1]).toEqual(["submitted", "in_flight"]);
+    expect(snaps[snaps.length - 1].candidateOutcomes.map((r) => r.outcome)).toEqual(["submitted", "submitted"]);
+  });
+
+  it("does not checkpoint a dry run", async () => {
+    const checkpoint = vi.fn();
+    await runSubmit(raw(2), baseOpts({ dryRun: true }), { fetchImpl: makeFetch([ok("x")]), existingFacilities: [], checkpoint });
+    expect(checkpoint).not.toHaveBeenCalled();
+  });
+
+  it("resume does not resubmit an in_flight candidate: WARN, counter, carried forward", async () => {
+    const candidates = raw(3);
+    const log = makeSummary({
+      discovered: 3,
+      candidateOutcomes: [
+        { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted", submissionId: "sub-0" },
+        { index: 1, hash: candidateHash(candidates[1]), outcome: "in_flight" },
+        { index: 2, hash: candidateHash(candidates[2]), outcome: "not_attempted" },
+      ],
+    });
+    const resumeSubmitted = loadResumeLog(writeLogFile(log), candidates);
+    expect([...resumeSubmitted.keys()]).toEqual([0, 1]);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      const fetchImpl = makeFetch([ok("sub-2")]);
+      const second = await runSubmit(candidates, baseOpts({ resumeSubmitted }), { fetchImpl, existingFacilities: [], sleepImpl });
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(fetchImpl.mock.calls[0][1]!.body as string).payload.id).toBe("fac-2-tx");
+      expect(second.resumedInFlight).toBe(1);
+      expect(second.skippedResumed).toBe(1);
+      expect(second.candidateOutcomes[1]).toMatchObject({ outcome: "in_flight", carriedForward: true });
+      expect(warn).toHaveBeenCalledWith(
+        `WARN: candidate #1 (${candidateHash(candidates[1])}) was in flight when the previous attempt died; not resubmitted. Check the pending queue for it.`
+      );
+      // a second retry still skips it
+      expect([...loadResumeLog(writeLogFile(second), candidates).keys()]).toEqual([0, 1, 2]);
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("a checkpoint failure aborts before the next POST and maps to exit 1", async () => {
+    const candidates = raw(3);
+    const fetchImpl = makeFetch([ok("sub-0")]);
+    let calls = 0;
+    const err = await runSubmit(candidates, baseOpts(), {
+      fetchImpl,
+      existingFacilities: [],
+      sleepImpl,
+      checkpoint: () => {
+        // 1: in_flight #0, 2: settle #0 (after POST 1), 3: in_flight #1 fails
+        if (++calls === 3) throw Object.assign(new Error("disk full"), { code: "ENOSPC" });
+      },
+    }).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(CheckpointWriteError);
+    expect((err as Error).message).toContain("ENOSPC");
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    expect(exitCodeForAbort(err)).toBe(1);
+    expect(exitCodeForAbort(new VerificationGateUnavailableError("u", "x"))).toBe(EXIT_GATE_UNAVAILABLE);
+    expect(exitCodeForAbort(new Error("other"))).toBeUndefined();
+  });
+
+  describe("ambiguous POST failures", () => {
+    const run = (fetchImpl: ReturnType<typeof makeFetch>, n = 1) =>
+      runSubmit(raw(n), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+
+    it("a thrown non-pre-connect error is recorded in_flight, counters unchanged", async () => {
+      const fetchImpl = vi.fn(async () => {
+        throw Object.assign(new Error("socket hang up"), { code: "ECONNRESET" });
+      });
+      const log = vi.spyOn(console, "log").mockImplementation(() => {});
+      try {
+        const summary = await run(fetchImpl as never);
+        expect(summary.candidateOutcomes[0].outcome).toBe("in_flight");
+        expect(summary.errors).toBe(1);
+        expect(summary.apiUnavailable).toBe(1);
+        expect(log.mock.calls.some(([m]) => String(m).includes("recorded in_flight so a retry will not resubmit it"))).toBe(true);
+      } finally {
+        log.mockRestore();
+      }
+    });
+
+    it.each([504, 524])("HTTP %i is recorded in_flight", async (status) => {
+      const summary = await run(makeFetch([{ ok: false, status }]));
+      expect(summary.candidateOutcomes[0].outcome).toBe("in_flight");
+      expect(summary.errors).toBe(1);
+      expect(summary.apiUnavailable).toBe(1);
+    });
+
+    it.each([500, 502, 503, 400])("HTTP %i stays error", async (status) => {
+      const summary = await run(makeFetch([{ ok: false, status }]));
+      expect(summary.candidateOutcomes[0].outcome).toBe("error");
+    });
+
+    it("a pre-connect failure stays error", async () => {
+      const fetchImpl = vi.fn(async () => {
+        throw Object.assign(new Error("connect refused"), { code: "ECONNREFUSED" });
+      });
+      const summary = await run(fetchImpl as never);
+      expect(summary.candidateOutcomes[0].outcome).toBe("error");
+    });
+
+    it("a resume skips the in_flight candidate and resubmits the error one", async () => {
+      const candidates = raw(2);
+      const first = await run(makeFetch([{ ok: false, status: 504 }, { ok: false, status: 503 }]), 2);
+      expect(first.candidateOutcomes.map((r) => r.outcome)).toEqual(["in_flight", "error"]);
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      try {
+        const fetchImpl = makeFetch([ok("sub-1")]);
+        const second = await runSubmit(candidates, baseOpts({ resumeSubmitted: loadResumeLog(writeLogFile(first), candidates) }), {
+          fetchImpl,
+          existingFacilities: [],
+          sleepImpl,
+        });
+        expect(fetchImpl).toHaveBeenCalledTimes(1);
+        expect(JSON.parse(fetchImpl.mock.calls[0][1]!.body as string).payload.id).toBe("fac-1-tx");
+        expect(second.resumedInFlight).toBe(1);
+      } finally {
+        warn.mockRestore();
+      }
+    });
+  });
+
+  it("a failed in_flight checkpoint restores not_attempted, so the finally-written log never claims an unsent POST", async () => {
+    const fetchImpl = makeFetch([ok("x")]);
+    const written: RunSubmitSummary[] = [];
+    let calls = 0;
+    await expect(
+      runSubmitAndLog(raw(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl }, (s) => {
+        calls++;
+        if (calls === 1) throw Object.assign(new Error("disk full"), { code: "ENOSPC" }); // the in_flight checkpoint
+        written.push(snap(s)); // the finally write succeeds
+      })
+    ).rejects.toThrow(CheckpointWriteError);
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(written).toHaveLength(1);
+    expect(written[0].candidateOutcomes[0].outcome).toBe("not_attempted");
+  });
+
+  describe("carried records survive an interrupted resume", () => {
+    const prevLog = (candidates: unknown[]) =>
+      makeSummary({
+        discovered: candidates.length,
+        candidateOutcomes: [
+          { index: 0, hash: candidateHash(candidates[0]), outcome: "skippedUnverified" },
+          { index: 1, hash: candidateHash(candidates[1]), outcome: "submitted", submissionId: "sub-1" },
+          { index: 2, hash: candidateHash(candidates[2]), outcome: "in_flight" },
+        ],
+      });
+
+    it("a gate abort at candidate 0 still logs candidates 1 and 2 as carried", async () => {
+      const candidates = raw(3);
+      const resumeSubmitted = loadResumeLog(writeLogFile(prevLog(candidates)), candidates);
+      const written: RunSubmitSummary[] = [];
+      const verifyImpl = makeVerifyImpl(() => ({ verdict: "unavailable" }));
+      await expect(
+        runSubmitAndLog(candidates, baseOpts({ resumeSubmitted }), { fetchImpl: makeFetch([ok("x")]), existingFacilities: [], verifyImpl, sleepImpl }, (sm) =>
+          written.push(snap(sm))
+        )
+      ).rejects.toThrow(VerificationGateUnavailableError);
+      const last = written[written.length - 1];
+      expect(last.candidateOutcomes[0].outcome).toBe("not_attempted");
+      expect(last.candidateOutcomes[1]).toMatchObject({ outcome: "submitted", submissionId: "sub-1", carriedForward: true });
+      expect(last.candidateOutcomes[2]).toMatchObject({ outcome: "in_flight", carriedForward: true });
+      expect(last.skippedResumed).toBe(0); // not double-counted: the loop never reached them
+    });
+
+    it("the very first checkpoint already contains the carried records, and counters are not doubled", async () => {
+      const candidates = raw(3);
+      const resumeSubmitted = loadResumeLog(writeLogFile(prevLog(candidates)), candidates);
+      const snaps: RunSubmitSummary[] = [];
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      try {
+        const summary = await runSubmit(candidates, baseOpts({ resumeSubmitted }), {
+          fetchImpl: makeFetch([ok("sub-0")]),
+          existingFacilities: [],
+          sleepImpl,
+          checkpoint: (sm) => snaps.push(snap(sm)),
+        });
+        expect(snaps[0].candidateOutcomes.map((r) => r.outcome)).toEqual(["in_flight", "submitted", "in_flight"]);
+        expect(snaps[0].candidateOutcomes[1].carriedForward).toBe(true);
+        expect(summary.skippedResumed).toBe(1);
+        expect(summary.resumedInFlight).toBe(1);
+        expect(summary.candidateOutcomes[1]).toMatchObject({ outcome: "submitted", submissionId: "sub-1", carriedForward: true });
+      } finally {
+        warn.mockRestore();
+      }
+    });
+  });
+
+  describe("every POST site checkpoints in_flight first", () => {
+    const statusUpdate = {
+      statusUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        status: "under_construction",
+        date: "2026-07-16",
+        note: "groundbreaking confirmed",
+        sources: [{ url: "https://example.com/gb", label: "Report", retrievedAt: "2026-07-16", kind: "press" }],
+      },
+      provenance: { sources: ["https://example.com/gb"], discoveredBy: "test" },
+    };
+    const enrichment = {
+      enrichmentUpdate: {
+        targetFacilityId: "existing-facility-tx",
+        date: "2026-07-20",
+        sources: [{ url: "https://example.com/en", label: "10-Q", retrievedAt: "2026-07-20", kind: "filing" }],
+        fields: { investmentUsd: 500000000 },
+      },
+      provenance: { sources: ["https://example.com/en"], discoveredBy: "test" },
+    };
+    it.each([
+      ["create", raw(1)[0]],
+      ["status_update", statusUpdate],
+      ["enrichment_update", enrichment],
+    ])("%s", async (_kind, candidate) => {
+      const snaps: RunSubmitSummary[] = [];
+      let atPost: string | undefined;
+      const fetchImpl = vi.fn(async () => {
+        atPost = snaps[snaps.length - 1]?.candidateOutcomes[0].outcome;
+        return { ok: true, status: 201, json: async () => ({ id: "s" }), text: async () => "" } as unknown as Response;
+      });
+      await runSubmit([candidate], baseOpts(), {
+        fetchImpl: fetchImpl as never,
+        existingFacilities: [EXISTING_FACILITY],
+        sleepImpl,
+        checkpoint: (sm) => snaps.push(snap(sm)),
+      });
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(atPost).toBe("in_flight");
+    });
+  });
+
+  it("loadResumeLog refuses a log whose record claims another record's index", () => {
+    const candidates = raw(2);
+    const log = makeSummary({
+      discovered: 2,
+      candidateOutcomes: [
+        { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted" },
+        { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted" },
+      ],
+    });
+    expect(() => loadResumeLog(writeLogFile(log), candidates)).toThrow(/record 1 claims index 0/);
+  });
+
+  it("main exits 1 and posts nothing when the resume log has a duplicate index", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-dup-"));
+    const candidates = raw(2);
+    const inputPath = path.join(dir, "candidates.json");
+    writeFileSync(inputPath, JSON.stringify(candidates));
+    const logPath = writeLogFile(
+      makeSummary({
+        discovered: 2,
+        candidateOutcomes: [
+          { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted" },
+          { index: 0, hash: candidateHash(candidates[0]), outcome: "submitted" },
+        ],
+      })
+    );
+    const saved = { ...process.env };
+    const argv = process.argv;
+    process.env.API_ADMIN_TOKEN = "t";
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=r", `--resume-from-log=${logPath}`];
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    let exitCode: number | undefined;
+    vi.spyOn(process, "exit").mockImplementation(((c?: number) => {
+      exitCode = c;
+      throw new Error(`process.exit(${c})`);
+    }) as never);
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(1\)$/);
+      expect(exitCode).toBe(1);
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      vi.restoreAllMocks();
+      process.argv = argv;
+      Object.assign(process.env, saved);
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("main exits 1 when --resume-from-log is missing, and posts nothing", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "resume-missing-"));
+    const inputPath = path.join(dir, "candidates.json");
+    writeFileSync(inputPath, JSON.stringify(raw(2)));
+    const saved = { ...process.env };
+    const argv = process.argv;
+    process.env.API_ADMIN_TOKEN = "t";
+    process.argv = ["node", "submit-candidates.ts", inputPath, "--run-id=r", `--resume-from-log=${path.join(dir, "nope.json")}`];
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    let exitCode: number | undefined;
+    vi.spyOn(process, "exit").mockImplementation(((c?: number) => {
+      exitCode = c;
+      throw new Error(`process.exit(${c})`);
+    }) as never);
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    try {
+      await expect(main()).rejects.toThrow(/^process\.exit\(1\)$/);
+      expect(exitCode).toBe(1);
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      vi.restoreAllMocks();
+      process.argv = argv;
+      Object.assign(process.env, saved);
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("readSubmissionId gives up on a body that never resolves and still counts the submission", async () => {
+    vi.useFakeTimers();
+    try {
+      const fetchImpl = vi.fn(async () => ({ ok: true, status: 201, json: () => new Promise(() => {}), text: async () => "" }) as unknown as Response);
+      const run = runSubmit(raw(1), baseOpts(), { fetchImpl, existingFacilities: [], sleepImpl });
+      await vi.advanceTimersByTimeAsync(10_001);
+      const summary = await run;
+      expect(summary.submitted).toBe(1);
+      expect(summary.candidateOutcomes[0]).toMatchObject({ outcome: "submitted" });
+      expect(summary.candidateOutcomes[0].submissionId).toBeUndefined();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

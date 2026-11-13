@@ -162,7 +162,7 @@ yours. For academic work, cite the facility page you used and the date you acces
 `"[Facility name]", Compute Atlas, https://www.compute-atlas.com/facilities/<id>, accessed [date]`.
 Full terms: [LICENSE-DATA](LICENSE-DATA).
 
-Browsing the data on the site is free. The full dataset files are free for students, educators and academics, and by subscription for everyone else ([compute-atlas.com/access/commercial](https://www.compute-atlas.com/access/commercial)). One-off support is welcome through [PayPal](https://www.paypal.com/paypalme/computeatlas).
+Browsing the data on the site is free. The full dataset files are free for students and educators (verified against a school email address), and by subscription for everyone else ([compute-atlas.com/access/commercial](https://www.compute-atlas.com/access/commercial)). One-off support is welcome through [PayPal](https://www.paypal.com/paypalme/computeatlas).
 
 ---
 

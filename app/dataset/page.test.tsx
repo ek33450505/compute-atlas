@@ -85,7 +85,7 @@ describe("DatasetPage", () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
     render(await DatasetPage());
     expect(datasetNodes()[0].conditionsOfAccess).toBe(
-      "Facility pages are free to read. Data files require approved access, free for students, educators and academics.",
+      "Facility pages are free to read. Data files require approved access, free for students and educators.",
     );
   });
 
@@ -107,12 +107,13 @@ describe("DatasetPage", () => {
     expect(screen.queryByRole("link", { name: "Preview the files and plans" })).not.toBeInTheDocument();
   });
 
-  it("restricts the free tier to students, educators and academics", async () => {
+  it("restricts the free tier to students and educators", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(await DatasetPage());
     const free = screen.getByRole("heading", { level: 3, name: "Free" }).closest("section")!;
-    expect(free).toHaveTextContent("For students, educators and academics.");
+    expect(free).toHaveTextContent("For students and educators");
+    expect(document.body.textContent).not.toMatch(/academics/i);
     expect(free.textContent).not.toMatch(/government|journalist|nonprofit/i);
   });
 

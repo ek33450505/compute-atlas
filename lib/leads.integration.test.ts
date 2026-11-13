@@ -20,6 +20,8 @@ import {
   resetLeadToNew,
   stageLeadSubmission,
   listLeadSubmissionOutcomes,
+  listNewLeadsOldestFirst,
+  deferLeadIfNew,
 } from "@/lib/leads";
 import { submissionsTable, leadsTable } from "@/lib/db/schema";
 import type { Facility } from "@/lib/schema";
@@ -763,5 +765,42 @@ describe("listLeadSubmissionOutcomes", () => {
 
     expect(Object.keys(result)).toEqual([leadA]);
     expect(result[leadA].map((o) => o.id)).toEqual([subA]);
+  });
+});
+
+describe("listNewLeadsOldestFirst", () => {
+  it("returns only new leads, oldest first, limited in SQL", async () => {
+    const mk = (url: string, createdAt: string, status = "new") => ({
+      url,
+      status,
+      createdAt: new Date(createdAt),
+    });
+    await tdb.db.insert(leadsTable).values([
+      mk("https://example.com/c", "2026-03-01T00:00:00Z"),
+      mk("https://example.com/a", "2026-01-01T00:00:00Z"),
+      mk("https://example.com/x", "2025-12-01T00:00:00Z", "deferred"),
+      mk("https://example.com/b", "2026-02-01T00:00:00Z"),
+    ]);
+
+    const rows = await listNewLeadsOldestFirst(2);
+    expect(rows.map((r) => r.url)).toEqual(["https://example.com/a", "https://example.com/b"]);
+  });
+});
+
+describe("deferLeadIfNew", () => {
+  it("defers a new lead", async () => {
+    const [row] = await tdb.db.insert(leadsTable).values({ url: "https://example.com/n", status: "new" }).returning();
+    const res = await deferLeadIfNew(row.id, "note");
+    expect(res.ok).toBe(true);
+    const [after] = await tdb.db.select().from(leadsTable).where(eq(leadsTable.id, row.id));
+    expect(after.status).toBe("deferred");
+  });
+
+  it("never overwrites a lead a human or a committed promote already moved", async () => {
+    const [row] = await tdb.db.insert(leadsTable).values({ url: "https://example.com/p", status: "promoted" }).returning();
+    const res = await deferLeadIfNew(row.id, "note");
+    expect(res).toMatchObject({ ok: false, status: 409 });
+    const [after] = await tdb.db.select().from(leadsTable).where(eq(leadsTable.id, row.id));
+    expect(after.status).toBe("promoted");
   });
 });

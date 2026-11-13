@@ -63,29 +63,33 @@
 # discovery run (17:00 UTC on EDT, 18:00 UTC on EST, so the calendar day holds
 # across the Nov 1 DST change). The local pipeline was Mon/Wed/Fri from
 # 2026-11-02 and is Mon-Fri from 2026-11-12, and this follows it. In practice
-# GitHub's scheduled-run delay pushes actual execution to ~00:40-02:30 UTC the
-# NEXT day, measured over the last 14 runs (taken on the Mon/Wed/Fri schedule;
-# re-measure on Mon-Fri). The local run ended 13:25-15:30 local at 3 states per
-# run; 4-state runs (since 2026-11-12) are unmeasured and end later, so check that
-# the watchdog still reads a finished heartbeat. Re-measure with
-# `gh run list --limit 30 --workflow=discovery-watchdog.yml --json createdAt`.
+# GitHub's scheduled-run delay pushes actual execution to ~00:50-04:30 UTC the
+# NEXT day (scheduled runs created 2026-10-24..11-12 under the earlier daily
+# and Mon/Wed/Fri crons; observed 00:53-04:23 UTC; re-measure on Mon-Fri). The local run ended 13:25-15:30 local at 3 states per
+# run; 4-state runs (since 2026-11-12) end ~16:00-17:00 local (estimate;
+# re-measure), so the watchdog should still read a finished heartbeat. Re-measure
+# with `gh run list --limit 30 --workflow=discovery-watchdog.yml --json createdAt`.
 #
-# STALENESS BUDGET: 84h, not 36h. It is check-heartbeat.ts's
-# DISCOVERY_STALE_HOURS_DEFAULT, matched by run.sh and by automation-health's
-# staleAfterHours. The longest normal gap is Fri -> Mon (nominally 72h start to
-# start, ~70h from the Friday run's end), plus the same 12h slack the old daily
-# 36h budget carried; the slack is what absorbs a Monday start that launchd
-# deferred past a sleep. What this guarantees ON MON-FRI (since 2026-11-12) is
-# weaker than it was on Mon/Wed/Fri, and the budget was deliberately left at 84h:
-# a missed Mon or Fri run leaves a ~96h gap and is caught by run.sh's own gap
-# check on the next run, but a single missed Tue/Wed/Thu run leaves only ~48h,
-# which 84h does not flag anywhere. Remotely, the heartbeat must be ~84h old at
-# a watchdog run, which takes about three consecutive mid-week misses (or a
-# missed Fri plus Mon). A day-aware budget (e.g. ~36h Tue-Fri, 84h on Mon) would
-# restore single-miss detection; not done. Under Mon/Wed/Fri every single miss
-# left ~94h and two consecutive misses were caught here.
+# STALENESS BUDGET: day-aware, not flat (Wave 5, 2026-11-12). check-heartbeat.ts
+# uses dayAwareStaleHours (scripts/schedule-budget.ts) with "today" taken in
+# America/New_York; run.sh mirrors it via `date +%u`. (automation-health's
+# check of THIS workflow's own freshness stays a flat 84h: its runs are created
+# a UTC day late, Tue-Sat, so a weekday rule would false-alarm.) Budget = 24h x
+# days back from today to the most recent scheduled weekday strictly before
+# today, plus 12h slack (absorbs a start launchd deferred past a sleep):
+# Mon 84h (back to Fri), Tue-Sat 36h, Sun 60h. Today's own run is never
+# required, so this job cannot race a late-ending 4-state run. On EST (UTC-5)
+# a 04:30 UTC start is still the same local evening (23:30); on EDT (UTC-4) it
+# crosses local midnight (00:30), which only moves "today" forward a day and so
+# requires a run that finished hours earlier: stricter, never a false alarm. Guarantee: run.sh's gap check flags a single missed mid-week run on its
+# next run; this watchdog catches two consecutive misses (the old Mon/Wed/Fri
+# guarantee). A set DISCOVERY_STALE_HOURS is a fixed override; nothing in
+# .github/ sets it.
 #
-# Requires: DATABASE_URL as a repo secret (already configured).
+# Requires: DATABASE_URL as a repo secret (already configured; it should hold the
+# low-privilege ci_monitor role, see scripts/ops/create-ci-monitor-role.ts), and
+# DATASET_SHARING_ENABLED as a repo VARIABLE (vars, not a secret) that mirrors
+# the Vercel flag so the dataset-edition check runs.
 #
 # DIGEST CRASH CHECK (added 2026-09-13):
 # The state digest feature (LIVE since 2026-09-14 — Vercel Cron, 0 9 1 * *)
@@ -98,11 +102,15 @@
 #     the feature has never run; all read as "healthy".
 #   - Feature deployed but healthy — all runs completed, exit 0.
 #   - Crashed run detected — at least one row with completedAt IS NULL, exit 1.
+#   - Recent send failures, or confirmed recipients over the alarm, exit 1
+#     (since Wave 5; the classifier reports each as its own token).
 #   - Check failed — DATABASE_URL unset or Neon unreachable, exit 1 (distinct
 #     from "crashed run").
 #
-# The check NEVER edits, deletes, or "fixes" anything. Recovery is manual —
-# deleting the row in Neon by hand. Reporting is the only action.
+# The check NEVER edits, deletes, or "fixes" anything. Recovery of an incomplete
+# window is a deliberate admin call that resumes the same run at-most-once
+# (GET /api/cron/state-digest?since=&until=, after 10 minutes); deleting the
+# row would re-mail everyone. Reporting is the only action.
 #
 # Deliberately separates the two checks so a heartbeat failure doesn't mask
 # a digest crash, or vice versa — both fire in one run if either detects a
@@ -122,6 +130,7 @@ jobs:
   watchdog:
     name: Verify discovery and digest status
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # ⛔ DATABASE_URL is deliberately NOT a job-level `env:` (it was one until
     # 2026-09-27). A job-level env is handed to every step including `npm ci`,
     # which runs four package install scripts on this runner (esbuild x3,
@@ -182,15 +191,33 @@ jobs:
           echo "classified state: $STATE"
           echo "state=$STATE" >> "$GITHUB_OUTPUT"
 
+      # Cron-chain freshness and quality: digest, dataset edition, PayPal
+      # webhooks, email sends. Exits 1 on any failure; see
+      # scripts/ops/check-cron-freshness.ts. Runs after earlier failures on
+      # purpose, so one check cannot hide another. DATASET_SHARING_ENABLED is a
+      # repo VARIABLE (vars, not a secret) mirroring the Vercel flag; when it is
+      # unset the edition check is skipped, so say so loudly.
+      - name: Check cron freshness
+        id: freshness
+        continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATASET_SHARING_ENABLED: ${{ vars.DATASET_SHARING_ENABLED }}
+        run: |
+          if [ -z "${DATASET_SHARING_ENABLED:-}" ]; then
+            echo "::warning::vars.DATASET_SHARING_ENABLED is unset, so the dataset-edition check is skipped."
+          fi
+          npx tsx scripts/ops/check-cron-freshness.ts
+
       # Always runs, so a heartbeat failure doesn't mask a digest crash or vice
       # versa. The job fails if either check reports a real problem; both outputs
       # are visible. Heartbeat problems are reported FIRST for ordering only —
       # that is a reading convenience, not a severity ranking, and it stopped
       # being one on 2026-09-14 when the digest went live. A crashed digest run
-      # now means real mail half-sent to real subscribers, and its recovery is
-      # deliberately manual (no `?force=`; the window's row must be deleted in
-      # Neon by hand), so treat a digest failure as at least as urgent as a
-      # missed discovery run.
+      # now means real mail half-sent to real subscribers. Its recovery is a
+      # deliberate admin call that resumes the same run at-most-once (never
+      # delete the row: that re-mails everyone), so treat a digest failure as at
+      # least as urgent as a missed discovery run.
       - name: Report heartbeat failure
         if: always() && steps.heartbeat.outcome == 'failure'
         run: |
@@ -199,21 +226,43 @@ jobs:
 
       # Report only if the digest detector itself failed (DATABASE_URL unset,
       # Neon unreachable, etc.) — distinguish from an actual crash.
+      # The classifier prints `healthy` alone, or every matching failure token
+      # space-separated (crashed send-failures recipient-alarm detector-broken),
+      # so one failure cannot mask another: match tokens with contains().
       - name: Report digest detector failure
-        if: always() && steps.digest.outputs.state == 'detector-broken'
+        if: always() && contains(steps.digest.outputs.state, 'detector-broken')
         run: |
           echo "::error::The digest status check did not run to completion, so nothing can be reported about digest runs. Read the detector output above for the cause."
           exit 1
 
       # Report only if a digest crash was detected (completedAt IS NULL).
       - name: Report incomplete digest run
-        if: always() && steps.digest.outputs.state == 'crashed'
+        if: always() && contains(steps.digest.outputs.state, 'crashed')
         run: |
-          echo "::error::One or more state digest runs are incomplete (completedAt IS NULL), indicating a crash mid-send. Read the detector output above for details. Recovery requires manual deletion of the row in Neon — see CLAUDE.md."
+          echo "::error::The scheduled state digest run did not complete (completedAt IS NULL). Wait 10 minutes, then resume it by calling GET /api/cron/state-digest?since=<YYYY-MM-DD>&until=<YYYY-MM-DD> with the admin bearer; the resume is at-most-once. Do NOT delete the row in Neon: that re-mails every recipient."
           exit 1
 
-      # FAIL-CLOSED CATCH-ALL. The three reporting steps above each match ONE
-      # exact state, so an unrecognised — or EMPTY — value matches none of them
+      - name: Report digest send failures
+        if: always() && contains(steps.digest.outputs.state, 'send-failures')
+        run: |
+          echo "::error::Recent digest recipients were not mailed (see the ::error:: line above for the run id and counts by code). Check email_sends for that run in Neon. attempted_no_final_outcome and send_timeout_may_have_left may still have been delivered. If the run is incomplete, resume it as described for a crashed run."
+          exit 1
+
+      - name: Report digest recipient alarm
+        if: always() && contains(steps.digest.outputs.state, 'recipient-alarm')
+        run: |
+          echo "::error::Confirmed digest subscriptions exceed the alarm threshold. The digest route stops at its time budget, so recipients past it go unmailed. Raise maxDuration in app/api/cron/state-digest/route.ts within the plan limit, or batch the digest."
+          exit 1
+
+      # Report only if the cron freshness check failed. Its output names which check.
+      - name: Report cron freshness failure
+        if: always() && steps.freshness.outcome == 'failure'
+        run: |
+          echo "::error::Cron freshness check failed: a digest run is stale, the dataset edition is missing, stale, failed or stuck, a PayPal webhook is unprocessed, or an email send failed. Read the output above for which."
+          exit 1
+
+      # FAIL-CLOSED CATCH-ALL. The digest reporting steps above each match ONE
+      # known token, so an unrecognised — or EMPTY — value matches none of them
       # and the job finishes GREEN having reported nothing. Empty is reachable:
       # the digest step carries `continue-on-error: true`, so if it aborts
       # before writing $GITHUB_OUTPUT (a missing `npx`, a non-executable
@@ -223,15 +272,18 @@ jobs:
       #
       # This is the exact shape drift-alert.yml shipped fail-open TWICE before
       # it was closed the same way on 2026-09-13. Do not remove this step
-      # because "the classifier only ever prints three words" — that the
+      # because "the classifier only ever prints `healthy` or its four failure
+      # tokens" — that the
       # classifier is *supposed* to is precisely the assumption worth checking
       # across a process boundary.
       - name: Fail if the digest state was never classified
         if: >-
           always()
           && steps.digest.outputs.state != 'healthy'
-          && steps.digest.outputs.state != 'crashed'
-          && steps.digest.outputs.state != 'detector-broken'
+          && !contains(steps.digest.outputs.state, 'crashed')
+          && !contains(steps.digest.outputs.state, 'send-failures')
+          && !contains(steps.digest.outputs.state, 'recipient-alarm')
+          && !contains(steps.digest.outputs.state, 'detector-broken')
         run: |
           echo "::error::The digest check produced no recognised classification (state='${{ steps.digest.outputs.state }}', step outcome='${{ steps.digest.outcome }}'), so THIS WORKFLOW LEARNED NOTHING about digest runs. This is not a report that all runs completed — it is the absence of a report. Failing closed."
           exit 1

@@ -13,7 +13,7 @@
  * habit).
  */
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, lt } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { stateDigestRunsTable } from "@/lib/db/schema";
@@ -46,7 +46,7 @@ export type DigestClaim =
   | { claimed: true; runId: string }
   | {
       claimed: false;
-      priorRun: { startedAt: Date; completedAt: Date | null; recipients: number | null };
+      priorRun: { id: string; startedAt: Date; completedAt: Date | null; recipients: number | null };
     };
 
 /**
@@ -85,6 +85,7 @@ export async function claimDigestWindow(since: Date, until: Date): Promise<Diges
 
     const rows = await db
       .select({
+        id: stateDigestRunsTable.id,
         startedAt: stateDigestRunsTable.startedAt,
         completedAt: stateDigestRunsTable.completedAt,
         recipients: stateDigestRunsTable.recipients,
@@ -137,4 +138,36 @@ export async function completeDigestWindow(
       recipients: counts.recipients,
     })
     .where(and(eq(stateDigestRunsTable.since, since), eq(stateDigestRunsTable.until, until)));
+}
+
+/**
+ * A claimed window with `completed_at IS NULL` whose `started_at` is older than this is treated as dead and
+ * may be RESUMED. It must stay comfortably past the cron route's `maxDuration` (300 s) so a live run can never
+ * be resumed underneath itself.
+ */
+export const STALE_DIGEST_RUN_MS = 10 * 60 * 1000;
+
+/**
+ * Atomically takes over an incomplete, stale run: one UPDATE that refreshes `started_at` only while the row is
+ * still incomplete and older than `staleMs`. Returns true for exactly one of any number of concurrent callers
+ * (the loser's UPDATE sees the refreshed `started_at` and matches zero rows); the winner keeps the SAME run id,
+ * so the `email_sends` rows of the earlier attempt stay linked and can be used to skip finished recipients.
+ */
+export async function takeOverStaleDigestRun(
+  runId: string,
+  staleMs: number = STALE_DIGEST_RUN_MS,
+  now: Date = new Date()
+): Promise<boolean> {
+  const rows = await getDb()
+    .update(stateDigestRunsTable)
+    .set({ startedAt: now })
+    .where(
+      and(
+        eq(stateDigestRunsTable.id, runId),
+        isNull(stateDigestRunsTable.completedAt),
+        lt(stateDigestRunsTable.startedAt, new Date(now.getTime() - staleMs))
+      )
+    )
+    .returning({ id: stateDigestRunsTable.id });
+  return rows.length === 1;
 }

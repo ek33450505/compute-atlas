@@ -20,9 +20,14 @@ fi
 
 set -euo pipefail
 
-# -q must stay first: it is what disables ~/.curlrc.
-exec curl -q -sS -L -g \
-	--proto '=http,https' --proto-redir '=http,https' \
-	--max-redirs 10 --max-time 60 --max-filesize 52428800 \
-	-A 'ComputeAtlas-discovery/1.0 (+https://www.compute-atlas.com)' \
-	-- "$url"
+# Every hop (redirects included) is vetted and DNS-pinned in fetch-url.ts: no
+# private/loopback/link-local/metadata addresses. Run the repo's tsx directly
+# (no npx lookup) so a minimal launchd PATH only needs `node`.
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+repo="$(cd "$here/../.." && pwd)"
+tsx="$repo/node_modules/.bin/tsx"
+if [[ ! -x "$tsx" ]]; then
+	echo "fetch-url: $tsx not found (run npm ci)" >&2
+	exit 1
+fi
+exec "$tsx" "$here/fetch-url.ts" "$url"

@@ -4,6 +4,7 @@ import {
   verifySource,
   MODEL_VERDICT_JSON_SCHEMA,
   MAX_PAGE_TEXT_CHARS,
+  truncatePageText,
   WAYBACK_MAX_RESPONSE_BYTES,
   type VerifySourceDeps,
   type VerifyClaim,
@@ -1175,5 +1176,16 @@ describe("verifySource", () => {
       expect(fetchPageTextImpl).toHaveBeenCalledTimes(1);
       expect(result.verdict).toBe("verified");
     });
+  });
+});
+
+describe("truncatePageText (exported for reuse)", () => {
+  it("returns short text unchanged and keeps the HEAD of long text", () => {
+    expect(truncatePageText("abc")).toEqual({ text: "abc", truncated: false });
+    const long = "a".repeat(MAX_PAGE_TEXT_CHARS) + "TAIL";
+    const out = truncatePageText(long);
+    expect(out.truncated).toBe(true);
+    expect(out.text).toHaveLength(MAX_PAGE_TEXT_CHARS);
+    expect(out.text).not.toContain("TAIL");
   });
 });

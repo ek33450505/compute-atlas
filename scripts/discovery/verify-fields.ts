@@ -207,7 +207,10 @@
  * Run via:
  *   npx tsx --env-file=.env.local scripts/discovery/verify-fields.ts \
  *     [--out <path>] [--limit N] [--fields capacityMw.planned,energy.source] \
- *     [--facility <id>] [--run-id=ID]
+ *     [--facility <id>] [--run-id=ID] [--cursor-file <path>] \
+ *     [--next-cursor-out <path>]
+ *   (--cursor-file: resumable bounded sweep, see cursor.ts; same contract as
+ *   extract-fields.ts)
  *   (--out is optional here too, but unlike extract-fields.ts there is no
  *   dry-run/live distinction to gate — this script never writes live data
  *   either way; --out only controls whether the JSON report also lands on
@@ -240,9 +243,21 @@ import {
   type ExtractFieldModelDeps,
   type ExtractableField,
   type FetchState,
+  type ModelCallTally,
   type ModelExtraction,
   type SourceFetchDeps,
 } from "./extract-fields";
+import {
+  beginCursorRun,
+  clearNextCursorOutFromArgv,
+  finalizeCursorRun,
+  parseCursorFileFlag,
+  parseNextCursorOutFlag,
+  proposeNextCursor,
+  type ProcessedFacility,
+  rotateAfterCursor,
+  sortById,
+} from "./cursor";
 import { callOllama } from "./ollama-client";
 import { fetchPageText } from "./fetch-page-text";
 import { fetchPdfText } from "./fetch-pdf-text";
@@ -320,11 +335,11 @@ function fieldRecordedValue(facility: Facility, field: ExtractableField): number
 
 /** Every (facility, field) pair in `facilities` x `fields` whose target field
  * currently carries a recorded value — the opposite selection from
- * `selectGaps`. Order: outer loop over facilities, inner loop over `fields`
+ * `selectGaps`. Order: facilities sorted by id, inner loop over `fields`
  * in the order given, matching `selectGaps`'s own iteration order. */
 export function selectValuesToVerify(facilities: Facility[], fields: ExtractableField[]): FieldValueCheck[] {
   const checks: FieldValueCheck[] = [];
-  for (const facility of facilities) {
+  for (const facility of sortById(facilities, (f) => f.id)) {
     for (const field of fields) {
       const recordedValue = fieldRecordedValue(facility, field);
       if (recordedValue !== undefined) {
@@ -414,7 +429,8 @@ async function classifyReadableSource(
   recordedValue: number | string,
   sourceUrl: string,
   pageText: string,
-  deps: ExtractFieldModelDeps
+  deps: ExtractFieldModelDeps,
+  modelCalls: ModelCallTally
 ): Promise<SourceVerification> {
   const base = { facilityId: facility.id, facilityName: facility.name, field, recordedValue, sourceUrl };
 
@@ -424,6 +440,8 @@ async function classifyReadableSource(
   }
 
   const extraction = await extractField(field, facility, pageText, deps);
+  modelCalls.attempted++;
+  if (extraction.ok) modelCalls.answered++;
   if (!extraction.ok) {
     console.log(
       `unreachable: ${facility.id} ${field} — model call unavailable (${extraction.modelFailureReason}) (source: ${sourceUrl})`
@@ -515,6 +533,7 @@ export interface VerifyFieldsDeps extends ExtractFieldModelDeps, SourceFetchDeps
 }
 
 interface FacilityVerifyResult {
+  modelCalls: ModelCallTally;
   results: SourceVerification[];
   /** At least one source fetched successfully AND cleared
    * MIN_READABLE_CHARS. Used only by the systemic-collapse abort guard. */
@@ -605,6 +624,7 @@ async function verifyFacility(
   let sawAnyReadable = false;
   let sawAnyThin = false;
   let sourcesSkippedNonDocument = 0;
+  const modelCalls: ModelCallTally = { attempted: 0, answered: 0 };
 
   /** Pushes one `unreachable` triple per field under check for `sourceUrl`,
    * optionally tagged with archive provenance — the shared tail of every
@@ -673,7 +693,7 @@ async function verifyFacility(
           // the only difference is the text came from the archived snapshot.
           const windowed = windowText(archived.fetchResult.text, facility.name, facility.location.city);
           for (const { field, recordedValue } of fields) {
-            const classified = await classifyReadableSource(facility, field, recordedValue, source.url, windowed.text, deps);
+            const classified = await classifyReadableSource(facility, field, recordedValue, source.url, windowed.text, deps, modelCalls);
             results.push({ ...classified, viaArchive: true, archiveUrl });
           }
           continue;
@@ -719,11 +739,11 @@ async function verifyFacility(
     const windowed = windowText(fetchResult.text, facility.name, facility.location.city);
 
     for (const { field, recordedValue } of fields) {
-      results.push(await classifyReadableSource(facility, field, recordedValue, source.url, windowed.text, deps));
+      results.push(await classifyReadableSource(facility, field, recordedValue, source.url, windowed.text, deps, modelCalls));
     }
   }
 
-  return { results, sawAnyReadable, sawAnyThin, sourcesSkippedNonDocument };
+  return { results, sawAnyReadable, sawAnyThin, sourcesSkippedNonDocument, modelCalls };
 }
 
 // ============================================================================
@@ -741,6 +761,8 @@ export interface RunVerifyOptions {
   limit?: number;
   facilityId?: string;
   runId: string;
+  /** Last facility id reached by the previous bounded run; see cursor.ts. */
+  cursor?: string;
 }
 
 /**
@@ -860,6 +882,11 @@ export interface VerifyFieldsSummary {
    * `abortedBeforeReached` — never silently absent. */
   aborted: boolean;
   abortReason: string | null;
+  /** Proposed next `--cursor-file` value: the id of the last facility
+   * processed, whatever its outcome. `null` = the cursor must not move (the run
+   * aborted, the model was unusable (no usable answer), or the run was print-only / had no cursor).
+   * The tool never writes the cursor; see cursor.ts. */
+  nextCursor: string | null;
   /** Every (facility, field, source) triple attempted, in the order
    * processed — the disagreements among these are the tool's entire reason
    * to exist; see `printHumanSummary`. */
@@ -945,12 +972,17 @@ export async function runVerify(
     recoveredViaArchive: 0,
     aborted: false,
     abortReason: null,
+    nextCursor: null,
     results: [],
   };
 
   const targetFacilities = opts.facilityId ? facilities.filter((f) => f.id === opts.facilityId) : facilities;
 
-  let checks = selectValuesToVerify(targetFacilities, opts.fields);
+  let checks = rotateAfterCursor(
+    selectValuesToVerify(targetFacilities, opts.fields),
+    opts.cursor,
+    (c) => c.facility.id
+  );
   if (opts.limit !== undefined) {
     checks = checks.slice(0, opts.limit);
   }
@@ -984,6 +1016,7 @@ export async function runVerify(
   // from `aborted`, since it stays correct (empty-set-relevant) even on a
   // non-aborted run.
   const reachedFacilityIds = new Set<string>();
+  const processed: ProcessedFacility[] = [];
 
   // One instance per `runVerify` call — see `FetchState`'s doc-comment in
   // extract-fields.ts — so the pdf_extractor_unavailable warning's "once per
@@ -993,6 +1026,7 @@ export async function runVerify(
   for (const { facility, fields } of byFacility.values()) {
     reachedFacilityIds.add(facility.id);
     const result = await verifyFacility(facility, fields, deps, fetchState);
+    processed.push({ id: facility.id, ...result.modelCalls });
     summary.sourcesSkippedNonDocument += result.sourcesSkippedNonDocument;
     for (const item of result.results) {
       summary.results.push(item);
@@ -1036,6 +1070,7 @@ export async function runVerify(
     summary.aborted = true;
     summary.abortReason = abortReason;
   }
+  summary.nextCursor = proposeNextCursor({ processed, aborted: summary.aborted });
 
   // === Per-VALUE reconciliation (the second, coarser accounting layer —
   // see VerifyFieldsSummary's doc-comments and the file header's
@@ -1112,9 +1147,13 @@ interface CliArgs {
   fields: ExtractableField[];
   facilityId?: string;
   runId: string;
+  cursorFile?: string;
+  nextCursorOut?: string;
 }
 
 export function parseArgs(argv: string[]): CliArgs {
+  let cursorFile: string | undefined;
+  let nextCursorOut: string | undefined;
   let outPath: string | undefined;
   let limit: number | undefined;
   let fields: ExtractableField[] = [...EXTRACTABLE_FIELDS];
@@ -1123,7 +1162,15 @@ export function parseArgs(argv: string[]): CliArgs {
 
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i];
-    if (flag === "--out") {
+    const cursorFlag = parseCursorFileFlag(argv, i);
+    const nextOutFlag = parseNextCursorOutFlag(argv, i);
+    if (cursorFlag) {
+      cursorFile = cursorFlag.value;
+      i += cursorFlag.consumed;
+    } else if (nextOutFlag) {
+      nextCursorOut = nextOutFlag.value;
+      i += nextOutFlag.consumed;
+    } else if (flag === "--out") {
       outPath = argv[++i];
     } else if (flag.startsWith("--out=")) {
       outPath = flag.slice("--out=".length);
@@ -1158,7 +1205,7 @@ export function parseArgs(argv: string[]): CliArgs {
     }
   }
 
-  return { outPath, limit, fields, facilityId, runId };
+  return { outPath, limit, fields, facilityId, runId, cursorFile, nextCursorOut };
 }
 
 /**
@@ -1241,6 +1288,7 @@ export function buildRealDeps(): VerifyFieldsDeps {
 }
 
 async function main(): Promise<void> {
+  clearNextCursorOutFromArgv(process.argv.slice(2));
   const args = parseArgs(process.argv.slice(2));
   const { facilities } = await loadFacilities();
 
@@ -1263,12 +1311,21 @@ async function main(): Promise<void> {
     };
   }
 
+  const { cursor } = beginCursorRun(args);
   const summary = await runVerify(
     facilities,
-    { fields: args.fields, limit: args.limit, facilityId: args.facilityId, runId: args.runId },
+    {
+      fields: args.fields,
+      limit: args.limit,
+      facilityId: args.facilityId,
+      runId: args.runId,
+      cursor,
+    },
     deps
   );
 
+  // Report-only: the scheduler persists the cursor after the downstream step.
+  finalizeCursorRun(args, summary);
   printHumanSummary(summary);
 
   if (args.outPath) {

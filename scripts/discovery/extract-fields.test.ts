@@ -756,15 +756,15 @@ describe("runExtract — Wayback fallback (archived-snapshot recovery)", () => {
     const archivedText = `The facility has an operational capacity of 100 MW. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
 
     const genuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
-      makeArchiveFacility(`bad-facility-${i}`, [
+      makeArchiveFacility(`a-bad-facility-${i}`, [
         { url: `https://example.com/bad-${i}`, label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
       ])
     );
-    const recoveredFacility = makeArchiveFacility("recovered-facility", [
+    const recoveredFacility = makeArchiveFacility("b-recovered-facility", [
       { url: "https://example.com/recovered", label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
     ]);
     const moreGenuineFailures = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
-      makeArchiveFacility(`bad-facility-later-${i}`, [
+      makeArchiveFacility(`c-bad-facility-later-${i}`, [
         { url: `https://example.com/bad-later-${i}`, label: "Press release", retrievedAt: "2026-01-01", kind: "press" },
       ])
     );
@@ -1877,16 +1877,16 @@ describe("runExtract — aborts loudly on a consecutive total-fetch-failure stre
     // too thin to use), then THRESHOLD-1 more failures — never an unbroken
     // run of THRESHOLD, so this must complete normally.
     const before = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
-      makeUnfetchableFacility(`before-${i}`)
+      makeUnfetchableFacility(`a-before-${i}`)
     );
-    const resetFacility = makeUnfetchableFacility("reset-facility");
+    const resetFacility = makeUnfetchableFacility("b-reset-facility");
     const after = Array.from({ length: CONSECUTIVE_FETCH_FAILURE_ABORT_THRESHOLD - 1 }, (_, i) =>
-      makeUnfetchableFacility(`after-${i}`)
+      makeUnfetchableFacility(`c-after-${i}`)
     );
 
     const deps: RunExtractDeps = {
       fetchPageTextImpl: async (url) => {
-        if (url === "https://example.com/reset-facility") {
+        if (url === "https://example.com/b-reset-facility") {
           return { ok: true, text: "short", finalUrl: url, httpStatus: 200 }; // thin, but a real fetch
         }
         return { ok: false, reason: "network_error", errorCode: "ECONNRESET" };
@@ -1942,18 +1942,18 @@ describe("runExtract — combined real-shape edge cases reconcile (defect 7, ret
   }
 
   it("reconciles across a zero-source facility, an early-exit facility, a limit-truncated facility, and a partial-fill facility together", async () => {
-    const zeroSourceFacility = makeEdgeCaseFacility("zero-source", "Zero Source Corp", []);
-    const earlyExitFacility = makeEdgeCaseFacility("early-exit", "Early Exit Corp", [
+    const zeroSourceFacility = makeEdgeCaseFacility("a-zero-source", "Zero Source Corp", []);
+    const earlyExitFacility = makeEdgeCaseFacility("b-early-exit", "Early Exit Corp", [
       source("https://example.com/early-exit-s0"),
       source("https://example.com/early-exit-s1"),
       source("https://example.com/early-exit-s2"),
     ]);
     // Passed BEFORE limitCutFacility so its gaps (both fields) survive the
     // slice fully — only limitCutFacility's SECOND gap gets truncated.
-    const partialFillFacility = makeEdgeCaseFacility("partial-fill", "Partial Fill Corp", [
+    const partialFillFacility = makeEdgeCaseFacility("c-partial-fill", "Partial Fill Corp", [
       source("https://example.com/partial-fill-s0"),
     ]);
-    const limitCutFacility = makeEdgeCaseFacility("limit-cut", "Limit Cut Corp", [
+    const limitCutFacility = makeEdgeCaseFacility("d-limit-cut", "Limit Cut Corp", [
       source("https://example.com/limit-cut-s0"),
     ]);
 
@@ -2028,7 +2028,7 @@ describe("runExtract — combined real-shape edge cases reconcile (defect 7, ret
     // precisely, not merely implied by the aggregate `extracted` total (which
     // could stay correct even if this specific field were dropped while some
     // other field were double-counted). Assert its actual emitted candidate.
-    const limitCutCandidate = summary.candidates.find((c) => c.enrichmentUpdate.targetFacilityId === "limit-cut");
+    const limitCutCandidate = summary.candidates.find((c) => c.enrichmentUpdate.targetFacilityId === "d-limit-cut");
     expect(limitCutCandidate).toBeDefined();
     expect(limitCutCandidate?.enrichmentUpdate.fields.capacityMw?.planned).toBe(77);
     // The truncated field was never even requested for this facility — it
@@ -2685,5 +2685,156 @@ describe("selectGaps and notRecorded", () => {
     expect(selectGaps([f], ["capacityMw.operational", "energy.source"])).toEqual([
       { facility: f, field: "energy.source" },
     ]);
+  });
+});
+
+// ============================================================================
+// A-OPS-07: an unavailable model must abort the run, not exit 0 as N
+// `modelUnavailable` fields. The probe is the discriminator.
+// ============================================================================
+
+describe("runExtract — aborts when the first model call fails and Ollama is down", () => {
+  const richText = `The facility has an operational capacity of 300 MW. ${"Filler sentence about the site and its operations. ".repeat(20)}`;
+
+  function makeFacilities(n: number): Facility[] {
+    return Array.from({ length: n }, (_, i) => ({
+      id: `probe-facility-${i}`,
+      name: "Probe Test Facility",
+      operator: "Test Operator",
+      status: "operational",
+      facilityType: "data_center",
+      confidence: "confirmed",
+      location: { lat: 30, lon: -90, city: "Testville", state: "TX", precision: "exact" },
+      statusHistory: [],
+      sources: [
+        { url: `https://example.com/p${i}`, label: "Press", retrievedAt: "2026-01-01", kind: "press" },
+      ],
+      lastUpdated: "2026-01-01",
+    })) as Facility[];
+  }
+
+  function makeProbeDeps(overrides: Partial<RunExtractDeps>): RunExtractDeps {
+    return {
+      fetchPageTextImpl: async (url) => ({ ok: true, text: richText, finalUrl: url, httpStatus: 200 }),
+      fetchPdfTextImpl: pdfUnavailable,
+      callOllamaImpl: async () => ({ ok: false, reason: "network_error" }),
+      now: () => new Date("2026-08-15T00:00:00.000Z"),
+      sleep: noopSleep,
+      ...overrides,
+    };
+  }
+
+  it("aborts after ONE model call when the probe confirms Ollama is down, and proposes no cursor", async () => {
+    const callOllamaImpl = vi.fn(async () => ({ ok: false as const, reason: "network_error" as const }));
+    const probeOllama = vi.fn(async () => ({ ok: false as const, reason: "network_error" }));
+    const summary = await runExtract(
+      makeFacilities(5),
+      { fields: ["capacityMw.operational"], runId: "probe-run" },
+      makeProbeDeps({ callOllamaImpl, probeOllama })
+    );
+    expect(summary.aborted).toBe(true);
+    expect(summary.abortReason).toMatch(/Ollama/);
+    expect(callOllamaImpl).toHaveBeenCalledTimes(1);
+    expect(probeOllama).toHaveBeenCalledTimes(1);
+    expect(summary.abortedUnprocessed).toBe(5);
+    expect(summary.modelUnavailable).toBe(0);
+    expect(summary.unclassified).toBe(0);
+    expect(summary.nextCursor).toBeNull();
+  });
+
+  it("continues (probing once) when the probe says Ollama is healthy: the failure was a fluke", async () => {
+    const probeOllama = vi.fn(async () => ({ ok: true as const }));
+    const summary = await runExtract(
+      makeFacilities(3),
+      { fields: ["capacityMw.operational"], runId: "probe-run" },
+      makeProbeDeps({ probeOllama })
+    );
+    expect(summary.aborted).toBe(false);
+    expect(probeOllama).toHaveBeenCalledTimes(1);
+    expect(summary.modelUnavailable).toBe(3);
+  });
+
+  it("never probes once any call has answered", async () => {
+    let calls = 0;
+    const probeOllama = vi.fn(async () => ({ ok: false as const, reason: "network_error" }));
+    const summary = await runExtract(
+      makeFacilities(3),
+      { fields: ["capacityMw.operational"], runId: "probe-run" },
+      makeProbeDeps({
+        callOllamaImpl: async () => {
+          calls++;
+          return calls === 1
+            ? { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "not stated" } }
+            : { ok: false, reason: "network_error" };
+        },
+        probeOllama,
+      })
+    );
+    expect(summary.aborted).toBe(false);
+    expect(probeOllama).not.toHaveBeenCalled();
+  });
+
+  it("aborts after the 3rd consecutive failure when Ollama dies after a healthy first call", async () => {
+    let calls = 0;
+    const probeOllama = vi.fn(async () => ({ ok: false as const, reason: "network_error" }));
+    const summary = await runExtract(
+      makeFacilities(6),
+      { fields: ["capacityMw.operational"], runId: "probe-run" },
+      makeProbeDeps({
+        callOllamaImpl: async () => {
+          calls++;
+          return calls === 1
+            ? { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "not stated" } }
+            : { ok: false, reason: "network_error" };
+        },
+        probeOllama,
+      })
+    );
+    expect(summary.aborted).toBe(true);
+    expect(calls).toBe(4);
+    expect(probeOllama).toHaveBeenCalledTimes(1);
+    expect(summary.nextCursor).toBeNull();
+  });
+
+  it("never probes on intermittent single failures with answers between", async () => {
+    let calls = 0;
+    const probeOllama = vi.fn(async () => ({ ok: false as const, reason: "network_error" }));
+    const summary = await runExtract(
+      makeFacilities(8),
+      { fields: ["capacityMw.operational"], runId: "probe-run" },
+      makeProbeDeps({
+        callOllamaImpl: async () => {
+          calls++;
+          return calls % 3 === 0
+            ? { ok: false, reason: "network_error" }
+            : { ok: true, data: { value: null, verbatimQuote: null, reasonIfNull: "not stated" } };
+        },
+        probeOllama,
+      })
+    );
+    expect(summary.aborted).toBe(false);
+    expect(probeOllama).not.toHaveBeenCalled();
+  });
+
+  it("re-probes only after another 3 failures once a streak probe passed", async () => {
+    const probeOllama = vi.fn(async () => ({ ok: true as const }));
+    const summary = await runExtract(
+      makeFacilities(7),
+      { fields: ["capacityMw.operational"], runId: "probe-run" },
+      makeProbeDeps({ probeOllama })
+    );
+    // 7 straight failures: probe at #1 (first failure), #4 and #7 (each 3 after the last passing probe)
+    expect(summary.aborted).toBe(false);
+    expect(probeOllama).toHaveBeenCalledTimes(3);
+  });
+
+  it("is unchanged without a probe dep: unavailable stays per-field modelUnavailable", async () => {
+    const summary = await runExtract(
+      makeFacilities(2),
+      { fields: ["capacityMw.operational"], runId: "probe-run" },
+      makeProbeDeps({})
+    );
+    expect(summary.aborted).toBe(false);
+    expect(summary.modelUnavailable).toBe(2);
   });
 });

@@ -27,8 +27,8 @@ export function generateMetadata(): Metadata {
     description: !isDatasetSharingEnabled()
       ? "Dataset access for Compute Atlas is not open yet."
       : isCommercialTierEnabled()
-        ? `The full Compute Atlas dataset as weekly JSON and CSV files: free for students, educators and academics, ${formatPlanPrice("monthly")} for everyone else.`
-        : "The full Compute Atlas dataset as weekly JSON and CSV files, free for students, educators and academics.",
+        ? `The full Compute Atlas dataset as weekly JSON and CSV files: free for students and educators, ${formatPlanPrice("monthly")} for everyone else.`
+        : "The full Compute Atlas dataset as weekly JSON and CSV files, free for students and educators.",
     alternates: { canonical: "/dataset" },
     ...(isDatasetSharingEnabled() ? {} : { robots: { index: false, follow: false } }),
   };
@@ -134,8 +134,8 @@ export default async function DatasetPage() {
                   Free
                 </h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  For students, educators and academics. The same weekly files through a personal
-                  link. Each request is reviewed by hand.
+                  For students and educators, verified by hand against a school email address. The
+                  same weekly files through a personal link.
                 </p>
                 <Link href="/access?from=data" className={BUTTON_CLASS}>
                   Request access
@@ -225,8 +225,8 @@ export default async function DatasetPage() {
                 fee pays for the work, not a license. Finding, reading and citing{" "}
                 {counts ? n(counts.sourceLinks) : "thousands of"} public sources, checking for
                 changes every week and delivering clean files is the work. Commercial
-                subscriptions pay for it and keep the files free for students, educators and
-                academics. The map and every facility page stay free for everyone.
+                subscriptions pay for it and keep the files free for students and
+                educators. The map and every facility page stay free for everyone.
               </p>
             </section>
           )}

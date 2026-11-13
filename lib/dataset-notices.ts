@@ -4,9 +4,10 @@ import { issueRenewalToken, liveGrant } from "@/lib/dataset-grants";
 import { getDb } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
 import { datasetAccessGrantsTable, datasetEditionsTable } from "@/lib/db/schema";
-import { sendDatasetEditionNoticeEmail, sendDatasetRenewalReminderEmail, type SendOutcome } from "@/lib/email";
+import { sendDatasetEditionNoticeEmail, sendDatasetRenewalReminderEmail } from "@/lib/email";
 import { sendGrantGated } from "@/lib/email-gate";
 import { DATASET_NOTICE_PACE_MS, makePacer, realSleep, type Pacer } from "@/lib/send-pacer";
+import { sendWithTimeout } from "@/lib/send-timeout";
 
 export { DATASET_NOTICE_PACE_MS, makePacer, type Pacer };
 
@@ -66,26 +67,6 @@ export interface NoticeResult {
   failed: number;
   /** Every candidate was handled before the deadline and no error cut the run short. */
   complete: boolean;
-}
-
-/**
- * Races a sender against `DATASET_SEND_TIMEOUT_MS`: lib/email.ts `sendViaResend` has no timeout of its own, so a
- * hung Resend call would otherwise hold the whole pass until the function is killed. The timer is cleared on
- * settle. The abandoned call may still complete in the background (its late result is ignored), so a timeout
- * does not prove nothing was mailed.
- */
-async function sendWithTimeout(send: () => Promise<SendOutcome>): Promise<SendOutcome> {
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const timeout = new Promise<SendOutcome>((resolve) => {
-    timer = setTimeout(() => resolve({ sent: false, errorCode: "send_timeout" }), DATASET_SEND_TIMEOUT_MS);
-  });
-  const sending = send();
-  sending.catch(() => {});
-  try {
-    return await Promise.race([sending, timeout]);
-  } finally {
-    clearTimeout(timer);
-  }
 }
 
 interface DatasetSummary {
@@ -207,14 +188,15 @@ export async function sendEditionNotices(editionId: string, opts: NoticeOptions 
         { kind: "dataset_edition_notice", grantId: grant.id, email: grant.email, editionId },
         async () => {
           await pace();
-          return sendWithTimeout(() =>
-            sendDatasetEditionNoticeEmail({
+          return sendWithTimeout(
+            () => sendDatasetEditionNoticeEmail({
               email: grant.email,
               editionDate: edition.editionDate,
               unsubscribeToken,
               recordCount: edition.recordCount,
               summary,
-            })
+            }),
+            DATASET_SEND_TIMEOUT_MS
           );
         }
       );
@@ -335,8 +317,9 @@ export async function sendRenewalReminders(opts: NoticeOptions = {}): Promise<No
             const issued = await issueRenewalToken(grant.id);
             if (!issued.ok) return { sent: false, errorCode: "not_eligible" };
             const { mail } = issued;
-            return sendWithTimeout(() =>
-              sendDatasetRenewalReminderEmail({ email: mail.email, renewToken: mail.renewToken, expiresAt })
+            return sendWithTimeout(
+              () => sendDatasetRenewalReminderEmail({ email: mail.email, renewToken: mail.renewToken, expiresAt }),
+              DATASET_SEND_TIMEOUT_MS
             );
           }
         );

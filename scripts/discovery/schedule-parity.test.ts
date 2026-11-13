@@ -4,7 +4,8 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { MONITORED_WORKFLOWS } from "../automation-health";
-import { DISCOVERY_STALE_HOURS_DEFAULT } from "./check-heartbeat";
+import { DISCOVERY_SCHEDULE } from "./check-heartbeat";
+import { dayAwareStaleHours } from "../schedule-budget";
 
 // The discovery schedule lives in four places that nothing else ties together:
 // the launchd plist, the watchdog workflow's cron, run.sh's local stale check,
@@ -122,24 +123,29 @@ describe("discovery schedule parity", () => {
     expect(weekdays).toEqual(workflowCron().days);
   });
 
-  it("run.sh's DISCOVERY_STALE_HOURS default equals check-heartbeat's", () => {
-    const matches = [...runSh.matchAll(/DISCOVERY_STALE_HOURS="\$\{DISCOVERY_STALE_HOURS:-(\d+)\}"/g)];
-    expect(matches).toHaveLength(1);
-    expect(Number(matches[0][1])).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
+  // NEGATIVE proxy only. The real run.sh-vs-TS table parity is the BATS test
+  // "the day-aware budget table is 84/36/36/36/36/36/60 for Mon..Sun" in
+  // tests/discovery/run.bats, paired with scripts/schedule-budget.test.ts.
+  it("run.sh carries no flat DISCOVERY_STALE_HOURS default (its budget is day-aware)", () => {
+    expect(runSh).not.toMatch(/DISCOVERY_STALE_HOURS:-\d+/);
   });
 
-  // > 72: above the longest normal gap (Fri -> Mon, ~70h end to start), else a
-  // normal Monday warns. < 88: below the shortest gap a single missed run can
-  // leave, else run.sh can miss it.
-  it("stale threshold sits between the longest normal gap and the shortest single-miss gap", () => {
-    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBeGreaterThan(72);
-    expect(DISCOVERY_STALE_HOURS_DEFAULT).toBeLessThan(88);
+  // Longest normal gap is Fri -> Mon (~70h end to start): Monday's budget must
+  // sit above it, else a normal Monday warns; a single missed weekday must not
+  // fit inside any other day's budget.
+  it("day-aware budget: Monday clears the Fri -> Mon gap, other days flag one missed run", () => {
+    const at = (d: number) => new Date(`2026-11-${d}T17:00:00Z`); // noon New York, Mon 16 .. Sun 22
+    expect(dayAwareStaleHours(at(16), DISCOVERY_SCHEDULE)).toBeGreaterThan(72);
+    expect(dayAwareStaleHours(at(16), DISCOVERY_SCHEDULE)).toBeLessThan(88);
+    for (const d of [17, 18, 19, 20]) {
+      expect(dayAwareStaleHours(at(d), DISCOVERY_SCHEDULE)).toBeLessThan(48);
+    }
   });
 
-  it("automation-health's discovery-watchdog entry matches the workflow cron and stale default", () => {
+  it("automation-health's discovery-watchdog entry matches the workflow cron and flat 84h budget", () => {
     const entries = MONITORED_WORKFLOWS.filter((w) => w.file === "discovery-watchdog.yml");
     expect(entries).toHaveLength(1);
-    expect(entries[0].staleAfterHours).toBe(DISCOVERY_STALE_HOURS_DEFAULT);
+    expect(entries[0].staleAfterHours).toBe(84); // flat: it monitors GitHub's scheduler, runs land a day late
     expect(entries[0].cronDescription.startsWith(workflowCron().cron)).toBe(true);
   });
 });

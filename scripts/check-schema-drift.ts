@@ -17,7 +17,7 @@
  * Unlike the retired JSON-vs-Neon drift check (non-blocking, always exited 0,
  * treated an unreachable DB as "nothing to report"), this script
  * FAILS CLOSED on purpose:
- *   - an expected table missing from the live database -> hard failure, exit 1
+ *   - an expected table, column, index or NOT NULL flag missing/different -> hard failure, exit 1
  *   - DATABASE_URL unset, or the DB unreachable          -> hard failure, exit 1
  * A monitor that silently passes when it cannot check is worse than no
  * monitor at all — that exact shape ("catch the DB error, fail open") is
@@ -35,7 +35,7 @@
  * Uses relative imports, matching the other scripts in this folder.
  */
 import { eq, getTableName, is, sql } from "drizzle-orm";
-import { PgTable } from "drizzle-orm/pg-core";
+import { getTableConfig, PgTable } from "drizzle-orm/pg-core";
 
 import { formatErrorSummary } from "../lib/db-error";
 import * as schema from "../lib/db/schema";
@@ -58,6 +58,73 @@ export function getExpectedTableNames(): string[] {
   return names.sort();
 }
 
+export interface ExpectedColumn {
+  /** "table.column" */
+  key: string;
+  notNull: boolean;
+}
+
+export interface ExpectedTableShape {
+  columns: ExpectedColumn[];
+  /** Named indexes, unique constraints and hand-managed indexes, as "table: name". */
+  indexes: { table: string; name: string }[];
+}
+
+/**
+ * Indexes the code relies on that Drizzle's schema does not declare (hand-written
+ * in a migration), so getTableConfig() cannot see them. A missing one FAILS the
+ * check, same as a declared index.
+ */
+export const HAND_MANAGED_INDEXES: { table: string; name: string; migration: string; why: string }[] = [
+  {
+    table: "subscriptions",
+    name: "subscriptions_active_target_idx",
+    migration: "drizzle/0004_icy_monster_badoon.sql",
+    why: "partial unique index (WHERE status <> 'unsubscribed'); the watch double-opt-in design depends on it",
+  },
+  {
+    table: "facilities",
+    name: "facilities_search_vector_idx",
+    migration: "drizzle/0003_facilities_search_vector.sql",
+    why: "GIN index over facilities.search_vector; lib/search-db.ts full-text search relies on it",
+  },
+];
+
+/**
+ * Derives expected columns (name + NOT NULL) and named indexes / unique
+ * constraints from every pgTable export via `getTableConfig`, for the same
+ * no-hand-maintained-list reason as getExpectedTableNames().
+ */
+export function getExpectedShape(): ExpectedTableShape {
+  const columns: ExpectedColumn[] = [];
+  const indexes: { table: string; name: string }[] = [];
+  for (const value of Object.values(schema)) {
+    if (!is(value, PgTable)) continue;
+    const cfg = getTableConfig(value);
+    for (const col of cfg.columns) {
+      columns.push({ key: `${cfg.name}.${col.name}`, notNull: col.notNull });
+    }
+    for (const idx of cfg.indexes) {
+      if (idx.config.name) indexes.push({ table: cfg.name, name: idx.config.name });
+    }
+    // Column-level `.unique()` is not in uniqueConstraints; it lands in the DB
+    // as a constraint (and backing index) named `uniqueName` (`<table>_<col>_unique`).
+    // PgColumn's constructor always fills uniqueName, but the type is `string | undefined`,
+    // so the guard stays to satisfy the compiler.
+    for (const col of cfg.columns) {
+      if (col.isUnique && col.uniqueName) indexes.push({ table: cfg.name, name: col.uniqueName });
+    }
+    for (const uc of cfg.uniqueConstraints) {
+      const name = uc.name;
+      if (name) indexes.push({ table: cfg.name, name });
+    }
+  }
+  for (const h of HAND_MANAGED_INDEXES) indexes.push({ table: h.table, name: h.name });
+  columns.sort((a, b) => a.key.localeCompare(b.key));
+  indexes.sort((a, b) => a.name.localeCompare(b.name));
+  return { columns, indexes };
+}
+
 /**
  * "YYYY-MM-DD" in UTC. Mirrors the private `utcDateString()` helper in
  * lib/api-daily-limit.ts (same format — that's the column this check reads)
@@ -77,19 +144,41 @@ export interface SchemaDriftReport {
   expectedTables: string[];
   presentTables: string[];
   missingTables: string[];
+  /** "table.column" expected by the code but absent from a present table. */
+  missingColumns: string[];
+  /** Expected NOT NULL but nullable in the DB, or the reverse ("table.column: expected ..."). */
+  nullabilityMismatches: string[];
+  /** Named indexes / unique constraints the code declares that the DB lacks ("table: name"). */
+  missingIndexes: string[];
+  /** Info only, never a failure: columns/indexes in the DB that the code does not declare. */
+  extraColumns: string[];
+  extraIndexes: string[];
   /** null when api_daily_usage itself is missing — already covered by missingTables. */
   capLiveness: CapLivenessResult | null;
 }
 
-/** Thrown when one or more expected tables are missing from the live database. The hard-failure path. */
+/** Thrown when an expected table, column, index or nullability is missing/different. The hard-failure path. */
 export class SchemaDriftError extends Error {
   readonly report: SchemaDriftReport;
 
   constructor(report: SchemaDriftReport) {
-    super(
-      `Schema drift: ${report.missingTables.length} expected table(s) missing from the live ` +
-        `database: ${report.missingTables.join(", ")}`
-    );
+    const parts: string[] = [];
+    if (report.missingTables.length > 0) {
+      parts.push(`${report.missingTables.length} table(s) missing: ${report.missingTables.join(", ")}`);
+    }
+    if (report.missingColumns.length > 0) {
+      parts.push(`${report.missingColumns.length} column(s) missing: ${report.missingColumns.join(", ")}`);
+    }
+    if (report.nullabilityMismatches.length > 0) {
+      parts.push(
+        `${report.nullabilityMismatches.length} nullability mismatch(es): ` +
+          report.nullabilityMismatches.join(", ")
+      );
+    }
+    if (report.missingIndexes.length > 0) {
+      parts.push(`${report.missingIndexes.length} index(es) missing: ${report.missingIndexes.join(", ")}`);
+    }
+    super(`Schema drift against the live database: ${parts.join("; ")}`);
     this.name = "SchemaDriftError";
     this.report = report;
   }
@@ -106,7 +195,8 @@ export class SchemaDriftError extends Error {
  */
 export async function runSchemaDriftCheck(
   expectedTables: string[] = getExpectedTableNames(),
-  today: string = utcDateString()
+  today: string = utcDateString(),
+  expectedShape: ExpectedTableShape = getExpectedShape()
 ): Promise<SchemaDriftReport> {
   const db = getDb();
 
@@ -121,6 +211,63 @@ export async function runSchemaDriftCheck(
   const presentTables = expectedTables.filter((t) => present.has(t));
   const missingTables = expectedTables.filter((t) => !present.has(t));
 
+  // Columns and indexes come from pg_catalog (pg_attribute / pg_class /
+  // pg_namespace), which Postgres exposes to every role without any table
+  // privilege (only the *contents* of tables are privilege-gated), so the
+  // least-privilege monitor role needs no new grant. Columns of a missing table
+  // are not also reported as missing columns: the table is the root cause.
+  const colRows = (
+    await db.execute<{ tablename: string; attname: string; attnotnull: boolean }>(sql`
+      SELECT c.relname AS tablename, a.attname, a.attnotnull
+      FROM pg_catalog.pg_attribute a
+      JOIN pg_catalog.pg_class c ON c.oid = a.attrelid
+      JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relkind IN ('r', 'p')
+        AND a.attnum > 0 AND NOT a.attisdropped
+    `)
+  ).rows;
+  const idxRows = (
+    await db.execute<{ indexname: string }>(sql`
+      SELECT c.relname AS indexname
+      FROM pg_catalog.pg_class c
+      JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relkind IN ('i', 'I')
+    `)
+  ).rows;
+
+  const liveCols = new Map(colRows.map((r) => [`${r.tablename}.${r.attname}`, r.attnotnull]));
+  const liveIdx = new Set(idxRows.map((r) => r.indexname));
+  const expectedColKeys = new Set(expectedShape.columns.map((c) => c.key));
+  const expectedIdxNames = new Set(expectedShape.indexes.map((i) => i.name));
+  const missingTableSet = new Set(missingTables);
+
+  const missingColumns: string[] = [];
+  const nullabilityMismatches: string[] = [];
+  for (const col of expectedShape.columns) {
+    if (missingTableSet.has(col.key.slice(0, col.key.indexOf(".")))) continue;
+    const liveNotNull = liveCols.get(col.key);
+    if (liveNotNull === undefined) {
+      missingColumns.push(col.key);
+    } else if (liveNotNull !== col.notNull) {
+      nullabilityMismatches.push(
+        `${col.key}: expected ${col.notNull ? "NOT NULL" : "nullable"}, found ${liveNotNull ? "NOT NULL" : "nullable"}`
+      );
+    }
+  }
+  const missingIndexes = expectedShape.indexes
+    .filter((i) => !missingTableSet.has(i.table) && !liveIdx.has(i.name))
+    .map((i) => `${i.table}: ${i.name}`);
+
+  // Info only: extras in the DB (e.g. a manual hotfix index) never fail the run.
+  // Scoped to expected tables so unrelated public-schema tables stay out of it.
+  const expectedTableSet = new Set(expectedTables);
+  const extraColumns = [...liveCols.keys()]
+    .filter((k) => expectedTableSet.has(k.slice(0, k.indexOf("."))) && !expectedColKeys.has(k))
+    .sort();
+  const extraIndexes = [...liveIdx]
+    .filter((n) => !expectedIdxNames.has(n) && !n.endsWith("_pkey"))
+    .sort();
+
   // Soft cap-liveness signal — only meaningful (and only queried) when the
   // table itself exists; a missing api_daily_usage is already covered above.
   let capLiveness: CapLivenessResult | null = null;
@@ -133,9 +280,24 @@ export async function runSchemaDriftCheck(
     capLiveness = { day: today, rowCount: row?.count ?? 0 };
   }
 
-  const report: SchemaDriftReport = { expectedTables, presentTables, missingTables, capLiveness };
+  const report: SchemaDriftReport = {
+    expectedTables,
+    presentTables,
+    missingTables,
+    missingColumns,
+    nullabilityMismatches,
+    missingIndexes,
+    extraColumns,
+    extraIndexes,
+    capLiveness,
+  };
 
-  if (missingTables.length > 0) {
+  if (
+    missingTables.length > 0 ||
+    missingColumns.length > 0 ||
+    nullabilityMismatches.length > 0 ||
+    missingIndexes.length > 0
+  ) {
     throw new SchemaDriftError(report);
   }
 
@@ -148,6 +310,13 @@ function printReport(report: SchemaDriftReport): void {
       report.expectedTables.join(", ")
   );
   console.log(`✓ ${report.presentTables.length}/${report.expectedTables.length} present in the live database.`);
+  console.log("✓ All expected columns, nullability and named indexes match.");
+  if (report.extraColumns.length > 0) {
+    console.log(`info: ${report.extraColumns.length} column(s) in the DB not declared in code: ${report.extraColumns.join(", ")}`);
+  }
+  if (report.extraIndexes.length > 0) {
+    console.log(`info: ${report.extraIndexes.length} index(es) in the DB not declared in code: ${report.extraIndexes.join(", ")}`);
+  }
 
   if (report.capLiveness) {
     if (report.capLiveness.rowCount > 0) {
@@ -166,13 +335,19 @@ function printReport(report: SchemaDriftReport): void {
   }
 }
 
-function printMissingTables(report: SchemaDriftReport): void {
-  console.error(
-    `::error::Schema drift: ${report.missingTables.length} expected table(s) missing from the ` +
-      "live database:"
-  );
-  for (const name of report.missingTables) {
-    console.error(`   - ${name}`);
+function printDrift(report: SchemaDriftReport): void {
+  const groups: [string, string[]][] = [
+    ["expected table(s) missing", report.missingTables],
+    ["expected column(s) missing", report.missingColumns],
+    ["nullability mismatch(es)", report.nullabilityMismatches],
+    ["expected index(es) / unique constraint(s) missing", report.missingIndexes],
+  ];
+  for (const [label, items] of groups) {
+    if (items.length === 0) continue;
+    console.error(`::error::Schema drift: ${items.length} ${label} in the live database:`);
+    for (const name of items) {
+      console.error(`   - ${name}`);
+    }
   }
   console.error(
     "\nThis usually means a Drizzle migration was generated but never applied to this database " +
@@ -208,7 +383,7 @@ async function main(): Promise<void> {
     process.exit(0);
   } catch (err) {
     if (err instanceof SchemaDriftError) {
-      printMissingTables(err.report);
+      printDrift(err.report);
       process.exit(1);
     }
     // Log only the message (not the raw error object) so a Neon/pg connection

@@ -72,6 +72,46 @@ describe("readHeartbeatFile", () => {
     expect(() => readHeartbeatFile(filePath)).toThrow(/lastRunAt/);
   });
 
+  it("accepts the optional per-state yield fields and the run-level streak", () => {
+    const withYield: HeartbeatFile = {
+      ...VALID_HEARTBEAT,
+      states: [{ ...VALID_HEARTBEAT.states[0], submitted: 2, discovered: 5, skippedUnreachable: 0 }],
+      consecutiveZeroYieldRuns: 3,
+    };
+    expect(readHeartbeatFile(writeHeartbeat(withYield))).toEqual(withYield);
+  });
+
+  it("stays backward compatible: an old file without yield fields has none added", () => {
+    const parsed = readHeartbeatFile(writeHeartbeat(VALID_HEARTBEAT));
+    expect(parsed).not.toHaveProperty("consecutiveZeroYieldRuns");
+    expect(parsed.states[0]).not.toHaveProperty("submitted");
+  });
+
+  it.each([
+    ["negative", -1],
+    ["fractional", 1.5],
+    ["a string", "3"],
+    ["null", null],
+  ])("rejects a per-state yield field that is %s", (_l, bad) => {
+    const filePath = writeHeartbeat({
+      ...VALID_HEARTBEAT,
+      states: [{ ...VALID_HEARTBEAT.states[0], submitted: bad }],
+    });
+    expect(() => readHeartbeatFile(filePath)).toThrow(/states\[0\]\.submitted/);
+  });
+
+  it("never publishes consecutiveZeroYieldRuns, and passes a zero_yield status through", () => {
+    const hb = readHeartbeatFile(writeHeartbeat({ ...VALID_HEARTBEAT, status: "zero_yield", consecutiveZeroYieldRuns: 5 }));
+    const payload = toUpsertPayload(hb);
+    expect(payload.status).toBe("zero_yield");
+    expect(payload).not.toHaveProperty("consecutiveZeroYieldRuns");
+  });
+
+  it("rejects an invalid consecutiveZeroYieldRuns", () => {
+    const filePath = writeHeartbeat({ ...VALID_HEARTBEAT, consecutiveZeroYieldRuns: -2 });
+    expect(() => readHeartbeatFile(filePath)).toThrow(/consecutiveZeroYieldRuns/);
+  });
+
   it("throws when states is not an array", () => {
     const filePath = writeHeartbeat({ lastRunAt: VALID_HEARTBEAT.lastRunAt, status: "ok", failureCount: 0, states: "nope" });
     expect(() => readHeartbeatFile(filePath)).toThrow(/states/);

@@ -35,10 +35,12 @@ import {
   notifyStateSubscribersMonthly,
   groupChangesByRecipient,
   sendGroupedChangeNotifications,
+  NOTIFY_SEND_TIMEOUT_MS,
+  sendGroupedChangeNotificationsUntil,
   type RecipientFacilityChange,
   type RecipientChangeGroup,
 } from "@/lib/notify";
-import { claimDigestWindow } from "@/lib/state-digest-ledger";
+import { claimDigestWindow, STALE_DIGEST_RUN_MS, takeOverStaleDigestRun } from "@/lib/state-digest-ledger";
 
 const facilitiesTyped = facilitiesRaw as unknown as Facility[];
 const facilityA = facilitiesTyped[0];
@@ -1443,5 +1445,356 @@ describe("sendGroupedChangeNotifications — pacing and rate-limit retry", () =>
 
     expect(sent).toBe(0);
     expect(sendChangeNotification).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("sendGroupedChangeNotifications — per-send timeout", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("abandons a hung send as send_timeout and does not retry it", async () => {
+    const changes: RecipientFacilityChange[] = [];
+    const [row] = await tdb.db
+      .insert(subscriptionsTable)
+      .values({
+        email: "hang@example.com",
+        targetType: "facility",
+        targetId: facilityA.id,
+        status: "confirmed",
+        confirmToken: generateToken(),
+        unsubscribeToken: generateToken(),
+      })
+      .returning();
+    changes.push({
+      origin: "facility-watch",
+      subscriptionId: row.id,
+      email: row.email,
+      unsubscribeToken: row.unsubscribeToken,
+      facilityName: facilityA.name,
+      facilitySlug: facilityA.id,
+      changeLabel: "record updated",
+      status: "Operational",
+    });
+    vi.mocked(sendChangeNotification).mockImplementation(() => new Promise(() => {}));
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+
+    const run = sendGroupedChangeNotifications(groupChangesByRecipient(changes), undefined, {
+      sleep: vi.fn().mockResolvedValue(undefined),
+    });
+    // The DB gate runs on real async I/O: wait until the send has been started, then expire its timer.
+    for (let i = 0; i < 2000 && vi.mocked(sendChangeNotification).mock.calls.length === 0; i++) {
+      await new Promise((r) => setImmediate(r));
+    }
+    await vi.advanceTimersByTimeAsync(NOTIFY_SEND_TIMEOUT_MS);
+
+    expect(await run).toBe(0);
+    expect(sendChangeNotification).toHaveBeenCalledTimes(1);
+    const rows = await tdb.db.select().from(emailSendsTable);
+    expect(rows.map((r) => r.outcome)).toEqual(["error"]);
+    expect(rows[0].errorCode).toBe("send_timeout");
+    vi.mocked(sendChangeNotification).mockReset();
+    vi.mocked(sendChangeNotification).mockResolvedValue({ sent: true, resendId: null });
+  });
+});
+
+describe("digest deadline", () => {
+  const since = new Date("2026-01-01T00:00:00Z");
+  const until = new Date("2026-02-01T00:00:00Z");
+  const withinPeriod = new Date("2026-01-15T00:00:00Z");
+  const sleep = () => vi.fn().mockResolvedValue(undefined);
+
+  async function seedThreeRecipients() {
+    await seedFacility(tdb.db, facilityTnA);
+    await insertHistoryRow(facilityTnA.id, "update", withinPeriod);
+    for (const email of ["a@example.com", "b@example.com", "c@example.com"]) {
+      await insertSubscription({ email, targetType: "state", targetId: facilityTnA.location.state });
+    }
+  }
+
+  /** A clock that reads 0 for the first `k` calls and 1000 afterwards (one read per group). */
+  const clockPastAfter = (k: number) => {
+    let calls = 0;
+    return () => (calls++ < k ? 0 : 1000);
+  };
+
+  it("stops starting groups at the deadline, leaves the window open and flags incomplete", async () => {
+    await seedThreeRecipients();
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const result = await notifyStateSubscribersMonthly(since, until, {
+      deadline: 500,
+      now: clockPastAfter(2),
+      sleep: sleep(),
+    });
+
+    expect(result).toEqual({ ok: true, changes: 3, groups: 3, recipients: 2, incomplete: true });
+    expect(resendSendMock).toHaveBeenCalledTimes(2);
+    const [run] = await tdb.db.select().from(stateDigestRunsTable);
+    expect(run.completedAt).toBeNull();
+    expect(errSpy).toHaveBeenCalledWith(
+      "notifyStateSubscribersMonthly: deadline reached, handled 2 of 3 groups, sent 2; window left incomplete"
+    );
+    expect(JSON.stringify(errSpy.mock.calls)).not.toContain("@example.com");
+  });
+
+  it("completes the window when the deadline is never reached", async () => {
+    await seedThreeRecipients();
+
+    const result = await notifyStateSubscribersMonthly(since, until, {
+      deadline: 500,
+      now: () => 0,
+      sleep: sleep(),
+    });
+
+    expect(result).toEqual({ ok: true, changes: 3, groups: 3, recipients: 3 });
+    const [run] = await tdb.db.select().from(stateDigestRunsTable);
+    expect(run.completedAt).not.toBeNull();
+  });
+
+  it("the approve-path wrapper never forwards a deadline: every group sends even with the clock far past", async () => {
+    const changes: RecipientFacilityChange[] = [];
+    for (let i = 0; i < 3; i++) {
+      const sub = await insertSubscription({ email: `w${i}@example.com`, targetType: "facility", targetId: facilityA.id });
+      const [row] = await tdb.db.select().from(subscriptionsTable).where(eq(subscriptionsTable.unsubscribeToken, sub.unsubscribeToken));
+      changes.push({
+        origin: "facility-watch",
+        subscriptionId: row.id,
+        email: row.email,
+        unsubscribeToken: row.unsubscribeToken,
+        facilityName: facilityA.name,
+        facilitySlug: facilityA.id,
+        changeLabel: "record updated",
+        status: "Operational",
+      });
+    }
+    const groups = groupChangesByRecipient(changes);
+    // Control: the Until entry point with a past deadline DOES stop, so a leak into the wrapper would show here.
+    const stopped = await sendGroupedChangeNotificationsUntil(groups, undefined, { sleep: sleep(), deadline: 1, now: () => 1000 });
+    expect(stopped).toMatchObject({ sent: 0, handled: 0, stoppedEarly: true });
+    // The wrapper takes no deadline option at all; Date.now() is far past 1, so a leaked deadline of 1 would stop it.
+    expect(await sendGroupedChangeNotifications(groups, undefined, { sleep: sleep(), deadline: 1 } as never)).toBe(3);
+  });
+});
+
+describe("notifyStateSubscribersMonthly — resuming an incomplete window", () => {
+  const since = new Date("2026-01-01T00:00:00Z");
+  const until = new Date("2026-02-01T00:00:00Z");
+  const sleep = () => vi.fn().mockResolvedValue(undefined);
+  const clockPastAfter = (k: number) => {
+    let calls = 0;
+    return () => (calls++ < k ? 0 : 1000);
+  };
+
+  async function seedThree() {
+    await seedFacility(tdb.db, facilityTnA);
+    await insertHistoryRow(facilityTnA.id, "update", new Date("2026-01-15T00:00:00Z"));
+    for (const email of ["a@example.com", "b@example.com", "c@example.com"]) {
+      await insertSubscription({ email, targetType: "state", targetId: facilityTnA.location.state });
+    }
+  }
+  const ageRun = async (ms: number) => {
+    await tdb.db.update(stateDigestRunsTable).set({ startedAt: new Date(Date.now() - ms) });
+  };
+  const partialRun = () =>
+    notifyStateSubscribersMonthly(since, until, { deadline: 500, now: clockPastAfter(2), sleep: sleep() });
+
+  it("resumes a stale partial run: sends exactly the remaining groups under the same run id, then completes", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    expect((await partialRun()).recipients).toBe(2);
+    const [before] = await tdb.db.select().from(stateDigestRunsTable);
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result).toEqual({ ok: true, changes: 3, groups: 3, recipients: 3, resumed: true, skipped: 2, ambiguous: 0 });
+    expect(resendSendMock).toHaveBeenCalledTimes(3);
+    const [run] = await tdb.db.select().from(stateDigestRunsTable);
+    expect(run.id).toBe(before.id);
+    expect(run.completedAt).not.toBeNull();
+  });
+
+  it("skips groups whose earlier attempt is still `attempted` (it may have been delivered)", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await partialRun();
+    const rows = await tdb.db.select().from(emailSendsTable);
+    await tdb.db.update(emailSendsTable).set({ outcome: "attempted", completedAt: null }).where(eq(emailSendsTable.id, rows[0].id));
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result).toMatchObject({ skipped: 2, ambiguous: 1 });
+    expect(resendSendMock).toHaveBeenCalledTimes(3);
+    // Only the never-started group went out; the `attempted` one was not re-sent but still counts toward recipients.
+    expect(result.recipients).toBe(3);
+  });
+
+  it("refuses to resume while the prior run is younger than the stale threshold", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await partialRun();
+    await ageRun(STALE_DIGEST_RUN_MS - 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result.alreadyRun?.completedAt).toBeNull();
+    expect(result.resumed).toBeUndefined();
+    expect(resendSendMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("still returns alreadyRun for a completed window, however old", async () => {
+    await seedThree();
+    await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+    await ageRun(STALE_DIGEST_RUN_MS * 10);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result.alreadyRun?.completedAt).not.toBeNull();
+    expect(resendSendMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("concurrent takeover: exactly one caller wins", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await partialRun();
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+    const [run] = await tdb.db.select().from(stateDigestRunsTable);
+
+    const wins = await Promise.all([takeOverStaleDigestRun(run.id), takeOverStaleDigestRun(run.id)]);
+
+    expect(wins.filter(Boolean)).toHaveLength(1);
+  });
+
+  // Rewrites the single final row of every send in the run, to stage each "what did the earlier attempt leave" case.
+  const setFinalRows = async (outcome: string, errorCode: string | null) => {
+    await tdb.db.update(emailSendsTable).set({ outcome, errorCode });
+  };
+
+  it("one email with two state subscriptions: only the group the earlier run did not send is sent on resume", async () => {
+    await seedFacility(tdb.db, facilityTnA);
+    await seedFacility(tdb.db, facilityOtherState);
+    await insertHistoryRow(facilityTnA.id, "update", new Date("2026-01-15T00:00:00Z"));
+    await insertHistoryRow(facilityOtherState.id, "update", new Date("2026-01-15T00:00:00Z"));
+    await insertSubscription({ email: "two@example.com", targetType: "state", targetId: facilityTnA.location.state });
+    await insertSubscription({ email: "two@example.com", targetType: "state", targetId: facilityOtherState.location.state });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const partial = await notifyStateSubscribersMonthly(since, until, { deadline: 500, now: clockPastAfter(1), sleep: sleep() });
+    expect(partial).toMatchObject({ groups: 2, recipients: 1, incomplete: true });
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result).toEqual({ ok: true, changes: 2, groups: 2, recipients: 2, resumed: true, skipped: 1, ambiguous: 0 });
+    expect(resendSendMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("skips a send_timeout row (the abandoned call may still deliver) and counts it ambiguous", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await partialRun();
+    await setFinalRows("error", "send_timeout");
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result).toMatchObject({ resumed: true, skipped: 2, ambiguous: 2, recipients: 3 });
+    expect(resendSendMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("retries a final rate_limit_exceeded row, which proves the provider rejected the request", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await partialRun();
+    await setFinalRows("error", "rate_limit_exceeded");
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result).toMatchObject({ resumed: true, skipped: 0, ambiguous: 0, recipients: 3 });
+    expect(resendSendMock).toHaveBeenCalledTimes(5);
+  });
+
+  it("skips an unknown error code as ambiguous", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await partialRun();
+    await setFinalRows("error", "some_new_provider_error");
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result).toMatchObject({ skipped: 2, ambiguous: 2 });
+    expect(resendSendMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("retries a skipped_* row (nothing was attempted)", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await partialRun();
+    await setFinalRows("skipped_suppressed", null);
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result).toMatchObject({ resumed: true, skipped: 0 });
+    expect(resendSendMock).toHaveBeenCalledTimes(5);
+  });
+
+  it("uses the LATEST row per subscription: an older error followed by a sent row counts as sent", async () => {
+    await seedThree();
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    await partialRun();
+    const rows = await tdb.db.select().from(emailSendsTable);
+    for (const r of rows) {
+      await tdb.db.insert(emailSendsTable).values({
+        kind: r.kind,
+        emailHash: r.emailHash,
+        subscriptionId: r.subscriptionId,
+        runId: r.runId,
+        outcome: "error",
+        errorCode: "rate_limit_exceeded",
+        createdAt: new Date(r.createdAt.getTime() - 5000),
+      });
+    }
+    await ageRun(STALE_DIGEST_RUN_MS + 60_000);
+
+    const result = await notifyStateSubscribersMonthly(since, until, { sleep: sleep() });
+
+    expect(result).toMatchObject({ skipped: 2, ambiguous: 0 });
+    expect(resendSendMock).toHaveBeenCalledTimes(3);
+  });
+});
+
+describe("takeOverStaleDigestRun SQL guards", () => {
+  const since = new Date("2026-03-01T00:00:00Z");
+  const until = new Date("2026-04-01T00:00:00Z");
+  const staleMs = 600_000;
+  const now = new Date("2026-04-02T09:00:00Z");
+
+  async function insertRun(startedAt: Date, completedAt: Date | null): Promise<string> {
+    const [row] = await tdb.db
+      .insert(stateDigestRunsTable)
+      .values({ since, until, startedAt, completedAt })
+      .returning({ id: stateDigestRunsTable.id });
+    return row.id;
+  }
+
+  it("never takes over a completed run, even when the caller's own check is bypassed", async () => {
+    const id = await insertRun(new Date(now.getTime() - 10 * staleMs), new Date(now.getTime() - 5 * staleMs));
+    expect(await takeOverStaleDigestRun(id, staleMs, now)).toBe(false);
+  });
+
+  it("takes over only once started_at is strictly older than staleMs", async () => {
+    const id = await insertRun(new Date(now.getTime() - staleMs + 1), null);
+    expect(await takeOverStaleDigestRun(id, staleMs, now)).toBe(false);
+    // Exactly staleMs old is NOT stale: the guard is a strict `<`.
+    await tdb.db.update(stateDigestRunsTable).set({ startedAt: new Date(now.getTime() - staleMs) }).where(eq(stateDigestRunsTable.id, id));
+    expect(await takeOverStaleDigestRun(id, staleMs, now)).toBe(false);
+    await tdb.db.update(stateDigestRunsTable).set({ startedAt: new Date(now.getTime() - staleMs - 1) }).where(eq(stateDigestRunsTable.id, id));
+    expect(await takeOverStaleDigestRun(id, staleMs, now)).toBe(true);
+    // started_at was refreshed to `now`, so an immediate second takeover loses.
+    expect(await takeOverStaleDigestRun(id, staleMs, now)).toBe(false);
   });
 });

@@ -319,9 +319,12 @@ down to 2, and `confirmed` alone was answered 14 times and right 14. ⚠️ Do N
 onto whichever values remain, so a narrower vocabulary needs its own run. Neither field is an
 `ExtractableField`; the lane cannot emit either. Read `scripts/discovery/bench/README.md` before
 re-proposing either. The scheduled invocation bakes that list in, and bounds each tool with
-`ENRICHMENT_LIMIT` (60) / `VERIFY_LIMIT` (40) — a full sweep is ~10 hours (rescaled from the
-measured 12h/2,525-gap figure; the 2,190-gap count is from 2026-09-01 on the old two-field list, and the one-field list is not re-measured), and an unparseable
-limit would otherwise disable the bound entirely, so `run.sh` validates both before use.
+`ENRICHMENT_LIMIT` (60) / `VERIFY_LIMIT` (40) — successive runs continue from a per-lane
+cursor instead of re-reading the same head of the table; ~10 hours is what one UNBOUNDED
+sweep would cost (rescaled from the measured 12h/2,525-gap figure; the 2,190-gap count is
+from 2026-09-01 on the old two-field list, and the one-field list is not re-measured), and
+an unparseable limit would otherwise disable the bound entirely, so `run.sh` validates both
+before use.
 The leads lane (`leads-lane.ts`: public URL tips → pending submissions) also runs on every scheduled run in
 `run.sh`, after the field-extraction lane, bounded by `LEADS_LIMIT` (default 10).
 Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics

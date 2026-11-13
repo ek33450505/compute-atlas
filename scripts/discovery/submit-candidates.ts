@@ -31,7 +31,8 @@
  *
  * Uses relative imports throughout, matching scripts/seed.ts and scripts/submissions.ts.
  */
-import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { readFileSync, mkdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { formatErrorSummary, formatFatalError, redactedErrorCode, scrubUriCredentials } from "../../lib/db-error";
@@ -39,8 +40,14 @@ import { facilitySchema, type Facility, type Source } from "../../lib/schema";
 import { statusUpdateIntentSchema, type StatusUpdateIntent } from "../../lib/status-update";
 import { enrichmentUpdateIntentSchema, type EnrichmentUpdateIntent } from "../../lib/enrichment-update";
 import { isRestrictedSourceUrl } from "../../lib/restricted-sources";
+import { normalizeSourceUrl } from "./source-url";
 import { verifySource, type VerifyClaim, type VerificationResult } from "./verify-source";
 import { fetchPageText } from "./fetch-page-text";
+import { fetchPdfText } from "./fetch-pdf-text";
+import { fetchTextWithPdfRetry } from "./pdf-retry";
+
+// Re-exported: the implementation moved to ./pdf-retry so leads-lane.ts can share it.
+export { fetchTextWithPdfRetry };
 import { callOllama, probeOllama, type ProbeOllamaResult } from "./ollama-client";
 import { loadFacilities } from "./load-facilities";
 import { isEntrypoint } from "../is-entrypoint";
@@ -100,6 +107,48 @@ export function verificationEnabled(env: EnvLike = process.env): boolean {
   return env.VERIFY_SOURCES_ENABLED !== "false";
 }
 
+/**
+ * EXIT CODE CLASSIFICATION (the one place it is defined; run.sh branches on it).
+ *
+ *   0  clean.
+ *   1  ordinary or CONFIG error. Retrying will not help until something is fixed:
+ *        - `errors` > 0 with no outage (a candidate we meant to stage broke, or one
+ *          POST was rejected with a 4xx);
+ *        - 401 from the intake API (token missing/revoked: repeats every run);
+ *        - DISCOVERY_REQUIRE_VERIFY=1 with VERIFY_SOURCES_ENABLED=false (repeats
+ *          every run: the refusal message is fixed text, `VERIFY_DISABLED_REFUSAL`);
+ *        - `--resume-from-log` pointing at a log that does not match the candidates.
+ *   3  `EXIT_GATE_UNAVAILABLE`: transient, retry this state later. 5xx, 408, 429, 403
+ *      (a Cloudflare WAF can return it), a thrown fetch (transport), an unreadable
+ *      facility index, `VerificationGateUnavailableError` (Ollama), or a majority of
+ *      candidates `skippedUnreachable`.
+ *
+ * run.sh does not rewind the cursor on 3: it queues the saved candidates file and
+ * its `run-<runId>.json` and the next run resubmits with `--resume-from-log`, which
+ * skips candidates the first attempt already POSTed (createSubmission does not dedupe).
+ */
+export const EXIT_GATE_UNAVAILABLE = 3;
+
+/** Minimum candidates for the `skippedUnreachable` majority rule to mean anything. */
+export const UNREACHABLE_MAJORITY_MIN = 3;
+
+/**
+ * Fixed refusal message for a scheduled run (DISCOVERY_REQUIRE_VERIFY=1) that
+ * finds the gate disabled. A literal, never interpolated, so a test can pin it.
+ */
+export const VERIFY_DISABLED_REFUSAL =
+  "VERIFY_SOURCES_ENABLED=false is set while the scheduler requires the source-verification gate " +
+  "(DISCOVERY_REQUIRE_VERIFY=1); refusing to run. Remove VERIFY_SOURCES_ENABLED=false from .env.local, " +
+  "or run by hand without DISCOVERY_REQUIRE_VERIFY.";
+
+/**
+ * True when the scheduler demands the verification gate but it is disabled.
+ * Without DISCOVERY_REQUIRE_VERIFY=1 (manual runs) the opt-out stays allowed.
+ */
+export function requireVerifyViolation(env: EnvLike = process.env): boolean {
+  return env.DISCOVERY_REQUIRE_VERIFY === "1" && !verificationEnabled(env);
+}
+
 // --- types -----------------------------------------------------------------
 
 export interface CandidateProvenance {
@@ -135,8 +184,30 @@ export type NormalizedCandidate =
       provenance: CandidateProvenance;
     };
 
+/**
+ * Per-candidate record in `run-<runId>.json`, the basis for `--resume-from-log`.
+ * `index` is the candidate's position in the candidates file and `hash` the sha256
+ * of its JSON; together they prove a log belongs to a file. `outcome` is one of
+ * "submitted" | "dry_run" | "error" | "not_attempted" | a skipped counter name
+ * (skippedDuplicate, skippedInvalid, skippedOverCap, skippedUnverified,
+ * skippedUnreachable, skippedRestrictedSource). A candidate carried over from a
+ * resumed log stays "submitted" (with `carriedForward`), so a second resume skips it too.
+ * "in_flight" is checkpointed BEFORE each real POST and settled after it: a log that still
+ * says "in_flight" means the process died with the POST outcome unknown, and a resume
+ * skips it too (at-most-once; the pending queue is the arbiter).
+ */
+export interface CandidateOutcomeRecord {
+  index: number;
+  hash: string;
+  outcome: string;
+  submissionId?: string;
+  carriedForward?: true;
+}
+
 export interface RunSubmitOptions {
   runId: string;
+  /** Candidate indexes a previous attempt already POSTed (from `loadResumeLog`); skipped, not re-staged. */
+  resumeSubmitted?: ReadonlyMap<number, CandidateOutcomeRecord>;
   max: number;
   dryRun: boolean;
   baseUrl: string;
@@ -145,6 +216,14 @@ export interface RunSubmitOptions {
 }
 
 export interface RunSubmitDeps {
+  /**
+   * Durable checkpoint of the live summary, called before every real POST (with the
+   * candidate marked "in_flight") and after it settles. Submissions do not dedupe
+   * server-side, so the log is the only protection against double-staging on a retry.
+   * A throw aborts the run before any further POST (`CheckpointWriteError`). `runSubmitAndLog`
+   * wires it to its log writer; absent (bare `runSubmit` callers), nothing is checkpointed.
+   */
+  checkpoint?: (summary: RunSubmitSummary) => void;
   /** Test seam for the POST retry backoff; defaults to setTimeout. */
   sleepImpl?: (ms: number) => Promise<void>;
   fetchImpl: typeof fetch;
@@ -207,6 +286,29 @@ export interface RunSubmitSummary {
    * this is a verification-gate failure, not a schema failure, and the two
    * must not be blurred together in `run-<runId>.json`. */
   skippedUnverified: number;
+  /** Candidates skipped because the log given to `--resume-from-log` shows they were already submitted.
+   * Counts only carried candidates the loop REACHED, so an early abort leaves it (and `resumedInFlight`)
+   * below the carried total; the reliable carried total is the number of `candidateOutcomes` with
+   * `carriedForward: true`. */
+  skippedResumed: number;
+  /** Candidates the resumed log shows as "in_flight" (the previous attempt died around their POST):
+   * not resubmitted, since we cannot know whether it landed. Check the pending queue. Reached-only, like `skippedResumed`. */
+  resumedInFlight: number;
+  /** Every cited source of the candidate failed with a transport failure
+   * (`network_error`: resolver, connect, timeout), so nothing was READ. Counted
+   * here INSTEAD of `skippedUnverified`: a network outage is not evidence the
+   * sources are bad. ⚠️ A permanently dead domain also yields `network_error`, so a
+   * false positive is possible; it only costs a queued resubmit that fails the
+   * same way and is later aged out by run.sh (the cursor cannot be pinned). A majority of a state's candidates (and >= 3) makes the
+   * run exit `EXIT_GATE_UNAVAILABLE`. */
+  skippedUnreachable: number;
+  /** POSTs the intake API answered 401 (token missing/revoked): a CONFIG error, exit 1,
+   * counted in `errors` but not `apiUnavailable`. The remaining POSTs of the run are skipped. */
+  apiAuthRejected: number;
+  /** POSTs that failed because the intake API was unavailable (transport
+   * error, 5xx, 403, 408, 429) as opposed to rejecting one candidate with a 4xx.
+   * Also counted in `errors`. Nonzero makes the run exit `EXIT_GATE_UNAVAILABLE`. */
+  apiUnavailable: number;
   /** A candidate's cited source(s) included a licence-restricted domain (see
    * lib/restricted-sources.ts) that could not be safely stripped before
    * staging — either every source the candidate carried was restricted, or
@@ -222,6 +324,8 @@ export interface RunSubmitSummary {
   skippedRestrictedSource: number;
   errors: number;
   submittedIds: string[];
+  /** One record per input candidate, in file order; see `CandidateOutcomeRecord`. */
+  candidateOutcomes: CandidateOutcomeRecord[];
 }
 
 // --- normalization -----------------------------------------------------------
@@ -332,8 +436,8 @@ function buildExistingIndex(existing: Facility[]): {
 
 /**
  * Shared provenance assembly for the facility, status_update, and
- * enrichment_update POST paths. `escalationNote` (from a verification-gate
- * "escalate" verdict — see `verifyCandidateSources`) is appended to any
+ * enrichment_update POST paths. `verdictNote` (the per-URL verdict list
+ * from the verification gate — see `verifyCandidateSources`) is appended to any
  * existing `provenance.note` rather than replacing it, so a note the
  * discovery pipeline already wrote is never silently dropped.
  */
@@ -341,9 +445,9 @@ function buildProvenance(
   provenance: CandidateProvenance,
   runId: string,
   discoveredAt: string,
-  escalationNote?: string
+  verdictNote?: string
 ) {
-  const noteParts = [provenance.note, escalationNote].filter(
+  const noteParts = [provenance.note, verdictNote].filter(
     (part): part is string => typeof part === "string" && part.length > 0
   );
   return {
@@ -413,16 +517,101 @@ interface TimeoutGuard {
 function describeRejectedSource(result: VerificationResult): string {
   if (result.transportFailure) {
     const status = result.transportFailure.httpStatus !== undefined ? `, http ${result.transportFailure.httpStatus}` : "";
-    return `${result.sourceUrl} (could not be read: ${result.transportFailure.reason}${status})`;
+    return `could not be read: ${result.transportFailure.reason}${status}`;
   }
-  return `${result.sourceUrl} (${result.reason})`;
+  return result.reason;
 }
 
 /**
- * Runs the verification gate over every URL in `sources` for `claim`. Never
- * called when `opts.dryRun` or `deps.verifyImpl` is absent — callers check
- * that before invoking this.
+ * Every URL the candidate will PUBLISH: the payload's own `sources[].url`
+ * (what the reviewer sees cited on the facility) plus `provenance.sources`
+ * (what the submission envelope records), de-duplicated in first-seen order.
+ * The gate must verify this whole set — verifying only `provenance.sources`
+ * left payload URLs nothing had ever fetched (A-OPS-02).
+ */
+function collectPublishedUrls(payloadSources: Source[], provenanceSources: string[]): string[] {
+  return [...new Set([...payloadSources.map((s) => s.url), ...provenanceSources])];
+}
+
+/**
+ * A source that could not be READ because the network failed, not because the
+ * source is bad. `transportFailure` carries only the fetcher's reason enum (the
+ * resolver/connect error code is not propagated by verify-source.ts), so
+ * `network_error` is the signal; an `errorCode` on the failure, when a future
+ * verify-source adds one, is not required.
+ */
+function isUnreachableResult(result: VerificationResult): boolean {
+  return result.verdict !== "verified" && result.transportFailure?.reason === "network_error";
+}
+
+/** Per-URL outcome the gate records; `dropped` URLs are stripped from the staged payload. */
+interface UrlVerdictLine {
+  url: string;
+  outcome: "verified" | "dropped" | "kept-unverified";
+  /** Fixed outcome word + reason CODE only: this lands in provenance.note. */
+  code: string;
+}
+
+/**
+ * The reason CODE for a non-verified result, safe for provenance.note (which
+ * the admin submission list renders). `VerificationResult.reason` can embed
+ * page-sourced text (a quote fragment, see verify-source.ts), so it is NEVER
+ * used here: only the structural `transportFailure` enum (+ HTTP status) or a
+ * fixed word.
+ */
+function urlOutcomeCode(result: VerificationResult): string {
+  const word = result.verdict === "escalate" ? "escalated" : "rejected";
+  if (result.transportFailure) {
+    const status = result.transportFailure.httpStatus !== undefined ? `_${result.transportFailure.httpStatus}` : "";
+    return `${word}: ${result.transportFailure.reason}${status}`;
+  }
+  // verifySource rejects licence-restricted domains before any fetch, so no transportFailure is set.
+  if (isRestrictedSourceUrl(result.sourceUrl)) return `${word}: restricted_source`;
+  return `${word}: ${result.verdict === "escalate" ? "unconfirmed" : "content_mismatch"}`;
+}
+
+const MAX_NOTE_URL_CHARS = 200;
+const MAX_VERDICT_NOTE_CHARS = 2_000;
+
+/** One URL, made safe and bounded for the note: control/whitespace chars become "_", length capped. */
+function noteUrl(url: string): string {
+  const safe = url.replace(/[\s\u0000-\u001f\u007f]/g, "_");
+  return safe.length > MAX_NOTE_URL_CHARS ? `${safe.slice(0, MAX_NOTE_URL_CHARS)}...` : safe;
+}
+
+/**
+ * Renders the per-URL verdict list for provenance.note, bounded to
+ * `MAX_VERDICT_NOTE_CHARS`. Dropped entries come first, then kept-unverified,
+ * then verified, so truncation (`+N more`) hides the least interesting ones.
+ */
+function renderVerdictNote(lines: UrlVerdictLine[]): string | undefined {
+  if (lines.every((l) => l.outcome === "verified")) return undefined;
+  const rank = { dropped: 0, "kept-unverified": 1, verified: 2 } as const;
+  const entries = [...lines]
+    .sort((x, y) => rank[x.outcome] - rank[y.outcome])
+    .map((l) => `${noteUrl(l.url)} ${l.outcome === "dropped" ? "DROPPED" : "kept"} (${l.code})`);
+  const prefix = "Source verification: ";
+  let out = prefix;
+  for (let i = 0; i < entries.length; i++) {
+    const piece = (i === 0 ? "" : "; ") + entries[i];
+    const reserve = i < entries.length - 1 ? `; +${entries.length - i - 1} more`.length : 0;
+    if (out.length + piece.length + reserve > MAX_VERDICT_NOTE_CHARS && i > 0) {
+      return `${out}; +${entries.length - i} more`;
+    }
+    out += piece;
+  }
+  return out;
+}
+
+/**
+ * Runs the verification gate over every URL in `urls` for `claim` (the
+ * published set — see `collectPublishedUrls`). Never called when
+ * `opts.dryRun` or `deps.verifyImpl` is absent — callers check that before
+ * invoking this.
  *
+ * - URLs are de-duplicated by `normalizeSourceUrl` (case, fragment, trailing
+ *   slash): spellings of one URL share one verdict and one `verifyImpl` call,
+ *   and a drop applies to every raw spelling.
  * - Any source verdict of `"unavailable"` throws `VerificationGateUnavailableError`
  *   immediately, stopping BEFORE checking the candidate's remaining sources —
  *   if the model is unreachable for one URL it is unreachable for all of
@@ -430,39 +619,56 @@ function describeRejectedSource(result: VerificationResult): string {
  *   ONE exception: an `"unavailable"` flagged `modelTimedOut` (a single model
  *   call hit its per-call timeout) first consults `guard.probe`. If Ollama
  *   answers and the verify model is present, that source simply does not
- *   verify (the remaining sources are still checked). Outcome: if another
- *   source verified, the candidate stages normally; if none verified but
- *   another escalated, it stages with an `escalationNote` that also names the
- *   timed-out URL(s); if none verified and none escalated, it is held with a
- *   `rejectionDetail` saying the call timed out while Ollama was healthy. An
- *   unhealthy or throwing probe, no probe, or an exhausted `guard.remaining`
- *   budget (a degraded Ollama) throws as above.
- *   A non-timeout "unavailable" never reaches the probe.
- * - >=1 `"verified"` source -> survives, no escalation note.
- * - 0 `"verified"` but >=1 `"escalate"` -> survives, with an escalation note
- *   summarizing the escalated URL(s)/reason(s) for the human reviewer (an
- *   escalated source is never silently dropped nor silently accepted).
- * - 0 `"verified"` and 0 `"escalate"` (every source rejected) -> does not
- *   survive, with `rejectionDetail` summarizing each rejected source's URL
- *   and reason (`describeRejectedSource`) — including whether it was ever
- *   actually read — so a human/log reader can tell "this URL is
- *   unreadable/dead" from "we read the page and the claim was not there"
- *   instead of a single undifferentiated "unverified".
- * - `sources` is empty (the candidate cited nothing) -> does not survive,
- *   with a `rejectionDetail` that says plainly that no sources were cited —
- *   never the empty string `[].map(...).join("; ")` would otherwise produce,
- *   which reads as a dangling "— " in the "skip unverified" log line and
- *   wrongly implies a source was checked and rejected rather than never cited.
+ *   verify (the remaining sources are still checked). An unhealthy or
+ *   throwing probe, no probe, or an exhausted `guard.remaining` budget (a
+ *   degraded Ollama) throws as above. A non-timeout "unavailable" never
+ *   reaches the probe.
+ * - Each URL is judged individually. `dropUrls` holds every URL that is not
+ *   `"verified"` and not kept-escalated; callers strip those from what gets
+ *   staged, so one verified URL no longer carries dead or fabricated siblings.
+ * - >=1 `"verified"` URL -> survives. `"escalate"` URLs (page too large, or
+ *   not readable even through the PDF path) are KEPT only because some other
+ *   URL verified, and are labelled "unverified (escalated: <code>)" in the
+ *   note. Rejected and timed-out URLs are dropped.
+ * - 0 `"verified"` -> does not survive, even if some URL escalated: an
+ *   escalation alone is not mechanical verification. `rejectionDetail` (a
+ *   log line, never persisted) summarizes each URL (`describeRejectedSource`),
+ *   including whether it was ever actually read.
+ * - `urls` is empty -> does not survive, with a `rejectionDetail` that says
+ *   plainly nothing was cited.
+ * - `verdictNote` lists every URL's outcome whenever any URL was dropped or
+ *   kept unverified. It carries ONLY the URL plus a fixed reason code
+ *   (`urlOutcomeCode`) — never `VerificationResult.reason`, which can contain
+ *   page-sourced text — and is bounded (`renderVerdictNote`).
  */
 async function verifyCandidateSources(
-  sources: string[],
+  urls: string[],
   claim: VerifyClaim,
   verifyImpl: (url: string, claim: VerifyClaim) => Promise<VerificationResult>,
   guard: TimeoutGuard
-): Promise<{ survives: boolean; escalationNote?: string; rejectionDetail?: string }> {
-  const results: VerificationResult[] = [];
+): Promise<{
+  survives: boolean;
+  verdictNote?: string;
+  rejectionDetail?: string;
+  dropUrls: Set<string>;
+  /** Not surviving, and every cited source failed to be READ (transport failure). */
+  unreachable?: boolean;
+}> {
+  // canonical key -> every raw spelling seen (first one is the one verified).
+  const spellings = new Map<string, string[]>();
+  for (const url of urls) {
+    const key = normalizeSourceUrl(url);
+    const seen = spellings.get(key);
+    if (seen) {
+      if (!seen.includes(url)) seen.push(url);
+    } else {
+      spellings.set(key, [url]);
+    }
+  }
+
+  const results: Array<{ url: string; result: VerificationResult }> = [];
   const timedOutUrls: string[] = [];
-  for (const url of sources) {
+  for (const [, [url]] of spellings) {
     const result = await verifyImpl(url, claim);
     if (result.verdict === "unavailable") {
       if (!result.modelTimedOut || !guard.probe) {
@@ -492,41 +698,46 @@ async function verifyCandidateSources(
       timedOutUrls.push(url);
       continue;
     }
-    results.push(result);
+    results.push({ url, result });
   }
 
-  if (results.some((r) => r.verdict === "verified")) {
-    return { survives: true };
+  const allSpellings = (url: string): string[] => spellings.get(normalizeSourceUrl(url)) ?? [url];
+  const dropUrls = new Set<string>();
+  const lines: UrlVerdictLine[] = [];
+  const logParts: string[] = [];
+  const anyVerified = results.some(({ result }) => result.verdict === "verified");
+  for (const { url, result } of results) {
+    if (result.verdict === "verified") {
+      lines.push({ url, outcome: "verified", code: "verified" });
+    } else if (result.verdict === "escalate" && anyVerified) {
+      lines.push({ url, outcome: "kept-unverified", code: `unverified (${urlOutcomeCode(result)})` });
+    } else {
+      for (const spelling of allSpellings(url)) dropUrls.add(spelling);
+      lines.push({ url, outcome: "dropped", code: urlOutcomeCode(result) });
+    }
+    if (result.verdict !== "verified") {
+      logParts.push(`${url} (${result.verdict === "escalate" ? `escalated: ${result.reason}` : describeRejectedSource(result)})`);
+    }
+  }
+  for (const url of timedOutUrls) {
+    for (const spelling of allSpellings(url)) dropUrls.add(spelling);
+    lines.push({ url, outcome: "dropped", code: "timed_out" });
+    logParts.push(`${url} (verification call timed out while Ollama was healthy)`);
   }
 
-  const escalated = results.filter((r) => r.verdict === "escalate");
-  if (escalated.length > 0) {
-    const timeoutNote =
-      timedOutUrls.length > 0
-        ? `; verification timed out while Ollama was healthy for: ${timedOutUrls.join(", ")}`
-        : "";
-    return {
-      survives: true,
-      escalationNote: `Escalated for human review — source(s) could not be mechanically verified: ${escalated
-        .map((r) => `${r.sourceUrl} (${r.reason})`)
-        .join("; ")}${timeoutNote}`,
-    };
+  if (anyVerified) {
+    return { survives: true, verdictNote: renderVerdictNote(lines), dropUrls };
   }
 
-  const timeoutDetail =
-    timedOutUrls.length > 0
-      ? `verification call timed out while Ollama was healthy, so held for manual review: ${timedOutUrls.join(", ")}`
-      : undefined;
-  const rejectedDetail = results.map(describeRejectedSource).join("; ");
+  const unreachable =
+    results.length > 0 &&
+    timedOutUrls.length === 0 &&
+    results.every(({ result }) => isUnreachableResult(result));
   return {
     survives: false,
-    rejectionDetail: timeoutDetail
-      ? rejectedDetail
-        ? `${timeoutDetail}; ${rejectedDetail}`
-        : timeoutDetail
-      : results.length === 0
-        ? "no sources were cited, so there was nothing to verify"
-        : rejectedDetail,
+    unreachable,
+    rejectionDetail: logParts.length === 0 ? "no sources were cited, so there was nothing to verify" : logParts.join("; "),
+    dropUrls,
   };
 }
 
@@ -563,6 +774,37 @@ async function verifyCandidateSources(
 // removed, there is no honest remap — the candidate is reported unstageable
 // rather than risk pointing a citation at the wrong source.
 
+/**
+ * URLs the verification gate dropped (see `verifyCandidateSources`'s
+ * `dropUrls`), stripped alongside restricted ones by the two functions below.
+ * Empty when the gate did not run (dry-run, VERIFY_SOURCES_ENABLED=false).
+ */
+const NO_DROPPED_URLS: ReadonlySet<string> = new Set();
+
+/**
+ * Reports a strip that could not be honored and counts it. When a citation
+ * pointed at the stripped source (`failingUrl`), the counter follows THAT
+ * URL: restricted -> `skippedRestrictedSource`, dropped as unverified ->
+ * `skippedUnverified`, whatever else was stripped alongside. With no failing
+ * reference (the strip would empty the list), it is an unverified skip iff the
+ * gate dropped any non-restricted URL.
+ */
+function skipOnStripFailure(
+  label: string,
+  failure: { removedUrls: string[]; reason: string; failingUrl?: string },
+  dropUrls: ReadonlySet<string>,
+  summary: RunSubmitSummary
+): void {
+  const unverifiedDrop = (u: string) => dropUrls.has(u) && !isRestrictedSourceUrl(u);
+  const unverified =
+    failure.failingUrl !== undefined ? unverifiedDrop(failure.failingUrl) : failure.removedUrls.some(unverifiedDrop);
+  console.log(
+    `skip ${unverified ? "unverified" : "restricted"}: ${label} — ${failure.reason} (${unverified ? "unverified/restricted" : "restricted"} source(s): ${failure.removedUrls.join(", ")})`
+  );
+  if (unverified) summary.skippedUnverified++;
+  else summary.skippedRestrictedSource++;
+}
+
 interface SourceIndexRef {
   /** Human-readable path for logging, e.g. "subsidies[2].sourceIndex". */
   path: string;
@@ -590,15 +832,16 @@ interface SourceIndexRef {
  */
 function stripRestrictedFromSources(
   sources: Source[],
-  refs: SourceIndexRef[]
+  refs: SourceIndexRef[],
+  dropUrls: ReadonlySet<string> = NO_DROPPED_URLS
 ):
   | { ok: true; sources: Source[]; removedUrls: string[]; remapped: Map<string, number> }
-  | { ok: false; removedUrls: string[]; reason: string } {
+  | { ok: false; removedUrls: string[]; reason: string; failingUrl?: string } {
   const removedUrls: string[] = [];
   const oldToNew = new Map<number, number>();
   const kept: Source[] = [];
   sources.forEach((s, i) => {
-    if (isRestrictedSourceUrl(s.url)) {
+    if (isRestrictedSourceUrl(s.url) || dropUrls.has(s.url)) {
       removedUrls.push(s.url);
       return;
     }
@@ -622,7 +865,8 @@ function stripRestrictedFromSources(
       return {
         ok: false,
         removedUrls,
-        reason: `${ref.path} (index ${ref.index}) referenced a restricted source that was stripped`,
+        reason: `${ref.path} (index ${ref.index}) referenced a stripped source`,
+        failingUrl: sources[ref.index]?.url,
       };
     }
     // Verifying invariant, not the lookup mechanism: the positional map
@@ -634,6 +878,7 @@ function stripRestrictedFromSources(
         ok: false,
         removedUrls,
         reason: `${ref.path} (index ${ref.index}) remapped to a source with a mismatched URL — refusing to stage`,
+        failingUrl: sources[ref.index]?.url,
       };
     }
     remapped.set(ref.path, newIndex);
@@ -650,11 +895,12 @@ function stripRestrictedFromSources(
  * safely staged either.
  */
 function stripRestrictedUrls(
-  urls: string[]
+  urls: string[],
+  dropUrls: ReadonlySet<string> = NO_DROPPED_URLS
 ): { ok: true; kept: string[]; removedUrls: string[] } | { ok: false; removedUrls: string[]; reason: string } {
   const removedUrls: string[] = [];
   const kept = urls.filter((u) => {
-    if (isRestrictedSourceUrl(u)) {
+    if (isRestrictedSourceUrl(u) || dropUrls.has(u)) {
       removedUrls.push(u);
       return false;
     }
@@ -801,8 +1047,105 @@ function isPreConnectFailure(err: unknown): boolean {
   return defined.length > 0 && defined.every((c) => typeof c === "string" && PRE_CONNECT_CODES.has(c));
 }
 
+/**
+ * An HTTP status meaning the intake API is TRANSIENTLY unavailable, as opposed
+ * to rejecting this one candidate: any 5xx, 403 (a Cloudflare WAF can return it),
+ * 408 and 429 (rate limited). 401 is NOT here: it is a config error (see
+ * `isApiAuthRejected`). Other 4xx are per-candidate rejections.
+ */
+function isApiUnavailableStatus(status: number): boolean {
+  return status >= 500 || status === 403 || status === 408 || status === 429;
+}
+
+/** 401: the token is missing or revoked. Repeats every run, so exit 1, not a retry. */
+function isApiAuthRejected(status: number): boolean {
+  return status === 401;
+}
+
+/** Fixed, loud message for a 401 (never echoes the server body). */
+export const API_AUTH_REJECTED_MESSAGE =
+  "CONFIG ERROR: the intake API rejected the bearer token (401). Check API_INTAKE_TOKEN " +
+  "(or API_ADMIN_TOKEN) in .env.local against the deployed value; retrying will not help. " +
+  "Skipping the remaining POSTs for this run.";
+
+/** Summaries whose state hit a 401: skip the rest of their POSTs. */
+const authRejected = new WeakSet<RunSubmitSummary>();
+
+/** Counters whose movement during one candidate decides its recorded outcome. */
+const OUTCOME_COUNTERS = [
+  "submitted",
+  "skippedDuplicate",
+  "skippedInvalid",
+  "skippedOverCap",
+  "skippedUnverified",
+  "skippedUnreachable",
+  "skippedRestrictedSource",
+  "errors",
+] as const;
+type OutcomeCounter = (typeof OUTCOME_COUNTERS)[number];
+
+/** Submission id the intake API returned for the candidate being processed (best effort). */
+const lastSubmissionId = new WeakMap<RunSubmitSummary, string>();
+
+/** Stable identity of a candidate as read from the candidates file. */
+export function candidateHash(entry: unknown): string {
+  return createHash("sha256").update(JSON.stringify(entry) ?? "undefined").digest("hex");
+}
+
 /** Summaries whose state hit an exhausted pre-connect retry budget: skip the rest of their POSTs. */
 const connectOutage = new WeakSet<RunSubmitSummary>();
+
+/** Summaries whose current candidate's POST may have reached the API without us seeing the answer. */
+const ambiguousPost = new WeakSet<RunSubmitSummary>();
+
+const AMBIGUOUS_NOTE = "; outcome unknown (the request may have reached the API), recorded in_flight so a retry will not resubmit it";
+
+/** The log suffix for the current candidate once its POST was marked ambiguous, else empty. */
+function ambiguousNote(summary: RunSubmitSummary): string {
+  return ambiguousPost.has(summary) ? AMBIGUOUS_NOTE : "";
+}
+
+/**
+ * Whether a failed POST may nonetheless have staged the row. Submissions do not dedupe,
+ * so a retry of one that landed double-stages. Ambiguous: a thrown error that is not a
+ * pre-connect failure (reset after send, headers/body timeout, hang up) and 504/524, where
+ * a gateway gave up while the origin function may have finished its insert. NOT ambiguous:
+ * pre-connect failures (nothing was sent), 4xx, 500 (the function ran and failed) and
+ * 502/503 (the platform answered before the function ran). Ambiguous ones are recorded
+ * "in_flight" so a resume skips them like a crash mid-POST.
+ */
+function isAmbiguousStatus(status: number): boolean {
+  return status === 504 || status === 524;
+}
+
+/** Hooks `runSubmit` registers per summary; `postSubmission` calls it once before the first real POST of a candidate. */
+const beforePost = new WeakMap<RunSubmitSummary, () => void>();
+
+/** The durable run log could not be checkpointed, so the run stops before it POSTs anything it could not record. */
+export class CheckpointWriteError extends Error {
+  constructor(code: string) {
+    super(`could not checkpoint the run log (code: ${code}); aborting before any further POST`);
+    this.name = "CheckpointWriteError";
+  }
+}
+
+const READ_SUBMISSION_ID_TIMEOUT_MS = 10_000;
+
+/** Best-effort `id` from the intake response body; never throws and never blocks the success path. */
+async function readSubmissionId(res: Response): Promise<string | undefined> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const timeout = new Promise<undefined>((resolve) => {
+      timer = setTimeout(() => resolve(undefined), READ_SUBMISSION_ID_TIMEOUT_MS);
+    });
+    const body = (await Promise.race([res.json(), timeout])) as { id?: unknown } | null | undefined;
+    return typeof body?.id === "string" ? body.id : undefined;
+  } catch {
+    return undefined;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 /**
  * POST one envelope to /api/submissions and count the outcome. Failures log
@@ -818,8 +1161,16 @@ async function postSubmission(
 ): Promise<void> {
   if (connectOutage.has(summary)) {
     summary.errors++;
+    summary.apiUnavailable++;
     return;
   }
+  if (authRejected.has(summary)) {
+    summary.errors++;
+    summary.apiAuthRejected++;
+    return;
+  }
+  beforePost.get(summary)?.();
+  const requestBody = JSON.stringify(envelope); // outside the try: a serialization throw sent nothing
   const sleep = deps.sleepImpl ?? ((ms: number) => new Promise<void>((r) => setTimeout(r, ms)));
   const attempts = 1 + POST_CONNECT_RETRIES;
   for (let attempt = 1; attempt <= attempts; attempt++) {
@@ -830,14 +1181,24 @@ async function postSubmission(
           Authorization: `Bearer ${submissionToken()}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(envelope),
+        body: requestBody,
       });
       if (!res.ok) {
         const body = scrubUriCredentials((await res.text().catch(() => "")).replace(/[\r\n]+/g, " ")).slice(0, MAX_ERROR_BODY_CHARS);
-        console.log(`error: submit failed for ${id} (stage=POST) — ${res.status} ${body}`);
+        if (isAmbiguousStatus(res.status)) ambiguousPost.add(summary);
+        console.log(`error: submit failed for ${id} (stage=POST) — ${res.status} ${body}${ambiguousNote(summary)}`);
         summary.errors++;
+        if (isApiAuthRejected(res.status)) {
+          summary.apiAuthRejected++;
+          authRejected.add(summary);
+          console.error(API_AUTH_REJECTED_MESSAGE);
+        } else if (isApiUnavailableStatus(res.status)) {
+          summary.apiUnavailable++;
+        }
         return;
       }
+      const submissionId = await readSubmissionId(res);
+      if (submissionId !== undefined) lastSubmissionId.set(summary, submissionId);
       summary.submitted++;
       summary.submittedIds.push(id);
       return;
@@ -847,8 +1208,12 @@ async function postSubmission(
         await sleep(POST_RETRY_BASE_MS * attempt);
         continue;
       }
-      console.log(`error: submit threw for ${id} (stage=POST, attempt ${attempt}/${attempts}) — ${formatErrorSummary(err)}`);
+      if (!isPreConnectFailure(err)) ambiguousPost.add(summary);
+      console.log(
+        `error: submit threw for ${id} (stage=POST, attempt ${attempt}/${attempts}) — ${formatErrorSummary(err)}${ambiguousNote(summary)}`
+      );
       summary.errors++;
+      summary.apiUnavailable++; // a thrown fetch is a transport failure: the API never answered
       if (isPreConnectFailure(err)) {
         connectOutage.add(summary);
         console.log(`error: connect retry budget exhausted for ${id}; skipping the remaining POSTs for this run (each counted as an error, state fails)`);
@@ -878,10 +1243,27 @@ export async function runSubmit(
     skippedInvalid: 0,
     skippedOverCap: 0,
     skippedUnverified: 0,
+    skippedResumed: 0,
+    resumedInFlight: 0,
+    skippedUnreachable: 0,
+    apiAuthRejected: 0,
+    apiUnavailable: 0,
     skippedRestrictedSource: 0,
     errors: 0,
     submittedIds: [],
+    // Every candidate starts "not_attempted" so an aborted run's partial log
+    // still lists the ones never reached.
+    candidateOutcomes: candidates.map((entry, index) => ({ index, hash: candidateHash(entry), outcome: "not_attempted" })),
   };
+  // Carried records go in BEFORE any checkpoint, not when the loop reaches them: a resume that
+  // aborts or dies at candidate X must still log every earlier attempt's submitted / in_flight
+  // records after X, or the next retry restages them.
+  for (const [index, carried] of opts.resumeSubmitted ?? []) {
+    const record = summary.candidateOutcomes[index];
+    // loadResumeLog guarantees the range; a caller bypassing it must fail loudly, not drop a carried record.
+    if (!record) throw new Error(`resumeSubmitted index ${index} is outside the ${candidates.length} candidates`);
+    summary.candidateOutcomes[index] = { ...carried, index, hash: record.hash, carriedForward: true };
+  }
 
   // Before ANY work, so a caller holding this reference can still log how far
   // the run got if it aborts (see `RunSubmitDeps.onSummaryInit`).
@@ -900,7 +1282,7 @@ export async function runSubmit(
     );
   }
 
-  const normalized = normalizeCandidates(candidates);
+  const normalized = normalizeCandidates(candidates).map((candidate, index) => ({ candidate, index }));
   const { ids: existingIds, nameStateCity: existingNameStateCity, byId: existingById } = buildExistingIndex(
     deps.existingFacilities
   );
@@ -910,11 +1292,72 @@ export async function runSubmit(
   // discovery review. Enrichment fills leftover cap budget. (Ed's review-load
   // calibration is a single daily number spanning both streams.)
   const ordered = [
-    ...normalized.filter((c) => c.type !== "enrichment_update"),
-    ...normalized.filter((c) => c.type === "enrichment_update"),
+    ...normalized.filter((c) => c.candidate.type !== "enrichment_update"),
+    ...normalized.filter((c) => c.candidate.type === "enrichment_update"),
   ];
 
-  for (const candidate of ordered) {
+  // Settles the previous candidate's record from the counters it moved. Candidates
+  // have many `continue` exits, so the outcome is read off the summary rather than
+  // written at each one. An iteration that throws (gate unavailable) is never
+  // settled and stays "not_attempted", which is true: nothing was POSTed for it.
+  const checkpoint = (): void => {
+    if (opts.dryRun || !deps.checkpoint) return;
+    try {
+      deps.checkpoint(summary);
+    } catch (err) {
+      throw new CheckpointWriteError(redactedErrorCode(err));
+    }
+  };
+  let pending: { index: number; before: Record<OutcomeCounter, number> } | null = null;
+  beforePost.set(summary, () => {
+    if (!pending) return;
+    const record = summary.candidateOutcomes[pending.index];
+    const previous = record.outcome;
+    record.outcome = "in_flight";
+    try {
+      checkpoint();
+    } catch (err) {
+      // Nothing was POSTed: the finally-write of this same summary must not claim it was.
+      record.outcome = previous;
+      throw err;
+    }
+  });
+  const settle = (): void => {
+    if (!pending) return;
+    const record = summary.candidateOutcomes[pending.index];
+    const moved = OUTCOME_COUNTERS.find((k) => summary[k] > pending!.before[k]);
+    if (moved === "submitted") {
+      if (opts.dryRun) record.outcome = "dry_run";
+      else {
+        record.outcome = "submitted";
+        const submissionId = lastSubmissionId.get(summary);
+        if (submissionId !== undefined) record.submissionId = submissionId;
+      }
+    } else if (moved) {
+      record.outcome = moved === "errors" ? (ambiguousPost.has(summary) ? "in_flight" : "error") : moved;
+    }
+    pending = null;
+    checkpoint();
+  };
+
+  for (const { candidate, index } of ordered) {
+    settle();
+    const carried = opts.resumeSubmitted?.get(index);
+    if (carried) {
+      if (carried.outcome === "in_flight") {
+        console.warn(
+          `WARN: candidate #${index} (${carried.hash}) was in flight when the previous attempt died; not resubmitted. Check the pending queue for it.`
+        );
+        summary.resumedInFlight++;
+      } else {
+        console.log(`skip resumed: candidate #${index} was already submitted by the previous attempt`);
+        summary.skippedResumed++;
+      }
+      continue; // the record was prefilled at init
+    }
+    lastSubmissionId.delete(summary);
+    ambiguousPost.delete(summary);
+    pending = { index, before: Object.fromEntries(OUTCOME_COUNTERS.map((k) => [k, summary[k]])) as Record<OutcomeCounter, number> };
     if (candidate.type === "enrichment_update") {
       const targetFacilityId = candidate.targetFacilityId;
       const idLabel = typeof targetFacilityId === "string" && targetFacilityId ? targetFacilityId : "(no id)";
@@ -948,27 +1391,31 @@ export async function runSubmit(
         continue;
       }
 
-      let escalationNote: string | undefined;
+      // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
+      if (summary.submitted >= opts.max) {
+        console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
+        summary.skippedOverCap++;
+        continue;
+      }
+
+      let verdictNote: string | undefined;
+      let dropUrls: ReadonlySet<string> = NO_DROPPED_URLS;
       if (!opts.dryRun && deps.verifyImpl) {
         const entityName = existingById.get(targetFacilityId)?.name ?? targetFacilityId;
         const gate = await verifyCandidateSources(
-          candidate.provenance.sources ?? [],
+          collectPublishedUrls(parsedIntent.data.sources, candidate.provenance.sources ?? []),
           { entityName },
           deps.verifyImpl,
           timeoutGuard
         );
         if (!gate.survives) {
-          console.log(`skip unverified: ${targetFacilityId} — ${gate.rejectionDetail}`);
-          summary.skippedUnverified++;
+          console.log(`skip ${gate.unreachable ? "unreachable" : "unverified"}: ${targetFacilityId} — ${gate.rejectionDetail}`);
+          if (gate.unreachable) summary.skippedUnreachable++;
+          else summary.skippedUnverified++;
           continue;
         }
-        escalationNote = gate.escalationNote;
-      }
-
-      if (summary.submitted >= opts.max) {
-        console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
-        summary.skippedOverCap++;
-        continue;
+        verdictNote = gate.verdictNote;
+        dropUrls = gate.dropUrls;
       }
 
       // Same asymmetry as the docSourceRefs block above, for the enrichment
@@ -995,20 +1442,14 @@ export async function runSubmit(
         enrichmentSourceRefs.push({ path: `reSourced[${i}].sourceRel`, index: r.sourceRel });
       });
 
-      const enrichmentSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, enrichmentSourceRefs);
+      const enrichmentSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, enrichmentSourceRefs, dropUrls);
       if (!enrichmentSourceStrip.ok) {
-        console.log(
-          `skip restricted: ${targetFacilityId} — ${enrichmentSourceStrip.reason} (restricted source(s): ${enrichmentSourceStrip.removedUrls.join(", ")})`
-        );
-        summary.skippedRestrictedSource++;
+        skipOnStripFailure(targetFacilityId, enrichmentSourceStrip, dropUrls, summary);
         continue;
       }
-      const enrichmentProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+      const enrichmentProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? [], dropUrls);
       if (!enrichmentProvenanceStrip.ok) {
-        console.log(
-          `skip restricted: ${targetFacilityId} — ${enrichmentProvenanceStrip.reason} (restricted source(s): ${enrichmentProvenanceStrip.removedUrls.join(", ")})`
-        );
-        summary.skippedRestrictedSource++;
+        skipOnStripFailure(targetFacilityId, enrichmentProvenanceStrip, dropUrls, summary);
         continue;
       }
       let enrichmentPayload = parsedIntent.data;
@@ -1019,7 +1460,7 @@ export async function runSubmit(
           enrichmentSourceStrip.remapped
         );
         console.log(
-          `stripped restricted source(s) from ${targetFacilityId}: ${enrichmentSourceStrip.removedUrls.join(", ")}`
+          `stripped restricted/unverified source(s) from ${targetFacilityId}: ${enrichmentSourceStrip.removedUrls.join(", ")}`
         );
       }
 
@@ -1031,7 +1472,7 @@ export async function runSubmit(
           { ...candidate.provenance, sources: enrichmentProvenanceStrip.kept },
           opts.runId,
           opts.discoveredAt,
-          escalationNote
+          verdictNote
         ),
       };
 
@@ -1070,53 +1511,51 @@ export async function runSubmit(
         continue;
       }
 
-      let escalationNote: string | undefined;
-      if (!opts.dryRun && deps.verifyImpl) {
-        const entityName = existingById.get(targetFacilityId)?.name ?? targetFacilityId;
-        const gate = await verifyCandidateSources(
-          candidate.provenance.sources ?? [],
-          { entityName },
-          deps.verifyImpl,
-          timeoutGuard
-        );
-        if (!gate.survives) {
-          console.log(`skip unverified: ${targetFacilityId} — ${gate.rejectionDetail}`);
-          summary.skippedUnverified++;
-          continue;
-        }
-        escalationNote = gate.escalationNote;
-      }
-
+      // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
       if (summary.submitted >= opts.max) {
         console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
         summary.skippedOverCap++;
         continue;
       }
 
+      let verdictNote: string | undefined;
+      let dropUrls: ReadonlySet<string> = NO_DROPPED_URLS;
+      if (!opts.dryRun && deps.verifyImpl) {
+        const entityName = existingById.get(targetFacilityId)?.name ?? targetFacilityId;
+        const gate = await verifyCandidateSources(
+          collectPublishedUrls(parsedIntent.data.sources, candidate.provenance.sources ?? []),
+          { entityName },
+          deps.verifyImpl,
+          timeoutGuard
+        );
+        if (!gate.survives) {
+          console.log(`skip ${gate.unreachable ? "unreachable" : "unverified"}: ${targetFacilityId} — ${gate.rejectionDetail}`);
+          if (gate.unreachable) summary.skippedUnreachable++;
+          else summary.skippedUnverified++;
+          continue;
+        }
+        verdictNote = gate.verdictNote;
+        dropUrls = gate.dropUrls;
+      }
+
       // status_update's intent carries no sourceIndex/sourceRel refs of its
       // own (sourceIndex is computed at APPLY time as existing.sources.length
       // — see lib/status-update.ts), so there is nothing to remap here.
-      const statusSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, []);
+      const statusSourceStrip = stripRestrictedFromSources(parsedIntent.data.sources, [], dropUrls);
       if (!statusSourceStrip.ok) {
-        console.log(
-          `skip restricted: ${targetFacilityId} — ${statusSourceStrip.reason} (restricted source(s): ${statusSourceStrip.removedUrls.join(", ")})`
-        );
-        summary.skippedRestrictedSource++;
+        skipOnStripFailure(targetFacilityId, statusSourceStrip, dropUrls, summary);
         continue;
       }
-      const statusProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+      const statusProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? [], dropUrls);
       if (!statusProvenanceStrip.ok) {
-        console.log(
-          `skip restricted: ${targetFacilityId} — ${statusProvenanceStrip.reason} (restricted source(s): ${statusProvenanceStrip.removedUrls.join(", ")})`
-        );
-        summary.skippedRestrictedSource++;
+        skipOnStripFailure(targetFacilityId, statusProvenanceStrip, dropUrls, summary);
         continue;
       }
       let statusPayload: StatusUpdateIntent = parsedIntent.data;
       if (statusSourceStrip.removedUrls.length > 0) {
         statusPayload = { ...parsedIntent.data, sources: statusSourceStrip.sources };
         console.log(
-          `stripped restricted source(s) from ${targetFacilityId}: ${statusSourceStrip.removedUrls.join(", ")}`
+          `stripped restricted/unverified source(s) from ${targetFacilityId}: ${statusSourceStrip.removedUrls.join(", ")}`
         );
       }
 
@@ -1128,7 +1567,7 @@ export async function runSubmit(
           { ...candidate.provenance, sources: statusProvenanceStrip.kept },
           opts.runId,
           opts.discoveredAt,
-          escalationNote
+          verdictNote
         ),
       };
 
@@ -1164,15 +1603,30 @@ export async function runSubmit(
       continue;
     }
 
-    let escalationNote: string | undefined;
+    // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
+    if (summary.submitted >= opts.max) {
+      console.log(`skip over cap: ${doc.id} — --max=${opts.max} already reached`);
+      summary.skippedOverCap++;
+      continue;
+    }
+
+    let verdictNote: string | undefined;
+    let dropUrls: ReadonlySet<string> = NO_DROPPED_URLS;
     if (!opts.dryRun && deps.verifyImpl) {
-      const gate = await verifyCandidateSources(sources, { entityName: doc.name }, deps.verifyImpl, timeoutGuard);
+      const gate = await verifyCandidateSources(
+        collectPublishedUrls(doc.sources, sources),
+        { entityName: doc.name },
+        deps.verifyImpl,
+        timeoutGuard
+      );
       if (!gate.survives) {
-        console.log(`skip unverified: ${doc.id} — ${gate.rejectionDetail}`);
-        summary.skippedUnverified++;
+        console.log(`skip ${gate.unreachable ? "unreachable" : "unverified"}: ${doc.id} — ${gate.rejectionDetail}`);
+        if (gate.unreachable) summary.skippedUnreachable++;
+        else summary.skippedUnverified++;
         continue;
       }
-      escalationNote = gate.escalationNote;
+      verdictNote = gate.verdictNote;
+      dropUrls = gate.dropUrls;
     }
 
     const isIdDuplicate = existingIds.has(doc.id);
@@ -1187,12 +1641,6 @@ export async function runSubmit(
     if (!isIdDuplicate && isNameDuplicate) {
       console.log(`skip duplicate: ${doc.id} — matches an existing facility by name/state/city`);
       summary.skippedDuplicate++;
-      continue;
-    }
-
-    if (summary.submitted >= opts.max) {
-      console.log(`skip over cap: ${doc.id} — --max=${opts.max} already reached`);
-      summary.skippedOverCap++;
       continue;
     }
 
@@ -1229,26 +1677,20 @@ export async function runSubmit(
       docSourceRefs.push({ path: "emissions.sourceIndex", index: doc.emissions.sourceIndex });
     }
 
-    const docSourceStrip = stripRestrictedFromSources(doc.sources, docSourceRefs);
+    const docSourceStrip = stripRestrictedFromSources(doc.sources, docSourceRefs, dropUrls);
     if (!docSourceStrip.ok) {
-      console.log(
-        `skip restricted: ${doc.id} — ${docSourceStrip.reason} (restricted source(s): ${docSourceStrip.removedUrls.join(", ")})`
-      );
-      summary.skippedRestrictedSource++;
+      skipOnStripFailure(doc.id, docSourceStrip, dropUrls, summary);
       continue;
     }
-    const docProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? []);
+    const docProvenanceStrip = stripRestrictedUrls(candidate.provenance.sources ?? [], dropUrls);
     if (!docProvenanceStrip.ok) {
-      console.log(
-        `skip restricted: ${doc.id} — ${docProvenanceStrip.reason} (restricted source(s): ${docProvenanceStrip.removedUrls.join(", ")})`
-      );
-      summary.skippedRestrictedSource++;
+      skipOnStripFailure(doc.id, docProvenanceStrip, dropUrls, summary);
       continue;
     }
     let finalDoc = doc;
     if (docSourceStrip.removedUrls.length > 0) {
       finalDoc = applyDocSourceStrip(doc, docSourceStrip.sources, docSourceStrip.remapped);
-      console.log(`stripped restricted source(s) from ${doc.id}: ${docSourceStrip.removedUrls.join(", ")}`);
+      console.log(`stripped restricted/unverified source(s) from ${doc.id}: ${docSourceStrip.removedUrls.join(", ")}`);
     }
 
     const envelope = {
@@ -1259,7 +1701,7 @@ export async function runSubmit(
         { ...candidate.provenance, sources: docProvenanceStrip.kept },
         opts.runId,
         opts.discoveredAt,
-        escalationNote
+        verdictNote
       ),
     };
 
@@ -1272,6 +1714,7 @@ export async function runSubmit(
 
     await postSubmission(deps, opts, envelope, doc.id, summary);
   }
+  settle();
 
   return summary;
 }
@@ -1307,13 +1750,66 @@ interface CliArgs {
   dryRun: boolean;
   baseUrl: string;
   state?: string;
+  resumeFromLog?: string;
+}
+
+/** Thrown when `--resume-from-log` cannot be used safely; `main()` exits 1 (config error). */
+export class ResumeLogError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ResumeLogError";
+  }
+}
+
+/**
+ * Loads a previous run log and returns the candidates it recorded as `submitted` or
+ * `in_flight` (POST outcome unknown: skipped, never retried), keyed by candidate index. Refuses (throws `ResumeLogError`) unless the log
+ * demonstrably belongs to THIS candidates file: it must list every candidate, and
+ * each record's index and content hash must match the candidate at that index. A
+ * mismatch would skip the wrong candidates, so it is never tolerated.
+ */
+export function loadResumeLog(logPath: string, candidates: unknown[]): Map<number, CandidateOutcomeRecord> {
+  let parsed: { candidateOutcomes?: unknown };
+  try {
+    parsed = JSON.parse(readFileSync(logPath, "utf-8")) as { candidateOutcomes?: unknown };
+  } catch {
+    throw new ResumeLogError(`--resume-from-log: could not read or parse ${logPath}`);
+  }
+  const records = parsed?.candidateOutcomes;
+  if (!Array.isArray(records)) {
+    throw new ResumeLogError(`--resume-from-log: ${logPath} has no candidateOutcomes (log from an older version?)`);
+  }
+  if (records.length !== candidates.length) {
+    throw new ResumeLogError(
+      `--resume-from-log: ${logPath} lists ${records.length} candidates but the candidates file has ${candidates.length}`
+    );
+  }
+  const submitted = new Map<number, CandidateOutcomeRecord>();
+  for (const [position, record] of (records as Array<Partial<CandidateOutcomeRecord> | null>).entries()) {
+    const index = record?.index;
+    if (typeof index !== "number" || !Number.isInteger(index) || index < 0 || index >= candidates.length) {
+      throw new ResumeLogError(`--resume-from-log: ${logPath} has a record with an invalid index`);
+    }
+    // One record per candidate, in file order: a duplicate or shuffled index would silently drop a record
+    // (and a dropped "submitted" one is re-POSTed).
+    if (index !== position) {
+      throw new ResumeLogError(`--resume-from-log: ${logPath} record ${position} claims index ${index}`);
+    }
+    if (record?.hash !== candidateHash(candidates[index])) {
+      throw new ResumeLogError(
+        `--resume-from-log: ${logPath} does not belong to this candidates file (candidate #${index} differs)`
+      );
+    }
+    if (record.outcome === "submitted" || record.outcome === "in_flight") submitted.set(index, record as CandidateOutcomeRecord);
+  }
+  return submitted;
 }
 
 function parseArgs(argv: string[]): CliArgs {
   const [inputPath, ...flags] = argv;
   if (!inputPath) {
     console.error(
-      "Usage: submit-candidates.ts <candidates.json> [--run-id=ID] [--max=N] [--dry-run] [--base-url=URL] [--state=XX]"
+      "Usage: submit-candidates.ts <candidates.json> [--run-id=ID] [--max=N] [--dry-run] [--base-url=URL] [--state=XX] [--resume-from-log=PATH]"
     );
     process.exit(1);
   }
@@ -1323,9 +1819,15 @@ function parseArgs(argv: string[]): CliArgs {
   let dryRun = false;
   let baseUrl = process.env.API_BASE_URL ?? "http://localhost:3000";
   let state: string | undefined;
+  let resumeFromLog: string | undefined;
 
-  for (const flag of flags) {
-    if (flag === "--dry-run") {
+  for (let i = 0; i < flags.length; i++) {
+    const flag = flags[i];
+    if (flag === "--resume-from-log") {
+      resumeFromLog = flags[++i];
+    } else if (flag.startsWith("--resume-from-log=")) {
+      resumeFromLog = flag.slice("--resume-from-log=".length);
+    } else if (flag === "--dry-run") {
       dryRun = true;
     } else if (flag.startsWith("--run-id=")) {
       runId = flag.slice("--run-id=".length);
@@ -1342,14 +1844,31 @@ function parseArgs(argv: string[]): CliArgs {
     }
   }
 
-  return { inputPath, runId, max, dryRun, baseUrl, state };
+  if (resumeFromLog !== undefined && resumeFromLog === "") {
+    console.error("--resume-from-log requires a path");
+    process.exit(1);
+  }
+
+  return { inputPath, runId, max, dryRun, baseUrl, state, resumeFromLog };
 }
 
-function writeLog(summary: RunSubmitSummary): void {
+export function writeLog(summary: RunSubmitSummary): void {
   const dir = process.env.DISCOVERY_LOG_DIR ?? path.join(process.cwd(), "discovery-logs");
   mkdirSync(dir, { recursive: true });
   const logPath = path.join(dir, `run-${summary.runId}.json`);
-  writeFileSync(logPath, JSON.stringify(summary, null, 2));
+  // Temp file + rename: a kill mid-write must leave the previous complete log, never a torn one.
+  const tmpPath = `${logPath}.${process.pid}.tmp`;
+  try {
+    writeFileSync(tmpPath, JSON.stringify(summary, null, 2));
+  } catch (err) {
+    try {
+      unlinkSync(tmpPath);
+    } catch {
+      // best effort: the write error is the one worth reporting
+    }
+    throw err;
+  }
+  renameSync(tmpPath, logPath);
 }
 
 /**
@@ -1380,6 +1899,7 @@ export async function runSubmitAndLog(
   try {
     return await runSubmit(candidates, opts, {
       ...deps,
+      checkpoint: deps.checkpoint ?? writeLogImpl,
       onSummaryInit: (summary) => {
         partial = summary;
       },
@@ -1425,7 +1945,11 @@ export async function runSubmitAndLog(
 function buildRealVerifyImpl(): (url: string, claim: VerifyClaim) => Promise<VerificationResult> {
   return (url, claim) =>
     verifySource(url, claim, {
-      fetchPageTextImpl: (pageUrl) => fetchPageText(pageUrl, {}),
+      fetchPageTextImpl: (pageUrl) =>
+        fetchTextWithPdfRetry(pageUrl, {
+          fetchPageTextImpl: (u) => fetchPageText(u, {}),
+          fetchPdfTextImpl: (u) => fetchPdfText(u, {}),
+        }),
       callOllamaImpl: (opts) => callOllama({ ...opts, fetchImpl: fetch }),
     });
 }
@@ -1480,21 +2004,33 @@ function buildRealProbe(): () => Promise<ProbeOllamaResult> {
  * alerting off. `errors` means something else entirely: we tried to stage a
  * candidate we had already decided was good, and it broke.
  *
- * Deliberately ONE nonzero code, not a graded scale ("some failed" vs "all
- * failed"). The sole consumer is a shell `if !`, which can only see
- * zero/nonzero; a graded code would be a distinction no caller can act on, and
- * a second thing to keep in sync. The graded information is not lost — it is in
- * the summary JSON, which `main()` prints before exiting on the completed-run
- * path (⚠️ not on every path: a `VerificationGateUnavailableError` reaches
- * `main().catch` and prints no summary to stdout — `writeLog` still persists
- * the partial, so diagnosis survives) and
- * `writeLog` persists to `run-<runId>.json`. Exit codes answer "did this run
- * lose work"; the JSON answers "how much, and which". Note too that every other
- * failure path in `main()` already exits 1, so a distinct code here would imply
- * a difference in kind that does not exist.
+ * Exit codes are classified in one place: see `EXIT_GATE_UNAVAILABLE`. In short, 1 =
+ * `errors` or a 401 config error, 3 = transient outage (retry later), 3 wins over 1
+ * except for a 401. The counts live in the summary JSON, which `main()` prints
+ * before exiting on the completed-run path and `writeLog` persists to
+ * `run-<runId>.json` (the file run.sh reads, abort paths included).
  */
-export function exitCodeForSummary(summary: Pick<RunSubmitSummary, "errors">): number {
+export function exitCodeForSummary(
+  summary: Pick<RunSubmitSummary, "errors"> &
+    Partial<Pick<RunSubmitSummary, "apiUnavailable" | "apiAuthRejected" | "skippedUnreachable" | "discovered">>
+): number {
+  // Outage first: the intake API went away (a partial batch still reports its
+  // counts in the summary) or the network, not the sources, failed for most
+  // candidates. Both mean "retry this state later", not "this batch is bad".
+  if ((summary.apiAuthRejected ?? 0) > 0) return 1; // config error: wins over a retry
+  if ((summary.apiUnavailable ?? 0) > 0) return EXIT_GATE_UNAVAILABLE;
+  const unreachable = summary.skippedUnreachable ?? 0;
+  if (unreachable >= UNREACHABLE_MAJORITY_MIN && 2 * unreachable > (summary.discovered ?? 0)) {
+    return EXIT_GATE_UNAVAILABLE;
+  }
   return summary.errors > 0 ? 1 : 0;
+}
+
+/** Exit code for an error that aborted `runSubmitAndLog`; undefined means unexpected (rethrow). */
+export function exitCodeForAbort(err: unknown): number | undefined {
+  if (err instanceof VerificationGateUnavailableError) return EXIT_GATE_UNAVAILABLE;
+  if (err instanceof CheckpointWriteError) return 1;
+  return undefined;
 }
 
 /**
@@ -1516,6 +2052,14 @@ export async function main(): Promise<void> {
     process.exit(1);
   }
 
+  // A-OPS-08: VERIFY_SOURCES_ENABLED=false in .env.local must not silently
+  // disable the gate on scheduled runs. The scheduler sets DISCOVERY_REQUIRE_VERIFY=1.
+  if (requireVerifyViolation()) {
+    console.error(VERIFY_DISABLED_REFUSAL); // config error: repeats every run, so exit 1, not a retry
+    process.exit(1);
+    return;
+  }
+
   const args = parseArgs(process.argv.slice(2));
 
   let raw: unknown[];
@@ -1526,6 +2070,20 @@ export async function main(): Promise<void> {
     console.error(`Could not read/parse ${args.inputPath}: ${formatErrorSummary(err)}`);
     process.exit(1);
     return;
+  }
+
+  let resumeSubmitted: Map<number, CandidateOutcomeRecord> | undefined;
+  if (args.resumeFromLog) {
+    try {
+      resumeSubmitted = loadResumeLog(args.resumeFromLog, raw);
+    } catch (err) {
+      if (!(err instanceof ResumeLogError)) throw err;
+      // lint-no-raw-error-logs: allow -- own error class; messages are fixed text plus a file path and counts, never a driver error
+      console.error(err.message);
+      process.exit(1);
+      return;
+    }
+    console.log(`resume: ${resumeSubmitted.size} candidate(s) already submitted per ${args.resumeFromLog}`);
   }
 
   // Fail fast on a stale index, before any candidate is processed. Unlike the
@@ -1553,7 +2111,7 @@ export async function main(): Promise<void> {
         "refusing to stage candidates against the committed data/facilities.json snapshot, which may " +
         "be stale. Staging nothing this run rather than risking a false duplicate or a lost update."
     );
-    process.exit(1);
+    process.exit(EXIT_GATE_UNAVAILABLE);
     return;
   }
   const existingFacilities = existingFacilitiesResult.facilities;
@@ -1566,18 +2124,32 @@ export async function main(): Promise<void> {
 
   // `runSubmitAndLog`, not `runSubmit`: the run log must survive a
   // verification-gate abort, which used to skip `writeLog` entirely.
-  const summary = await runSubmitAndLog(
-    raw,
-    {
-      runId: args.runId,
-      max: args.max,
-      dryRun: args.dryRun,
-      baseUrl: args.baseUrl,
-      state: args.state,
-      discoveredAt: new Date().toISOString(),
-    },
-    { fetchImpl: fetch, existingFacilities, verifyImpl, probeOllama: verifyImpl ? buildRealProbe() : undefined }
-  );
+  let summary: RunSubmitSummary;
+  try {
+    summary = await runSubmitAndLog(
+      raw,
+      {
+        runId: args.runId,
+        max: args.max,
+        dryRun: args.dryRun,
+        baseUrl: args.baseUrl,
+        state: args.state,
+        discoveredAt: new Date().toISOString(),
+        resumeSubmitted,
+      },
+      { fetchImpl: fetch, existingFacilities, verifyImpl, probeOllama: verifyImpl ? buildRealProbe() : undefined }
+    );
+  } catch (err) {
+    const code = exitCodeForAbort(err);
+    if (code === undefined) throw err;
+    // Ollama down / model not pulled: the partial run log was already written
+    // by runSubmitAndLog's finally. Distinct exit so run.sh retries the state later.
+    // A failed checkpoint is exit 1: retrying cannot help until the log dir is fixed.
+    // lint-no-raw-error-logs: allow -- CheckpointWriteError carries a fixed message plus an errno code; the gate error is formatted
+    console.error(err instanceof CheckpointWriteError ? err.message : formatFatalError(err));
+    process.exit(code);
+    return;
+  }
 
   // Print the summary FIRST, then exit on it: the JSON is the diagnosis, and it
   // has to survive the failure case it describes.

@@ -47,6 +47,8 @@ describe("AccessRequestForm commercial category", () => {
     await user.selectOptions(screen.getByLabelText(/^category/i), "commercial");
     expect(screen.getByRole("link", { name: "commercial access" })).toHaveAttribute("href", "/access/commercial");
     expect(screen.getByRole("status")).toHaveTextContent(/everyone else/i);
+    expect(screen.getByRole("status")).toHaveTextContent(/school email/i);
+    expect(screen.getByRole("status")).toHaveTextContent(/personal addresses \(Gmail, Outlook and similar\) are declined/i);
     expect(screen.getByRole("button", { name: /request access/i })).toBeDisabled();
     await user.selectOptions(screen.getByLabelText(/^category/i), "academic");
     expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
@@ -69,7 +71,7 @@ describe("AccessRequestForm category options by tier", () => {
   it("offers only the academic option with the tier off", () => {
     render(<AccessRequestForm termsVersion="2026-11-draft" commercialTier={false} />);
     const options = within(screen.getByLabelText(/^category/i)).getAllByRole("option");
-    expect(options.map((o) => o.textContent)).toEqual(["Choose a category", "Student, educator or academic"]);
+    expect(options.map((o) => o.textContent)).toEqual(["Choose a category", "Student or educator"]);
     expect(screen.queryByRole("option", { name: /something else/i })).not.toBeInTheDocument();
   });
 

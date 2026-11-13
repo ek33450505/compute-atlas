@@ -2,9 +2,10 @@
  * Read-only health check for the `discovery_heartbeat` singleton row.
  *
  * Why this exists: the discovery pipeline runs on the maintainer's Mac via
- * launchd at 13:00 local. `macOS StartCalendarInterval` does NOT catch up a
- * missed run — if the machine is asleep/off at 13:00, the run simply never
- * happens, and nothing on that machine errors (there's nothing there to error
+ * launchd at 13:00 local. launchd runs a `StartCalendarInterval` slot missed while the Mac was
+ * asleep on its next wake (`man launchd.plist`). For a Mac that was powered off, the man page is
+ * silent, and the one observed case (2026-09-05) was not caught up, so the run simply never
+ * happens. Nothing on that machine errors (there's nothing there to error
  * — the job never fired). The "RESIDUAL GAP" note in the alerting section of
  * `scripts/discovery/run.sh` documents this gap
  * and has a *local* partial mitigation (a same-machine stale check that only
@@ -73,42 +74,66 @@ import { formatErrorSummary } from "../../lib/db-error";
 import { getDb, hasDatabaseUrl } from "../../lib/db/client";
 import { discoveryHeartbeatTable, type DiscoveryHeartbeatRow } from "../../lib/db/schema";
 import { isEntrypoint } from "../is-entrypoint";
+import { dayAwareStaleHours, MON_FRI } from "../schedule-budget";
 
 // --- threshold -----------------------------------------------------------
 
 /**
- * Deliberately matches the same-named `DISCOVERY_STALE_HOURS` default in
- * `scripts/discovery/run.sh` (`DISCOVERY_STALE_HOURS="${DISCOVERY_STALE_HOURS:-84}"`)
- * so the local (on-machine, same-run) check and this remote (off-machine,
- * scheduled) check agree on what "stale" means. Keep these two literals in
- * sync if either changes. 84h = the Mon-Fri schedule's longest gap
- * (Fri -> Mon, up to ~72h) + 12h slack.
+ * The discovery schedule: Mon-Fri 13:00 America/New_York (since 2026-11-12).
+ * The default staleness budget is DAY-AWARE (`dayAwareStaleHours`): 24h per day
+ * back to the most recent scheduled weekday strictly before today, plus 12h
+ * slack. Today's own run is never required.
+ *
+ *   Mon 84 · Tue-Sat 36 · Sun 60
+ *
+ * `scripts/discovery/run.sh` carries the same table in bash for its local
+ * check; keep both in sync. A flat 84h hid a single missed Tue/Wed/Thu run
+ * (~48h gap).
  */
-export const DISCOVERY_STALE_HOURS_DEFAULT = 84;
+export const DISCOVERY_SCHEDULE = { timeZone: "America/New_York", weekdays: MON_FRI } as const;
 
 /**
- * Parses `DISCOVERY_STALE_HOURS` from the environment. An unset/empty value
- * falls back to `DISCOVERY_STALE_HOURS_DEFAULT`. A value that IS present but
- * fails to parse as a positive number THROWS rather than silently falling
- * back — an unparseable limit that disables its own bound is a known trap in
- * this repo (see `scripts/discovery/run.sh`'s and `extract-fields.ts`'s
- * `ENRICHMENT_LIMIT`/`VERIFY_LIMIT` validation for the same precaution).
+ * Resolves the staleness threshold. An unset/empty `DISCOVERY_STALE_HOURS`
+ * yields the day-aware budget for `now`. A value that IS present is a fixed
+ * override and, unless it is a positive INTEGER (the same `^[1-9][0-9]*$` rule
+ * as run.sh), THROWS rather than
+ * silently falling back — an unparseable limit that disables its own bound is
+ * a known trap in this repo (see `scripts/discovery/run.sh`'s and
+ * `extract-fields.ts`'s `ENRICHMENT_LIMIT`/`VERIFY_LIMIT` validation for the
+ * same precaution).
  */
-export function parseStaleHoursEnv(raw: string | undefined): number {
+export function parseStaleHoursEnv(raw: string | undefined, now: Date = new Date()): number {
   if (raw === undefined || raw === "") {
-    return DISCOVERY_STALE_HOURS_DEFAULT;
+    return dayAwareStaleHours(now, DISCOVERY_SCHEDULE);
   }
-  const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed <= 0) {
+  if (!/^[1-9][0-9]*$/.test(raw)) {
     throw new Error(
-      `check-heartbeat: DISCOVERY_STALE_HOURS="${raw}" is not a valid positive number of hours. ` +
-        `Refusing to silently fall back to the default (${DISCOVERY_STALE_HOURS_DEFAULT}h) — an ` +
+      `check-heartbeat: DISCOVERY_STALE_HOURS="${raw}" is not a positive whole number of hours. ` +
+        "Refusing to silently fall back to the day-aware default — an " +
         "unparseable threshold that disables the bound is exactly the failure mode this repo has " +
         "hit before (see run.sh's ENRICHMENT_LIMIT/VERIFY_LIMIT validation)."
     );
   }
-  return parsed;
+  return Number(raw);
 }
+
+// --- zero-yield alarm ------------------------------------------------------
+
+/**
+ * Consecutive scheduled runs that staged nothing before run.sh sets the
+ * heartbeat `status` to `ZERO_YIELD_STATUS`. One empty run is normal (nothing
+ * new that day); five in a row, about a week of weekday runs at 4 states per
+ * run (~20 states), is not: a source/resolver/gate failure that exits 0 looks
+ * exactly like that. The streak is computed by run.sh from the previous LOCAL
+ * discovery-logs/heartbeat.json (`consecutiveZeroYieldRuns`, never published:
+ * publish-heartbeat.ts validates and ignores it). This remote check needs no
+ * new error class: any status !== "ok" already throws `HeartbeatDegradedError`,
+ * whose message names the recorded status.
+ */
+export const ZERO_YIELD_RUNS_ALARM = 5;
+
+/** Heartbeat `status` run.sh records once the streak reaches `ZERO_YIELD_RUNS_ALARM`. */
+export const ZERO_YIELD_STATUS = "zero_yield";
 
 // --- read ------------------------------------------------------------------
 
@@ -172,8 +197,8 @@ export class HeartbeatStaleError extends Error {
     super(
       `discovery_heartbeat is stale: last run ${report.ageHours.toFixed(1)}h ago ` +
         `(threshold ${report.thresholdHours}h), recorded status="${report.row.status}". Scheduled ` +
-        "discovery runs were likely missed entirely (macOS StartCalendarInterval does not catch up " +
-        "a missed run)."
+        "discovery runs were likely missed entirely (launchd runs a slot missed during sleep on wake; " +
+        "a slot missed while the Mac was off was not caught up when observed on 2026-09-05)."
     );
     this.name = "HeartbeatStaleError";
     this.report = report;
@@ -190,6 +215,18 @@ export class HeartbeatDegradedError extends Error {
   readonly report: HeartbeatFreshnessReport;
 
   constructor(report: HeartbeatFreshnessReport) {
+    if (report.row.status === ZERO_YIELD_STATUS) {
+      super(
+        `discovery_heartbeat is FRESH but recorded status="${ZERO_YIELD_STATUS}": the last ${ZERO_YIELD_RUNS_ALARM}+ ` +
+          `scheduled runs (latest ${report.ageHours.toFixed(1)}h ago, threshold ${report.thresholdHours}h) staged ` +
+          "nothing. The runs executed and exited cleanly, so this is a silent pipeline failure, not a missed run: " +
+          "check discovery-logs/ on the maintainer's Mac for skippedUnreachable / skippedUnverified counts " +
+          "(resolver or network outage, Ollama gate, sources all dead)."
+      );
+      this.name = "HeartbeatDegradedError";
+      this.report = report;
+      return;
+    }
     super(
       `discovery_heartbeat is FRESH but DEGRADED: a run finished ${report.ageHours.toFixed(1)}h ` +
         `ago (threshold ${report.thresholdHours}h) and recorded status="${report.row.status}" ` +
@@ -226,9 +263,10 @@ export class HeartbeatDegradedError extends Error {
  * echoes the recorded status and its report keeps `isDegraded`.
  */
 export async function runHeartbeatCheck(
-  thresholdHours: number = parseStaleHoursEnv(process.env.DISCOVERY_STALE_HOURS),
+  thresholdHours?: number,
   now: Date = new Date()
 ): Promise<HeartbeatFreshnessReport> {
+  const threshold = thresholdHours ?? parseStaleHoursEnv(process.env.DISCOVERY_STALE_HOURS, now);
   const row = await fetchHeartbeatRow();
   if (!row) {
     throw new HeartbeatMissingError();
@@ -238,11 +276,11 @@ export async function runHeartbeatCheck(
   const report: HeartbeatFreshnessReport = {
     row,
     ageHours,
-    thresholdHours,
+    thresholdHours: threshold,
     isDegraded: row.status !== "ok",
   };
 
-  if (ageHours > thresholdHours) {
+  if (ageHours > threshold) {
     throw new HeartbeatStaleError(report);
   }
 
