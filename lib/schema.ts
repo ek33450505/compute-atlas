@@ -548,6 +548,19 @@ const constructionSchema = z.object({
       sourceIndex: sourceIndexSchema,
     })
     .optional(),
+  // `disturbedAcres` is the area disturbed as stated on a stormwater construction
+  // permit (e.g. a Texas TCEQ TXR15 notice of intent), separate from `landAcres`
+  // (the site's land area). `receivingWater` is the water body the permit names
+  // as receiving the site's stormwater; `segment` is the state's segment id when
+  // stated, a string because ids can carry leading zeros (e.g. "0828").
+  disturbedAcres: z.object({ value: z.number().positive(), sourceIndex: sourceIndexSchema }).optional(),
+  receivingWater: z
+    .object({
+      name: z.string().min(1),
+      segment: z.string().min(1).optional(),
+      sourceIndex: sourceIndexSchema,
+    })
+    .optional(),
   phases: z
     .array(
       z.object({
@@ -753,6 +766,8 @@ export interface V2SourceIndexCarrier {
     expectedStart?: IndexedRef;
     expectedCompletion?: IndexedRef;
     permitValuationUsd?: IndexedRef;
+    disturbedAcres?: IndexedRef;
+    receivingWater?: IndexedRef;
     phases?: IndexedRef[];
   };
 }
@@ -773,6 +788,8 @@ export function v2SourceIndexRefs(f: V2SourceIndexCarrier): { path: string; inde
   add("construction.expectedStart", f.construction?.expectedStart);
   add("construction.expectedCompletion", f.construction?.expectedCompletion);
   add("construction.permitValuationUsd", f.construction?.permitValuationUsd);
+  add("construction.disturbedAcres", f.construction?.disturbedAcres);
+  add("construction.receivingWater", f.construction?.receivingWater);
   f.construction?.phases?.forEach((p, i) => add(`construction.phases[${i}]`, p));
   return out;
 }
@@ -815,6 +832,8 @@ export function remapV2SourceIndices<T extends V2SourceIndexCarrier>(
       c.expectedCompletion = one("construction.expectedCompletion", c.expectedCompletion);
     if (c.permitValuationUsd)
       c.permitValuationUsd = one("construction.permitValuationUsd", c.permitValuationUsd);
+    if (c.disturbedAcres) c.disturbedAcres = one("construction.disturbedAcres", c.disturbedAcres);
+    if (c.receivingWater) c.receivingWater = one("construction.receivingWater", c.receivingWater);
     if (c.phases) c.phases = c.phases.map((p, i) => one(`construction.phases[${i}]`, p));
     out.construction = c;
   }

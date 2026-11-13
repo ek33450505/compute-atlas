@@ -85,6 +85,16 @@ const cases: [string, (i?: number) => Record<string, unknown>, string][] = [
     "construction.permitValuationUsd.sourceIndex",
   ],
   [
+    "construction.disturbedAcres",
+    (i) => ({ construction: { disturbedAcres: { value: 12.5, sourceIndex: i } } }),
+    "construction.disturbedAcres.sourceIndex",
+  ],
+  [
+    "construction.receivingWater",
+    (i) => ({ construction: { receivingWater: { name: "Brushy Creek", segment: "1244", sourceIndex: i } } }),
+    "construction.receivingWater.sourceIndex",
+  ],
+  [
     "construction.phases",
     (i) => ({ construction: { phases: [{ name: "Phase 1", mw: 50, expectedStart: "2027-01-15", sourceIndex: i }] } }),
     "construction.phases.0.sourceIndex",
@@ -117,6 +127,20 @@ describe("facilitySchema v2 fields: shape rules", () => {
       facilitySchema.safeParse({ ...dataCenter, construction: { expectedStart: { date: "Q3 2027", sourceIndex: 0 } } }).success
     ).toBe(false);
     expect(facilitySchema.safeParse({ ...dataCenter, construction: { phases: [] } }).success).toBe(false);
+  });
+  it("rejects non-positive disturbedAcres", () => {
+    for (const value of [0, -3]) {
+      expect(
+        facilitySchema.safeParse({ ...dataCenter, construction: { disturbedAcres: { value, sourceIndex: 0 } } }).success
+      ).toBe(false);
+    }
+  });
+  it("rejects a blank receivingWater name or segment, and allows a missing segment", () => {
+    const rw = (r: Record<string, unknown>) => ({ ...dataCenter, construction: { receivingWater: { sourceIndex: 0, ...r } } });
+    expect(facilitySchema.safeParse(rw({ name: "" })).success).toBe(false);
+    expect(facilitySchema.safeParse(rw({ name: "Brushy Creek", segment: "" })).success).toBe(false);
+    expect(facilitySchema.safeParse(rw({ name: "Brushy Creek" })).success).toBe(true);
+    expect(facilitySchema.safeParse(rw({ name: "Lake", segment: "0828" })).success).toBe(true);
   });
   it("rejects a bad phase date at the phase path", () => {
     const phase = (extra: Record<string, unknown>) => ({
@@ -193,6 +217,8 @@ describe("v2SourceIndexRefs / remapV2SourceIndices", () => {
       expectedStart: { date: "2027", sourceIndex: 0 },
       expectedCompletion: { date: "2028", sourceIndex: 1 },
       permitValuationUsd: { amountUsd: 1, permitNumber: "B-1", sourceIndex: 2 },
+      disturbedAcres: { value: 304, sourceIndex: 1 },
+      receivingWater: { name: "Brushy Creek", segment: "1244", sourceIndex: 2 },
       phases: [
         { name: "P1", mw: 50, expectedStart: "2027-01", expectedCompletion: "2027-12-31", sourceIndex: 0 },
         { name: "P2", sourceIndex: 1 },
@@ -210,6 +236,8 @@ describe("v2SourceIndexRefs / remapV2SourceIndices", () => {
     "construction.expectedStart.sourceIndex",
     "construction.expectedCompletion.sourceIndex",
     "construction.permitValuationUsd.sourceIndex",
+    "construction.disturbedAcres.sourceIndex",
+    "construction.receivingWater.sourceIndex",
     "construction.phases[0].sourceIndex",
     "construction.phases[1].sourceIndex",
   ];

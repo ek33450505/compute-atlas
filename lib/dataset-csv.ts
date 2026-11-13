@@ -111,6 +111,9 @@ const COLUMNS: readonly Column[] = [
   ["construction.expectedStart", (f) => f.construction?.expectedStart?.date],
   ["construction.expectedCompletion", (f) => f.construction?.expectedCompletion?.date],
   ["construction.permitValuationUsd", (f) => f.construction?.permitValuationUsd?.amountUsd],
+  ["construction.disturbedAcres", (f) => f.construction?.disturbedAcres?.value],
+  ["construction.receivingWater", (f) => f.construction?.receivingWater?.name],
+  ["construction.receivingWater.segment", (f) => f.construction?.receivingWater?.segment],
 ];
 
 /** The fixed, ordered header row of the CSV edition. */
@@ -201,6 +204,12 @@ export const CSV_COLUMN_NOTES: Readonly<Record<string, string>> = {
     "Expected construction completion, a forecast as stated by a source: YYYY, YYYY-MM or YYYY-MM-DD.",
   "construction.permitValuationUsd":
     "Valuation declared on a construction permit, in US dollars (USD). Separate from investmentUsd.",
+  "construction.disturbedAcres":
+    "Area disturbed by construction, in acres, as stated on a stormwater construction permit. Separate from landAcres.",
+  "construction.receivingWater":
+    "Water body named on a stormwater construction permit as receiving the site's runoff.",
+  "construction.receivingWater.segment":
+    "The state's water-quality segment id for construction.receivingWater, when the permit states one.",
 };
 
 /** How many columns the CSV edition has, for public copy that quotes it. */

@@ -150,6 +150,9 @@ const CSV_SPECS: readonly CsvSpec[] = [
   ["construction.expectedStart", "date", "all"],
   ["construction.expectedCompletion", "date", "all"],
   ["construction.permitValuationUsd", "number", "all", { unit: "USD" }],
+  ["construction.disturbedAcres", "number", "all", { unit: "acres" }],
+  ["construction.receivingWater", "string", "all"],
+  ["construction.receivingWater.segment", "string", "all"],
 ];
 
 /** JSON-only fields (facilities.json), `inCsv: false`. Meanings follow the comments in lib/schema.ts. */
