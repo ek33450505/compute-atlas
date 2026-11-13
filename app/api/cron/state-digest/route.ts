@@ -80,11 +80,12 @@ import { DIGEST_GROUP_WORST_CASE_MS, notifyStateSubscribersMonthly } from "@/lib
  *      mailing nobody, because the unique index is on the exact `(since, until)` pair and a
  *      one-minute window can never collide with a calendar month.
  *
- * Why Vercel Cron and not local launchd: launchd does not catch up a missed
- * `StartCalendarInterval` run. Observed here 2026-09-05 — the Mac booted 32 minutes after a
- * 13:00 schedule and launchd simply waited for the next occurrence (`runs = 0`, no error, no
- * log line, no notification). For a MONTHLY job that failure mode costs a whole month and
- * produces no signal at all, and a laptop asleep on the 1st is the normal case. Vercel Cron
+ * Why Vercel Cron and not local launchd: launchd runs a `StartCalendarInterval` slot missed
+ * while the Mac was asleep on its next wake (`man launchd.plist`), but the one observed
+ * powered-off case was not caught up: the Mac booted 32 minutes after a 13:00 schedule and
+ * launchd waited for the next occurrence (`runs = 0`, no error, no log line, no notification,
+ * 2026-09-05). A monthly job cannot depend on the maintainer's laptop being on at the moment it
+ * fires, and that failure mode costs a whole month with no signal. Vercel Cron
  * runs against the deployed function and needs no machine awake; `lib/notify.ts` already
  * executes in the Next runtime there for the approve path, so this adds a trigger, not a new
  * execution environment.

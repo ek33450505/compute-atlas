@@ -2,9 +2,10 @@
  * Read-only health check for the `discovery_heartbeat` singleton row.
  *
  * Why this exists: the discovery pipeline runs on the maintainer's Mac via
- * launchd at 13:00 local. `macOS StartCalendarInterval` does NOT catch up a
- * missed run — if the machine is asleep/off at 13:00, the run simply never
- * happens, and nothing on that machine errors (there's nothing there to error
+ * launchd at 13:00 local. launchd runs a `StartCalendarInterval` slot missed while the Mac was
+ * asleep on its next wake (`man launchd.plist`). For a Mac that was powered off, the man page is
+ * silent, and the one observed case (2026-09-05) was not caught up, so the run simply never
+ * happens. Nothing on that machine errors (there's nothing there to error
  * — the job never fired). The "RESIDUAL GAP" note in the alerting section of
  * `scripts/discovery/run.sh` documents this gap
  * and has a *local* partial mitigation (a same-machine stale check that only
@@ -196,8 +197,8 @@ export class HeartbeatStaleError extends Error {
     super(
       `discovery_heartbeat is stale: last run ${report.ageHours.toFixed(1)}h ago ` +
         `(threshold ${report.thresholdHours}h), recorded status="${report.row.status}". Scheduled ` +
-        "discovery runs were likely missed entirely (macOS StartCalendarInterval does not catch up " +
-        "a missed run)."
+        "discovery runs were likely missed entirely (launchd runs a slot missed during sleep on wake; " +
+        "a slot missed while the Mac was off was not caught up when observed on 2026-09-05)."
     );
     this.name = "HeartbeatStaleError";
     this.report = report;

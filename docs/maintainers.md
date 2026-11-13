@@ -172,7 +172,7 @@ window in `state_digest_runs` before building or sending anything, so a repeat c
 same window is a no-op rather than a duplicate send. Read the enable checklist in the route
 file's header before flipping either switch — it explains `completedAt IS NULL` (a prior run
 that claimed a window and crashed before finishing) and why a deliberate resend requires
-deleting that window's row rather than a `?force=` parameter.
+resuming that window, never deleting its `state_digest_runs` row. A resume is at-most-once: the route re-sends only to recipients whose final `email_sends` row proves no mail left, so a crashed run is recovered by calling the same `?since=&until=` window again (not by a `?force=` parameter or a row delete).
 
 ✅ **"Email me when reviewed" is LIVE as of 2026-09-14** (Ed's decision).
 `SUBMISSION_NOTIFY_ENABLED=true` is set in production.
@@ -439,8 +439,7 @@ The site is cited by third parties, so no correspondence may carry the maintaine
 ## Releases
 
 The project follows [Semantic Versioning](https://semver.org). Releases are published via
-[GitHub Releases](https://github.com/ek33450505/compute-atlas/releases) and automated with
-release-please; see [CHANGELOG.md](../CHANGELOG.md).
+[GitHub Releases](https://github.com/ek33450505/compute-atlas/releases). The release-please workflow is disabled (`disabled_manually`, checked with `gh workflow list --all` on 2026-11-12), so release PRs are not opened automatically; see [CHANGELOG.md](../CHANGELOG.md).
 
 The final open edition (`data/facilities.json`, 3,025 records) is frozen at older commits; the
 file is no longer tracked. Its `asOf` timestamp in `data/facilities.meta.json` records when a
@@ -452,7 +451,11 @@ snapshot was generated.
 re-checked when its trigger fires. Never run `npm audit fix --force`. Bumps follow the 14-day
 publish-age floor (`npm update <pkg> --before=<today minus 14 days>`).
 
-No advisory is currently accepted: `npm audit` reports 0 vulnerabilities (2026-10-26).
+Measured 2026-11-12 (these counts change with live advisories): `npm audit --omit=dev` reports 0 findings; the full `npm audit` reports 5 (3 low, 2 moderate). "Dev-only" is inferred from the `--omit=dev` count of 0, not read from npm's dev flag.
+
+- **Moderate, open: `@hono/node-server` 2.1.5** (GHSA-qv5m-9pm6-hqp3, GHSA-jpvv-r467-5p4w; fixed in 2.1.6). It is pulled in only by the shadcn CLI, via `shadcn@4.22.1` > `@modelcontextprotocol/sdk@1.32.1` > `@hono/node-server@2.1.5` (`npm ls @hono/node-server`). It is not reachable from the deployed app. `2.1.6` was published 2026-11-02, so under the project's 14-day publish floor it becomes eligible on 2026-11-16. Planned: a lockfile-only update then.
+- **Moderate, open: `hono` 4.13.13** (GHSA-4m76-xfj5-7975, GHSA-h7mg-cq63-vhpq, GHSA-3gg2-335m-rxc6; affected `<=4.13.15`, fixed in 4.13.16). Same chain: `shadcn@4.22.1` > `@modelcontextprotocol/sdk@1.32.1` > `hono`, and it is also deduped under `@hono/node-server`. `4.13.16` was published 2026-11-01, so it is eligible under the 14-day floor on 2026-11-15. Planned: a lockfile-only update, with `@hono/node-server` on or after 2026-11-16.
+- **Low, accepted (Wave 5, 2026-11-12): `shadcn`, `@shadcn/registry`, `deepmerge`** (GHSA-gcqx-w48m-w2h4). Dev-only CLI tooling. npm's only offered fix is `shadcn@1.0.0`, a semver-major change to an old line. Revisit when shadcn ships a fixed release.
 
 Resolved: [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) (`braces` ≤3.0.3,
 dev-only, accepted 2026-10-21) was withdrawn by GitHub on 2026-10-23, so `npm audit` no longer
@@ -950,7 +953,7 @@ snapshot but isn't — comparing data cannot see a stale *render*. Run
 
 ## CI database role (`ci_monitor`)
 
-The `DATABASE_URL` GitHub Actions secret must hold the `ci_monitor` URL, not the owner credential. The role is `LOGIN`, read-only by default (`default_transaction_read_only`, 30s `statement_timeout`) and holds `SELECT` on `api_daily_usage`, `discovery_heartbeat` and `state_digest_runs` only: exactly what `schema-check` and `discovery-watchdog` read. `schema-check` lists tables through `pg_catalog.pg_tables`, because `information_schema` hides tables a role has no privilege on.
+The `DATABASE_URL` GitHub Actions secret must hold the `ci_monitor` URL, not the owner credential. The role is `LOGIN`, read-only by default (`default_transaction_read_only`, 30s `statement_timeout`) and holds table-level `SELECT` on `api_daily_usage`, `discovery_heartbeat` and `state_digest_runs`, and column-level `SELECT` only on `subscriptions` (`status`, `target_type`), `email_sends` (`id`, `created_at`, `kind`, `email_hash`, `subscription_id`, `run_id`, `outcome`, `error_code`), `paypal_webhook_events` (`received_at`, `processed_at`) and `dataset_editions` (`built_at`, `status`). Those four tables have no table-level grant and no `email` column is readable (`GRANTED_COLUMNS` in `scripts/ops/create-ci-monitor-role.ts`). `schema-check` lists tables through `pg_catalog.pg_tables`, because `information_schema` hides tables a role has no privilege on.
 
 To (re)create or rotate it, with the owner `DATABASE_URL` in `.env.local`:
 

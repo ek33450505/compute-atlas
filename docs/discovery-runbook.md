@@ -50,7 +50,7 @@ launchctl print gui/$(id -u)/com.compute-atlas.discovery   # verify: state, runs
 
 The job runs Mon-Fri at 13:00 local (Mon/Wed/Fri until 2026-11-12), processing `STATES_PER_RUN` states per invocation (default 4 since 2026-11-12; 3 from 2026-10-09; 2 from 2026-08-14 — the rotation was expanded to all 50 states + DC on 2026-09-13 and the review cap raised 25 → 30, and `STATES_PER_RUN` was raised 2 → 3 on 2026-10-09 after zero overrun warnings since 2026-09-16, then 3 → 4 on 2026-11-12 alongside the move to Mon-Fri (4-state run times are not yet measured); see `docs/discovery-pipeline.md` and the `STATES_PER_RUN` comment in `scripts/discovery/run.sh`) from a rotation cursor. It stays a no-op until you uncomment `DISCOVERY_ENABLED=true` (fail-closed by default).
 
-Midday (rather than overnight) is deliberate: macOS `launchd` defers a missed `StartCalendarInterval` to the next wake, so an early-morning slot is simply skipped whenever the Mac is asleep. 13:00 assumes the machine is normally awake and lid-open then — if your usage differs, pick an hour when the Mac is reliably on, or move the job off the laptop entirely (e.g. a cron/CI runner with an API key instead of the subscription). Once a run *has* started, `run.sh` wraps the `claude -p` call in `caffeinate -i` (macOS only; a no-op elsewhere) so idle sleep can't suspend a long research call mid-run.
+Midday (rather than overnight) is deliberate: launchd (`man launchd.plist`, `StartCalendarInterval`) starts a job missed while the Mac was asleep the next time it wakes, coalescing several missed intervals into one, so sleep alone does not skip a round. A Mac that was powered off at the slot is different: launchd does not catch that up, and the one measured case did not run (see the kickstart recovery below). 13:00 assumes the machine is normally awake and lid-open then — if your usage differs, pick an hour when the Mac is reliably on, or move the job off the laptop entirely (e.g. a cron/CI runner with an API key instead of the subscription). Once a run *has* started, `run.sh` wraps the `claude -p` call in `caffeinate -i` (macOS only; a no-op elsewhere) so idle sleep can't suspend a long research call mid-run.
 
 ### PATH gotcha
 
@@ -72,7 +72,7 @@ Why a pipe and not `CLAUDE_CODE_OAUTH_TOKEN`: the headless session reads untrust
 CLAUDE_CONFIG_DIR=$(mktemp -d) CLAUDE_CODE_OAUTH_TOKEN_FILE_DESCRIPTOR=3 claude -p ok 3< <(printf '%s' sk-ant-oat01-bogus)
 ```
 
-**2026-10-27 session hardening (measured from the transcripts; corrects the hook and settings inference above).** The user-level `~/.claude/settings.json` does not load on this path, but CAST's managed PreToolUse hook still fires there (80× in those transcripts). The repo's gitignored `.claude/settings.local.json` did load until `--restricted` was added. That file is ignored by the user's global gitignore (`~/.gitignore_global`), not by the repo's `.gitignore`. Tool access is set by `CLAUDE_TOOL_FLAGS` in `run.sh` (line 397): `--restricted --strict-mcp-config --tools WebSearch,WebFetch,Read,Glob,Grep,Bash`, with `Write`, `Edit`, `NotebookEdit`, `Agent`, `Task`, `ps`, `pgrep` and `lsof` denied. Shell network fetches are granted only to the GET-only `scripts/discovery/fetch-url.sh` wrapper. Read-only commands that take no path (`echo`, `whoami`, `date`, `uname`) still auto-run, including inside `$(...)` in the wrapper's argument, so their output can reach a GET URL: no secret may live in claude's environment or in any process's argv (`run.sh:350-366`). The three command denies match the command name only, so path-qualified forms such as `/bin/ps` are unmeasured (`run.sh:370-373`). claude runs from `DISCOVERY_WORK_DIR` (default `~/.compute-atlas-discovery/work`, `run.sh:395`) in a subshell cd'd there (`run.sh:505-507`). It refuses to start unless that directory is empty (a `.DS_Store` is tolerated) and outside the repo (`run.sh:529-566`).
+**2026-10-27 session hardening (measured from the transcripts; corrects the hook and settings inference above).** The user-level `~/.claude/settings.json` does not load on this path, but CAST's managed PreToolUse hook still fires there (80× in those transcripts). The repo's gitignored `.claude/settings.local.json` did load until `--restricted` was added. That file is ignored by the user's global gitignore (`~/.gitignore_global`), not by the repo's `.gitignore`. Tool access is set by `CLAUDE_TOOL_FLAGS` in `run.sh`: `--restricted --strict-mcp-config --tools WebSearch,WebFetch,Read,Glob,Grep,Bash`, with `Write`, `Edit`, `NotebookEdit`, `Agent`, `Task`, `ps`, `pgrep` and `lsof` denied. Shell network fetches are granted only to the GET-only `scripts/discovery/fetch-url.sh` wrapper. Read-only commands that take no path (`echo`, `whoami`, `date`, `uname`) still auto-run, including inside `$(...)` in the wrapper's argument, so their output can reach a GET URL: no secret may live in claude's environment or in any process's argv (the environment comments next to `CLAUDE_TOOL_FLAGS` in `run.sh`). The three command denies match the command name only, so path-qualified forms such as `/bin/ps` are unmeasured (the same block in `run.sh`). claude runs from `DISCOVERY_WORK_DIR` (default `~/.compute-atlas-discovery/work`, set in `run.sh`) in a subshell cd'd there (in `run.sh`, around the `claude` call). It refuses to start unless that directory is empty (a `.DS_Store` is tolerated) and outside the repo (the work-directory check in `run.sh` before the `claude` call).
 
 ⛔ **Measured 2026-10-11: the isolated config dir also drops the MODEL and EFFORT, which confirms the inference above at the cost of a day's run.** `~/.claude/settings.json` carried `"model": "opus"` and `"effortLevel": "high"`, and the headless call had silently depended on both. The first scheduled run after #404 (VT WV IA) used `claude-sonnet-5-5` at default effort. It made 2 WebSearches per state, answered `[]` in 14–20s and reported `status=ok`. Earlier stored-login runs used Opus with 89–173 tool uses at 10–45 min per state. `run.sh` now passes `--model "$DISCOVERY_CLAUDE_MODEL" --effort "$DISCOVERY_CLAUDE_EFFORT"` (defaults `opus` / `high`) on every call, validates both before any state runs, and logs `claude model=… effort=…` once per batch. Anything else the call used to inherit from `~/.claude` is gone too, so pin it explicitly instead of relying on a settings file. Headless transcripts now live under `~/.compute-atlas-discovery/claude-config/projects/`, not `~/.claude/projects/`. Look there for the `model` field and the tool-use count.
 
@@ -107,7 +107,7 @@ The second line prints the stored length only. A token copied across a terminal 
 
 A run logs `using long-lived Claude token from keychain item compute-atlas-discovery-claude-token` when it found the item and handed it to `claude` (the log names the item, never the value). Since 2026-10-10 the isolated config dir leaves the token as the call's only credential, so a run that authenticates after that line used the token; before then the line recorded delivery, not use.
 
-**Residual risk.** A prompt-injected discovery session could read this item itself by running `security find-generic-password … -w` in its sandboxed Bash. That is the same exposure the CLI's own stored login (the `Claude Code-credentials` keychain item) already has today, so the token does not make it worse; and the pipe/descriptor delivery does not close it, because the session can go straight to the keychain. It is closed only by tightening the headless session's Bash permissions, which is an open maintainer decision (see the CORRECTION comment above `CLAUDE_TOOL_FLAGS` in `scripts/discovery/run.sh`). Creating the item is still optional (without it the job falls back to the stored login), but since 2026-10-10 it is what makes the job survive a login lapse.
+**Residual risk.** A prompt-injected discovery session could read this item itself by running `security find-generic-password … -w` in its sandboxed Bash. That is the same exposure the CLI's own stored login (the `Claude Code-credentials` keychain item) already has today, so the token does not make it worse; and the pipe/descriptor delivery does not close it, because the session can go straight to the keychain. It is closed only by tightening the headless session's Bash permissions, which is an open maintainer decision. Creating the item is still optional (without it the job falls back to the stored login), but since 2026-10-10 it is what makes the job survive a login lapse.
 
 - **The token expires about a year after you create it.** Note the creation date when you make it (a calendar reminder a month early works). Rotate by repeating the setup (`-U` updates the existing item). A lapsed token fails the run with `auth` (see the next bullet).
 - **The item now displaces the stored login for the discovery call** (2026-10-10, via the isolated config dir; between 10-05 and 10-10 it did not). An expired, revoked or truncated token fails the run loudly with `auth`; the interactive login cannot rescue it. Fix by re-minting the token.
@@ -162,7 +162,7 @@ To force-restart a run already in flight (killing it first):
 launchctl kickstart -k gui/$(id -u)/com.compute-atlas.discovery
 ```
 
-**Why this is needed:** macOS `StartCalendarInterval` does NOT catch up a scheduled run missed while the machine was off or asleep — it waits for the next occurrence. Observed 2026-09-05: the Mac booted at 13:32:43, 32 minutes after the 13:00 schedule; `launchctl print` reported `runs = 0` / `last exit code = (never exited)`, and that day's round simply never happened with no error anywhere. Without a manual trigger, no discovery runs that day at all. The watchdog (see [Discovery watchdog](#discovery-watchdog) below) detects this on its own schedule in GitHub Actions; `discovery:now` is the operator's manual recovery tool.
+**Why this is needed:** launchd catches up a job missed while the Mac was asleep (`man launchd.plist`), but the man page says nothing about a Mac that was powered off, so treat a slot missed while powered off as missed. Observed once, 2026-09-05: the Mac booted at 13:32:43, 32 minutes after the 13:00 schedule; `launchctl print` reported `runs = 0` / `last exit code = (never exited)`, and that day's round simply never happened with no error anywhere. Without a manual trigger, no discovery runs that day at all. The watchdog (see [Discovery watchdog](#discovery-watchdog) below) detects this on its own schedule in GitHub Actions; `discovery:now` is the operator's manual recovery tool.
 
 ### Dry run
 
@@ -244,7 +244,7 @@ bats tests/discovery/
 
 An off-machine monitor in GitHub Actions detects when the local discovery pipeline has not run at all — the failure mode `run.sh` cannot self-detect, since it only fires when it runs — and, since 2026-09-28, when it ran and failed.
 
-**Why off-machine?** macOS `StartCalendarInterval` does NOT catch up a missed run: if the machine is asleep/off at 13:00 local, the run simply never happens, and nothing on that machine errors (there's nothing there to error — the job never fired). `run.sh` documents this as its own blind spot — it cannot detect "launchd never fired at all" — and a watchdog on the same machine shares that blind spot exactly. A monitor running in GitHub Actions can detect this gap even if the Mac stays asleep indefinitely.
+**Why off-machine?** if the Mac is asleep at 13:00 local, launchd runs the job on wake (`man launchd.plist`); if it is powered off at 13:00, the run may never happen (observed 2026-09-05), and nothing on that machine errors (there's nothing there to error — the job never fired). `run.sh` documents this as its own blind spot — it cannot detect "launchd never fired at all" — and a watchdog on the same machine shares that blind spot exactly. A monitor running in GitHub Actions can detect this gap even if the Mac stays asleep indefinitely.
 
 ⚠️ **Do not treat `run.sh`'s local alerting as a second signal** (corrected 2026-09-28). This paragraph used to open by asserting that `run.sh` "already alerts on its own failures — desktop notification plus a nonzero exit". Both halves are unreliable, which is why the watchdog's scope widened (see **Scope** below):
 
@@ -551,10 +551,10 @@ The bench deliberately duplicates the shipped quote-gate logic (see
 For each `new` lead (oldest first):
 
 0. If the lead's triage (recorded at submit time) already lists live facilities citing its URL, the lead is deferred as a possible duplicate **before any fetch or model call**, with a note pointing at `/admin/leads`.
-1. Fetches the lead's URL. A fetch failure leaves the lead `new` — a bot-walled page is not a bad tip — and is not counted against it.
+1. Fetches the lead's URL. A permanent failure (a 4xx outside the transient set, or a reason in `PERMANENT_FETCH_REASONS`) defers the lead at once. Any other failure is transient: the lead stays `new` and is retried on later runs until it is 14 days old (`LEAD_TRANSIENT_GIVE_UP_DAYS`), then deferred. The transient set is 401, 403 (bot walls), 408 and 429. A transient failure is not a rejection of the tip. `pdf_extractor_unavailable` (poppler missing) is an environment fault, not a judgement about the lead: the lead stays `new`, never ages out, and the run fails.
 2. Asks the model to extract `name`, `operator`, `facilityType`, `status`, `city`, `state`, and `capacityMw`, explicitly instructed to return `null` for anything the page does not state. **The model never produces coordinates** — that field does not exist in the extraction schema at all.
 3. If the extraction has no usable identity (`name`/`operator`/`state` all required), the lead moves to `deferred` — a human should look. A lead is never `dismissed` automatically; only a human dismisses a lead.
-4. Re-verifies the extracted name (plus any capacity figure, as a numeric hint) against the page via the same mechanical gate discovery submissions already use (`verify-source.ts`). Only a `"verified"` verdict proceeds. `"rejected"` (checked and it didn't hold up) moves the lead to `deferred`. `"escalate"` (the fetcher couldn't structurally ingest the page) leaves the lead untouched at `new` for a human to look at from the normal queue — it is deliberately never treated as a rejection. `"unavailable"` (the model itself could not be reached) **aborts the entire run**, exactly like the discovery submission gate — never silently reclassified as "nothing found."
+4. Re-verifies the extracted name (plus any capacity figure, as a numeric hint) against the page via the same mechanical gate discovery submissions already use (`verify-source.ts`). Only a `"verified"` verdict proceeds. `"rejected"` (checked and it didn't hold up) moves the lead to `deferred`. `"escalate"` (the fetcher couldn't structurally ingest the page) leaves the lead untouched at `new` for a human to look at from the normal queue — it is deliberately never treated as a rejection. Past 14 days it is deferred with a note instead. `"unavailable"` (the model itself could not be reached) **aborts the entire run**, exactly like the discovery submission gate — never silently reclassified as "nothing found."
 5. Duplicate guard: if a live facility has the same operator in the same state, the lead moves to `deferred` with a note ("possible duplicate of <ids> — stage an update via /admin/leads") instead of proposing a second facility. The match is deliberately broad, since a false positive costs a human glance. A DB error in this query **aborts the run** (fail-closed); unlike a geocode error, it is not treated as a judgement about the lead.
 6. Geocodes the extracted `city, state` via `geocodeUS` (`lib/geocode.ts`) — coordinates are derived ONLY this way, never proposed by the model. Zero geocode results moves the lead to `deferred`. A thrown geocode error (network/HTTP) leaves the lead `new` and the run continues. The request sends an identifying User-Agent (`LEADS_LANE_USER_AGENT`), because Nominatim returns 403 to Node's default one.
 7. Builds the `create` payload in exactly the shape `buildCreatePayload` (`lib/contribute.ts`) produces — `confidence: "rumored"`, `location.precision: "approximate"`, the lead's URL as the source — and validates it against `facilitySchema` before ever calling `createSubmission`.
@@ -565,7 +565,7 @@ The lead also has a human path: `/admin/leads` offers "Stage as submission", whi
 
 ### Usage
 
-**Every scheduled run:** `scripts/discovery/run.sh` runs the leads lane after the field-extraction/verification block, with `LEADS_LIMIT` (default 10, validated as a positive integer). Its summary goes to `discovery-logs/leads-lane-<run-id>.json` and stderr to `leads-lane.err`. It is skipped on `DISCOVERY_DRY_RUN=true`. A non-zero exit (Ollama unavailable or a DB error) marks the run FAIL with "leads: lane failed" but does not stop the rest of the run.
+**Every scheduled run:** `scripts/discovery/run.sh` runs the leads lane after the field-extraction/verification block, with `LEADS_LIMIT` (default 10, validated as a positive integer). Its summary goes to `discovery-logs/leads-lane-<run-id>.json` and stderr to `leads-lane.err`. It is skipped on `DISCOVERY_DRY_RUN=true`. The lane exits 1 when a staging write fails or `pdftotext` is missing (`leadsLaneExitCode`); the run then marks itself FAIL with "leads: lane failed" but does not stop the rest of the run. An Ollama `unavailable` verdict aborts the lane (step 4 above).
 
 Manual runs use the npm script:
 
@@ -600,3 +600,37 @@ Needs a local Ollama daemon with `OLLAMA_VERIFY_MODEL` pulled, same as every oth
   `"unavailable"` model response (extraction OR verification) throws and
   aborts the whole run rather than silently staging unverified leads or
   misreading an outage as "nothing found."
+
+## Operator notes: refused runs, run lock, resubmit queue, cursors
+
+- **Refused and skipped runs.** A run that stops before its cursor write publishes a
+  heartbeat and leaves the cursor untouched, so the next run retries the same states.
+  `refused` (exit 1) means a config error or the git guard failed; the `ERROR:` line in
+  `discovery-logs/launchd.out` names the reason. `skipped_env` (exit 75) means preflight
+  exit 3, an environmental failure (Ollama, or the facility read; see
+  `discovery-logs/preflight.log`). Neither status means the run did any research.
+- **`DISCOVERY_ALLOW_DIRTY=1`** bypasses the git guard (branch must be `main`, no merge,
+  rebase or cherry-pick in progress, no tracked changes other than the generated top-level
+  `public/data/*.geojson`, `public/data/map-layers.json`, `AGENTS.md` and `CLAUDE.md`). It is
+  logged as a WARN. Use it for a deliberate manual run only.
+- **Run lock.** `discovery-logs/run.lock/` is a directory with an `info` file (pid, start
+  time, run id). A live owner makes a new run refuse. A dead owner (SIGKILL, reboot) is taken
+  over with a WARN. Remove the directory by hand only when no run is active; the refusal
+  message says so.
+- **Resubmit queue.** `discovery-logs/resubmit-queue` has one line per pending retry:
+  `<first-failure epoch> <state or -> <candidates file> <latest run log> <prev log or ->`.
+  Four-field lines from earlier versions read as `prev -`. Lines older than 7 days
+  (604800 s) are dropped. The file is rewritten through a temp file and `mv`. Do not hand-edit
+  it while a run holds the lock; a live run rewrites it.
+- **Per-lane cursors.** The field-extraction and verification lanes keep
+  `discovery-logs/extract-cursor.txt` and `discovery-logs/verify-cursor.txt`. A lane proposes
+  its next cursor. The extract cursor advances only when extraction succeeded and the submit
+  exited 0 or had nothing to submit; exit 3 promotes only if the resubmit was queued; exit 1
+  promotes unless the run log shows `apiAuthRejected > 0` or is unreadable; any other exit does
+  not promote. The verify cursor advances on success alone. The write goes through
+  `scripts/discovery/cursor.ts --write` (a WARN and the old cursor kept on failure). A missing or empty cursor file means the start of the table.
+  To reset a lane, delete its cursor file while no run is active. The leads lane has no
+  cursor; it is oldest-first on every run.
+- **Zero yield.** The heartbeat carries per-state yield counts. The streak moves only on a run
+  where every batch state is `ok` and every submitted count is known; a failing or refused run
+  carries it unchanged. Five consecutive zero-yield runs publish status `zero_yield`.

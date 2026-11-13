@@ -14,8 +14,8 @@
  * Second, related gap this closes: a scheduled job that correctly does nothing
  * is indistinguishable from a dead one. Run *freshness* (not just conclusion)
  * disambiguates that, because the scheduled run still happens either way.
- * Freshness also catches GitHub auto-disabling a schedule after 60 days of
- * repo inactivity (`disabled_inactivity`) — that shows up here as
+ * Freshness also catches a schedule that GitHub has auto-disabled for repo
+ * inactivity (`disabled_inactivity`, per GitHub's public-repo rules) — that shows up here as
  * `never-run`/`stale`, not silence. A workflow disabled on purpose
  * (`disabled_manually`) is reported as `disabled` and does not alert.
  *
@@ -151,7 +151,7 @@ export function classifyWorkflow(
   /**
    * The workflow's own `state` from the Actions API. Only `disabled_manually`
    * (intentional) is non-alerting; `disabled_inactivity` is GitHub's automatic
-   * 60-day disable, which is exactly what freshness must still catch.
+   * inactivity disable, which is exactly what freshness must still catch.
    */
   workflowState = "active"
 ): WorkflowClassification {
