@@ -20,6 +20,7 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+import { CODEBOOK_CONVENTIONS, CODEBOOK_ENTRIES, STABLE_ID_STATEMENT } from "@/lib/dataset-codebook";
 import DataPage, { metadata } from "./page";
 
 afterEach(() => {
@@ -43,6 +44,19 @@ describe("DataPage", () => {
     expect(screen.queryByRole("heading", { name: "Commercial" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Why it costs money" })).not.toBeInTheDocument();
     expect(container.textContent).not.toMatch(/\$\d|request access|CSV columns/i);
+  });
+
+  it("renders the field definitions with the stable-id statement and a labelled table", async () => {
+    render(await DataPage());
+    expect(screen.getByRole("heading", { name: "Field definitions" })).toBeInTheDocument();
+    expect(screen.getByText(STABLE_ID_STATEMENT)).toBeInTheDocument();
+    for (const line of CODEBOOK_CONVENTIONS) expect(screen.getByText(line)).toBeInTheDocument();
+    expect(screen.getByText(`Field list (${CODEBOOK_ENTRIES.length} entries)`)).toBeInTheDocument();
+    const table = screen.getByRole("table", { hidden: true });
+    const headers = within(table)
+      .getAllByRole("columnheader", { hidden: true })
+      .map((h) => h.textContent);
+    expect(headers).toEqual(["Field", "Type", "Applies to", "Meaning"]);
   });
 
   it("renders the h1", async () => {

@@ -1,4 +1,5 @@
 import type { DatasetChangelogSummary } from "@/lib/dataset-changelog";
+import { CODEBOOK_CONVENTIONS, CODEBOOK_ENTRIES, STABLE_ID_STATEMENT, type CodebookEntry } from "@/lib/dataset-codebook";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
 /**
@@ -62,6 +63,15 @@ function wrap(text: string, width: number, first = "", rest = first): string[] {
   return lines;
 }
 
+/** "path (type; unit U; values a, b; applies to X): meaning" for the README's field list. */
+function fieldLine(e: CodebookEntry): string {
+  const facts: string[] = [e.type];
+  if (e.unit) facts.push(`unit ${e.unit}`);
+  if (e.values) facts.push(`values ${e.values.join(", ")}`);
+  facts.push(`applies to ${e.appliesTo === "all" ? "all" : e.appliesTo.join(", ")}`);
+  return `${e.path} (${facts.join("; ")}): ${e.meaning}`;
+}
+
 function assertEditionDate(value: string): void {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   const d = m ? new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])) : null;
@@ -123,6 +133,11 @@ export function buildReadme(input: BuildReadmeInput): string {
 
   section("CSV notes");
   for (const note of CSV_NOTES) out.push(...wrap(note, WRAP_COLUMNS, "- ", "  "));
+
+  section("Field definitions");
+  for (const note of CODEBOOK_CONVENTIONS) out.push(...wrap(note, WRAP_COLUMNS, "- ", "  "));
+  out.push("", ...wrap(STABLE_ID_STATEMENT, WRAP_COLUMNS), "");
+  for (const entry of CODEBOOK_ENTRIES) out.push(...wrap(fieldLine(entry), WRAP_COLUMNS, "- ", "  "));
 
   if (initial) {
     out.push("", `Initial edition: ${recordCount.toLocaleString("en-US")} records.`);
