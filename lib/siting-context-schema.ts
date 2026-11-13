@@ -11,6 +11,24 @@ import { z } from "zod";
 // field (`splitRiskLabel(label)`, `distanceMi.toFixed`). Loose objects: an extra
 // key is accepted and kept, so downstream readers see the exact stored shape.
 export const waterStressSchema = z.looseObject({ cat: z.number(), label: z.string() });
+export const joinKeysSchema = z.looseObject({
+  countyFips: z.string().regex(/^\d{5}$/).optional(),
+  tractGeoid: z.string().regex(/^\d{11}$/).optional(),
+  egridSubregion: z.string().min(1).optional(),
+  egridMultiple: z.literal(true).optional(),
+  pin: z.looseObject({
+    lat: z.number(),
+    lon: z.number(),
+    precision: z.enum(["exact", "approximate", "representative_multi_site"]),
+  }),
+  flags: z.array(z.string()).optional(),
+  sources: z.looseObject({
+    county: z.string(),
+    tract: z.string().optional(),
+    egrid: z.string(),
+  }),
+  computedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+});
 export const sitingContextSchema = z.looseObject({
   nearestWater: z
     .looseObject({ name: z.string(), kind: z.enum(["river", "lake"]), distanceMi: z.number() })
@@ -19,4 +37,5 @@ export const sitingContextSchema = z.looseObject({
   waterStress: waterStressSchema.nullish(),
   groundwaterDecline: waterStressSchema.nullish(),
   aquifer: z.looseObject({ name: z.string(), rock: z.string() }).nullish(),
+  joinKeys: joinKeysSchema.nullish(),
 });
