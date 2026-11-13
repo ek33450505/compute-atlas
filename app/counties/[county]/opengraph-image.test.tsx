@@ -73,6 +73,18 @@ describe("county opengraph-image", () => {
     expect(mockRenderCard.mock.calls[1][0].headline).toBe("Kenai Peninsula Borough, Alaska");
   });
 
+  it("substitutes glyphs the OG font lacks in the county name", async () => {
+    mockRenderCard.mockReturnValue(new Response("card"));
+    mockGetFacilitiesByCounty.mockResolvedValue([]);
+    mockGetCountyBySlug.mockResolvedValue({ slug: "maui-hi", name: "Maui ★ Hawaiʻi", state: "HI" });
+
+    await OGImage(params("maui-hi"));
+
+    const headline = mockRenderCard.mock.calls.at(-1)![0].headline;
+    expect(headline).toContain("Maui · Hawai‘i");
+    expect(headline).not.toMatch(/[ʻ★]/);
+  });
+
   it("falls back to the site card for an unknown county, without throwing", async () => {
     mockRenderFallback.mockReturnValue(new Response("fallback"));
     mockGetCountyBySlug.mockResolvedValue(undefined);

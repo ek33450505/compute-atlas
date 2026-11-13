@@ -14,6 +14,7 @@ import {
   verificationEnabled,
   exitCodeForSummary,
   EXIT_GATE_UNAVAILABLE,
+  buildDnsControl,
   API_AUTH_REJECTED_MESSAGE,
   candidateHash,
   loadResumeLog,
@@ -2500,6 +2501,66 @@ describe("runSubmit — API availability and unreachable sources", () => {
     expect(exitCodeForSummary(summary)).toBe(EXIT_GATE_UNAVAILABLE);
   });
 
+  describe("network_error errorCode and the DNS positive control", () => {
+    const failWith = (errorCode?: string) =>
+      makeVerifyImpl(() => ({
+        verdict: "rejected",
+        transportFailure: { reason: "network_error", ...(errorCode ? { errorCode } : {}) },
+      }));
+    const run = (
+      errorCode: string | undefined,
+      extra: Partial<Parameters<typeof runSubmit>[2]> = {},
+      n = 3
+    ) =>
+      runSubmit(cands(n), baseOpts(), {
+        fetchImpl: makeFetch([{ ok: true }]),
+        existingFacilities: [],
+        verifyImpl: failWith(errorCode),
+        sleepImpl,
+        ...extra,
+      });
+
+    it("ENOTFOUND majority with the control OK is link rot: skippedUnverified, not exit 3", async () => {
+      const summary = await run("ENOTFOUND", { dnsControlOk: async () => true });
+      expect(summary.skippedUnreachable).toBe(0);
+      expect(summary.skippedUnverified).toBe(3);
+      expect(exitCodeForSummary(summary)).not.toBe(EXIT_GATE_UNAVAILABLE);
+    });
+
+    it("ENOTFOUND majority with the control failing is an outage: exit 3", async () => {
+      const summary = await run("ENOTFOUND", { dnsControlOk: async () => false });
+      expect(summary.skippedUnreachable).toBe(3);
+      expect(exitCodeForSummary(summary)).toBe(EXIT_GATE_UNAVAILABLE);
+    });
+
+    it("ENOTFOUND with a control that throws, or no control dep, counts as unreachable", async () => {
+      const thrown = await run("ENOTFOUND", {
+        dnsControlOk: async () => {
+          throw new Error("EAI_AGAIN");
+        },
+      });
+      expect(thrown.skippedUnreachable).toBe(3);
+      expect(exitCodeForSummary(thrown)).toBe(EXIT_GATE_UNAVAILABLE);
+      expect((await run("ENOTFOUND")).skippedUnreachable).toBe(3);
+    });
+
+    it("runs the control fresh for each ENOTFOUND candidate (no caching)", async () => {
+      const control = vi.fn(async () => true);
+      await run("ENOTFOUND", { dnsControlOk: control }, 3);
+      expect(control).toHaveBeenCalledTimes(3);
+    });
+
+    it("ECONNREFUSED and a missing errorCode never call the control and stay unreachable", async () => {
+      const control = vi.fn(async () => true);
+      for (const code of ["ECONNREFUSED", undefined]) {
+        const summary = await run(code, { dnsControlOk: control });
+        expect(summary.skippedUnreachable).toBe(3);
+        expect(exitCodeForSummary(summary)).toBe(EXIT_GATE_UNAVAILABLE);
+      }
+      expect(control).not.toHaveBeenCalled();
+    });
+  });
+
   it("keeps a dead link (http_error) and a content mismatch in skippedUnverified", async () => {
     const verifyImpl = makeVerifyImpl((url) =>
       url.endsWith("s0")
@@ -2528,6 +2589,43 @@ describe("runSubmit — API availability and unreachable sources", () => {
     expect(summary.skippedUnverified).toBe(1);
     expect(summary.skippedUnreachable).toBe(0);
   });
+});
+
+describe("buildDnsControl", () => {
+  it("is true when the lookup resolves", async () => {
+    const lookupImpl = vi.fn(async () => ({ address: "1.2.3.4", family: 4 }));
+    expect(await buildDnsControl("https://www.compute-atlas.com", lookupImpl)()).toBe(true);
+    expect(lookupImpl).toHaveBeenCalledWith("www.compute-atlas.com");
+  });
+
+  it("is false when the lookup rejects", async () => {
+    const lookupImpl = vi.fn(async () => {
+      throw Object.assign(new Error("nope"), { code: "ENOTFOUND" });
+    });
+    expect(await buildDnsControl("https://www.compute-atlas.com", lookupImpl)()).toBe(false);
+  });
+
+  it("is false after the timeout when the lookup never settles, and clears its timer", async () => {
+    vi.useFakeTimers();
+    try {
+      const lookupImpl = vi.fn(() => new Promise<unknown>(() => {}));
+      const pending = buildDnsControl("https://www.compute-atlas.com", lookupImpl, 50)();
+      await vi.advanceTimersByTimeAsync(50);
+      expect(await pending).toBe(false);
+      expect(vi.getTimerCount()).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it.each(["http://localhost:3000", "http://127.0.0.1:3000", "http://[::1]:3000", "not a url"])(
+    "is false without calling lookup for %s",
+    async (baseUrl) => {
+      const lookupImpl = vi.fn(async () => ({}));
+      expect(await buildDnsControl(baseUrl, lookupImpl)()).toBe(false);
+      expect(lookupImpl).not.toHaveBeenCalled();
+    }
+  );
 });
 
 describe("main — gate unavailable and refused-gate exits", () => {
@@ -2798,6 +2896,50 @@ describe("durable checkpoints and in_flight resume", () => {
     } finally {
       warn.mockRestore();
     }
+  });
+
+  describe("--max across a resume", () => {
+    const resumeWith = (candidates: ReturnType<typeof raw>, outcomes: Array<"submitted" | "in_flight">) => {
+      const log = makeSummary({
+        discovered: candidates.length,
+        candidateOutcomes: candidates.map((c, index) => ({
+          index,
+          hash: candidateHash(c),
+          outcome: outcomes[index] ?? "not_attempted",
+          ...(outcomes[index] === "submitted" ? { submissionId: `sub-${index}` } : {}),
+        })),
+      });
+      return loadResumeLog(writeLogFile(log), candidates);
+    };
+
+    it("carried submitted records consume the cap: max=3, 2 carried, 3 fresh -> 1 POST", async () => {
+      const candidates = raw(5);
+      const resumeSubmitted = resumeWith(candidates, ["submitted", "submitted"]);
+      const fetchImpl = makeFetch([ok("a"), ok("b"), ok("c")]);
+      const summary = await runSubmit(candidates, baseOpts({ max: 3, resumeSubmitted }), { fetchImpl, existingFacilities: [], sleepImpl });
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      expect(summary.submitted).toBe(1);
+      expect(summary.skippedOverCap).toBe(2);
+    });
+
+    it("a carried in_flight record counts too", async () => {
+      const candidates = raw(4);
+      const resumeSubmitted = resumeWith(candidates, ["in_flight"]);
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      try {
+        const fetchImpl = makeFetch([ok("a"), ok("b"), ok("c")]);
+        await runSubmit(candidates, baseOpts({ max: 3, resumeSubmitted }), { fetchImpl, existingFacilities: [], sleepImpl });
+        expect(fetchImpl).toHaveBeenCalledTimes(2);
+      } finally {
+        warn.mockRestore();
+      }
+    });
+
+    it("without a resume the cap is unchanged", async () => {
+      const fetchImpl = makeFetch([ok("a"), ok("b"), ok("c")]);
+      await runSubmit(raw(5), baseOpts({ max: 3 }), { fetchImpl, existingFacilities: [], sleepImpl });
+      expect(fetchImpl).toHaveBeenCalledTimes(3);
+    });
   });
 
   it("a checkpoint failure aborts before the next POST and maps to exit 1", async () => {

@@ -33,6 +33,7 @@
  */
 import { createHash } from "node:crypto";
 import { readFileSync, mkdirSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { lookup } from "node:dns/promises";
 import path from "node:path";
 
 import { formatErrorSummary, formatFatalError, redactedErrorCode, scrubUriCredentials } from "../../lib/db-error";
@@ -226,6 +227,11 @@ export interface RunSubmitDeps {
   checkpoint?: (summary: RunSubmitSummary) => void;
   /** Test seam for the POST retry backoff; defaults to setTimeout. */
   sleepImpl?: (ms: number) => Promise<void>;
+  /**
+   * Positive control for `ENOTFOUND` (see `isUnreachableResult`): true when a known-good
+   * host resolves right now. Absent, or false/throwing, ENOTFOUND counts as unreachable.
+   */
+  dnsControlOk?: () => Promise<boolean>;
   fetchImpl: typeof fetch;
   existingFacilities: Facility[];
   /**
@@ -500,6 +506,18 @@ const PROBE_TIMEOUT_MS = 5_000;
 interface TimeoutGuard {
   probe?: () => Promise<ProbeOllamaResult>;
   remaining: number;
+  /** Positive control for ENOTFOUND; absent means "not link rot" (conservative). */
+  dnsControl?: () => Promise<boolean>;
+}
+
+async function dnsControlOk(guard: TimeoutGuard): Promise<boolean> {
+  if (!guard.dnsControl) return false;
+  // Fresh every time, never cached: a cached true could hide an outage that starts mid-run.
+  try {
+    return await guard.dnsControl();
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -535,13 +553,47 @@ function collectPublishedUrls(payloadSources: Source[], provenanceSources: strin
 
 /**
  * A source that could not be READ because the network failed, not because the
- * source is bad. `transportFailure` carries only the fetcher's reason enum (the
- * resolver/connect error code is not propagated by verify-source.ts), so
- * `network_error` is the signal; an `errorCode` on the failure, when a future
- * verify-source adds one, is not required.
+ * source is bad. `network_error` is the signal. `ENOTFOUND` is link rot (a dead
+ * domain, permanent) ONLY when `dnsControlOk` says a control lookup of a known-good
+ * host succeeded at that moment: a resolver outage also yields `ENOTFOUND`, and
+ * miscounting it as link rot would exit 0 and silently lose the candidates. A
+ * missing `errorCode` counts as unreachable.
  */
-function isUnreachableResult(result: VerificationResult): boolean {
-  return result.verdict !== "verified" && result.transportFailure?.reason === "network_error";
+function isUnreachableResult(result: VerificationResult, dnsControlOk: boolean): boolean {
+  return (
+    result.verdict !== "verified" &&
+    result.transportFailure?.reason === "network_error" &&
+    !(result.transportFailure.errorCode === "ENOTFOUND" && dnsControlOk)
+  );
+}
+
+const DNS_CONTROL_TIMEOUT_MS = 3_000;
+
+/**
+ * Default positive control for `ENOTFOUND`: resolves the intake API's own hostname.
+ * Fails toward "unreachable" (false) on any error or timeout, and for a host that
+ * resolves without DNS (localhost, an IP literal), where the lookup proves nothing.
+ */
+export function buildDnsControl(
+  baseUrl: string,
+  lookupImpl: (host: string) => Promise<unknown> = lookup,
+  timeoutMs: number = DNS_CONTROL_TIMEOUT_MS
+): () => Promise<boolean> {
+  return async () => {
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      const host = new URL(baseUrl).hostname.replace(/^\[|\]$/g, "");
+      if (!host || host === "localhost" || /^[\d.]+$/.test(host) || host.includes(":")) return false;
+      const timeout = new Promise<false>((resolve) => {
+        timer = setTimeout(() => resolve(false), timeoutMs);
+      });
+      return await Promise.race([lookupImpl(host).then(() => true as const), timeout]);
+    } catch {
+      return false;
+    } finally {
+      if (timer) clearTimeout(timer);
+    }
+  };
 }
 
 /** Per-URL outcome the gate records; `dropped` URLs are stripped from the staged payload. */
@@ -729,10 +781,12 @@ async function verifyCandidateSources(
     return { survives: true, verdictNote: renderVerdictNote(lines), dropUrls };
   }
 
+  const sawNotFound = results.some(({ result }) => result.transportFailure?.errorCode === "ENOTFOUND");
+  const controlOk = sawNotFound ? await dnsControlOk(guard) : false;
   const unreachable =
     results.length > 0 &&
     timedOutUrls.length === 0 &&
-    results.every(({ result }) => isUnreachableResult(result));
+    results.every(({ result }) => isUnreachableResult(result, controlOk));
   return {
     survives: false,
     unreachable,
@@ -1265,6 +1319,13 @@ export async function runSubmit(
     summary.candidateOutcomes[index] = { ...carried, index, hash: record.hash, carriedForward: true };
   }
 
+  // Carried submitted / in_flight records (in_flight may have reached the API) already spent
+  // --max budget in the earlier attempt, so total staged across attempts stays within the cap.
+  let carriedCapUsed = 0;
+  for (const carried of opts.resumeSubmitted?.values() ?? []) {
+    if (carried.outcome === "submitted" || carried.outcome === "in_flight") carriedCapUsed++;
+  }
+
   // Before ANY work, so a caller holding this reference can still log how far
   // the run got if it aborts (see `RunSubmitDeps.onSummaryInit`).
   deps.onSummaryInit?.(summary);
@@ -1272,6 +1333,7 @@ export async function runSubmit(
   const timeoutGuard: TimeoutGuard = {
     probe: deps.probeOllama,
     remaining: deps.timeoutBudget ?? DEFAULT_TIMEOUT_BUDGET,
+    dnsControl: deps.dnsControlOk,
   };
 
   if (!opts.dryRun && !deps.verifyImpl) {
@@ -1392,7 +1454,7 @@ export async function runSubmit(
       }
 
       // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
-      if (summary.submitted >= opts.max) {
+      if (summary.submitted + carriedCapUsed >= opts.max) {
         console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
         summary.skippedOverCap++;
         continue;
@@ -1512,7 +1574,7 @@ export async function runSubmit(
       }
 
       // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
-      if (summary.submitted >= opts.max) {
+      if (summary.submitted + carriedCapUsed >= opts.max) {
         console.log(`skip over cap: ${targetFacilityId} — --max=${opts.max} already reached`);
         summary.skippedOverCap++;
         continue;
@@ -1604,7 +1666,7 @@ export async function runSubmit(
     }
 
     // Checked before the gate (no Ollama spend); a duplicate arriving at the cap counts as skippedOverCap.
-    if (summary.submitted >= opts.max) {
+    if (summary.submitted + carriedCapUsed >= opts.max) {
       console.log(`skip over cap: ${doc.id} — --max=${opts.max} already reached`);
       summary.skippedOverCap++;
       continue;
@@ -2137,7 +2199,13 @@ export async function main(): Promise<void> {
         discoveredAt: new Date().toISOString(),
         resumeSubmitted,
       },
-      { fetchImpl: fetch, existingFacilities, verifyImpl, probeOllama: verifyImpl ? buildRealProbe() : undefined }
+      {
+        fetchImpl: fetch,
+        existingFacilities,
+        verifyImpl,
+        probeOllama: verifyImpl ? buildRealProbe() : undefined,
+        dnsControlOk: buildDnsControl(args.baseUrl),
+      }
     );
   } catch (err) {
     const code = exitCodeForAbort(err);

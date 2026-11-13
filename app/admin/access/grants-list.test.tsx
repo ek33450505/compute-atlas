@@ -281,7 +281,7 @@ describe("GrantsList: revoke", () => {
     await waitFor(() => expect(mockRevoke).toHaveBeenCalledWith("g1", "Shared publicly"));
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Revoked access for Ada Lovelace"));
     expect(screen.getByRole("status")).toHaveTextContent("No email was sent");
-    expect(mockRefresh).toHaveBeenCalled();
+    await waitFor(() => expect(mockRefresh).toHaveBeenCalled());
   });
 
   it("commercial: the dialog says the subscription is cancelled, and the result says no refund was issued", async () => {
@@ -364,11 +364,13 @@ describe("GrantsList: revoke", () => {
     await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Grant is not active."));
     expect(screen.getByRole("alert")).toHaveTextContent("Error.");
     // Not eligible: the row may be stale, so it refreshes, and the buttons stay usable.
-    expect(mockRefresh).toHaveBeenCalled();
-    expect(screen.getByRole("button", { name: /Revoke access for/ })).not.toHaveAttribute(
-      "aria-disabled",
-      "true"
-    );
+    await waitFor(() => {
+      expect(mockRefresh).toHaveBeenCalled();
+      expect(screen.getByRole("button", { name: /Revoke access for/ })).not.toHaveAttribute(
+        "aria-disabled",
+        "true"
+      );
+    });
   });
 
   it("shows a generic failure and closes the dialog when revoking throws", async () => {

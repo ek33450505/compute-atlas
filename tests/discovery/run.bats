@@ -4268,6 +4268,38 @@ assert_refused() { # status exit-code
 	[[ "$q_log" == "$LOG_DIR"/run-*-enrichment.json ]] || return 1
 }
 
+@test "resubmit: unreadable (mode 000) queue fails closed, states still run, file untouched" {
+	[[ $EUID -eq 0 ]] && skip "root can read mode 000 files"
+	export DISCOVERY_ENABLED=true
+	seed_resubmit_entry "$(date +%s)" VA
+	orig="$(cat "$LOG_DIR/resubmit-queue")"
+	ino="$(ls -i "$LOG_DIR/resubmit-queue" | awk '{print $1}')"
+	chmod 000 "$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	chmod 600 "$LOG_DIR/resubmit-queue"
+	[ "$status" -eq 1 ]
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	[[ "$output" == *"WARN: resubmit queue unreadable, drain skipped: $LOG_DIR/resubmit-queue"* ]] || return 1
+	[[ "$output" == *"resubmit: queue unreadable, drain skipped"* ]] || return 1
+	[ "$(cat "$LOG_DIR/resubmit-queue")" = "$orig" ]
+	[ "$(ls -i "$LOG_DIR/resubmit-queue" | awk '{print $1}')" = "$ino" ]
+	grep -q -- "--state=TX" "$SUBMIT_ARGV_LOG"
+}
+
+@test "resubmit: queue path that is a directory fails closed, states still run" {
+	export DISCOVERY_ENABLED=true
+	mkdir "$LOG_DIR/resubmit-queue"
+	ino="$(ls -di "$LOG_DIR/resubmit-queue" | awk '{print $1}')"
+	run bash "$RUN_SH"
+	[ "$(ls -di "$LOG_DIR/resubmit-queue" | awk '{print $1}')" = "$ino" ]
+	[ "$status" -eq 1 ]
+	grep -q '"status": "degraded"' "$LOG_DIR/heartbeat.json"
+	[ -d "$LOG_DIR/resubmit-queue" ]
+	[[ "$output" == *"WARN: resubmit queue unreadable, drain skipped: $LOG_DIR/resubmit-queue"* ]] || return 1
+	[[ "$output" == *"resubmit: queue unreadable, drain skipped"* ]] || return 1
+	grep -q -- "--state=TX" "$SUBMIT_ARGV_LOG"
+}
+
 # Seed a queue entry. Args: epoch state [with_log=1] [with_prev=0] [line_override]
 seed_resubmit_entry() {
 	local epoch="$1" state="$2"

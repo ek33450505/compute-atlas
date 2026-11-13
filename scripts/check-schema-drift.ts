@@ -68,6 +68,13 @@ export interface ExpectedTableShape {
   columns: ExpectedColumn[];
   /** Named indexes, unique constraints and hand-managed indexes, as "table: name". */
   indexes: { table: string; name: string }[];
+  /**
+   * Foreign keys, as "table: name". Column-level `.references()` carries no explicit name;
+   * Drizzle names it `<table>_<cols>_<foreign table>_<foreign cols>_fk` (ForeignKey.getName),
+   * matching the CONSTRAINT names in drizzle/*.sql, then cut to Postgres's 63-byte identifier
+   * limit (the DB stores the truncated name). Read from pg_constraint, not pg_class.
+   */
+  foreignKeys: { table: string; name: string }[];
 }
 
 /**
@@ -90,6 +97,21 @@ export const HAND_MANAGED_INDEXES: { table: string; name: string; migration: str
   },
 ];
 
+const PG_MAX_IDENTIFIER_BYTES = 63;
+
+/** Longest prefix of whole code points that fits 63 UTF-8 bytes (Postgres clips on a character boundary). */
+export function toPgIdentifier(name: string): string {
+  let bytes = 0;
+  let out = "";
+  for (const ch of name) {
+    const len = Buffer.byteLength(ch);
+    if (bytes + len > PG_MAX_IDENTIFIER_BYTES) break;
+    bytes += len;
+    out += ch;
+  }
+  return out;
+}
+
 /**
  * Derives expected columns (name + NOT NULL) and named indexes / unique
  * constraints from every pgTable export via `getTableConfig`, for the same
@@ -98,6 +120,7 @@ export const HAND_MANAGED_INDEXES: { table: string; name: string; migration: str
 export function getExpectedShape(): ExpectedTableShape {
   const columns: ExpectedColumn[] = [];
   const indexes: { table: string; name: string }[] = [];
+  const foreignKeys: { table: string; name: string }[] = [];
   for (const value of Object.values(schema)) {
     if (!is(value, PgTable)) continue;
     const cfg = getTableConfig(value);
@@ -114,6 +137,7 @@ export function getExpectedShape(): ExpectedTableShape {
     for (const col of cfg.columns) {
       if (col.isUnique && col.uniqueName) indexes.push({ table: cfg.name, name: col.uniqueName });
     }
+    for (const fk of cfg.foreignKeys) foreignKeys.push({ table: cfg.name, name: toPgIdentifier(fk.getName()) });
     for (const uc of cfg.uniqueConstraints) {
       const name = uc.name;
       if (name) indexes.push({ table: cfg.name, name });
@@ -122,7 +146,8 @@ export function getExpectedShape(): ExpectedTableShape {
   for (const h of HAND_MANAGED_INDEXES) indexes.push({ table: h.table, name: h.name });
   columns.sort((a, b) => a.key.localeCompare(b.key));
   indexes.sort((a, b) => a.name.localeCompare(b.name));
-  return { columns, indexes };
+  foreignKeys.sort((a, b) => a.name.localeCompare(b.name));
+  return { columns, indexes, foreignKeys };
 }
 
 /**
@@ -235,6 +260,16 @@ export async function runSchemaDriftCheck(
     `)
   ).rows;
 
+  const fkRows = (
+    await db.execute<{ tablename: string; conname: string }>(sql`
+      SELECT c.relname AS tablename, k.conname
+      FROM pg_catalog.pg_constraint k
+      JOIN pg_catalog.pg_class c ON c.oid = k.conrelid
+      JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND k.contype = 'f'
+    `)
+  ).rows;
+
   const liveCols = new Map(colRows.map((r) => [`${r.tablename}.${r.attname}`, r.attnotnull]));
   const liveIdx = new Set(idxRows.map((r) => r.indexname));
   const expectedColKeys = new Set(expectedShape.columns.map((c) => c.key));
@@ -254,9 +289,15 @@ export async function runSchemaDriftCheck(
       );
     }
   }
-  const missingIndexes = expectedShape.indexes
-    .filter((i) => !missingTableSet.has(i.table) && !liveIdx.has(i.name))
-    .map((i) => `${i.table}: ${i.name}`);
+  const liveFks = new Set(fkRows.map((r) => `${r.tablename}: ${r.conname}`));
+  const missingIndexes = [
+    ...expectedShape.indexes
+      .filter((i) => !missingTableSet.has(i.table) && !liveIdx.has(i.name))
+      .map((i) => `${i.table}: ${i.name}`),
+    ...expectedShape.foreignKeys
+      .filter((f) => !missingTableSet.has(f.table) && !liveFks.has(`${f.table}: ${f.name}`))
+      .map((f) => `${f.table}: ${f.name}`),
+  ];
 
   // Info only: extras in the DB (e.g. a manual hotfix index) never fail the run.
   // Scoped to expected tables so unrelated public-schema tables stay out of it.
@@ -340,7 +381,7 @@ function printDrift(report: SchemaDriftReport): void {
     ["expected table(s) missing", report.missingTables],
     ["expected column(s) missing", report.missingColumns],
     ["nullability mismatch(es)", report.nullabilityMismatches],
-    ["expected index(es) / unique constraint(s) missing", report.missingIndexes],
+    ["expected index(es) / unique / foreign key constraint(s) missing", report.missingIndexes],
   ];
   for (const [label, items] of groups) {
     if (items.length === 0) continue;

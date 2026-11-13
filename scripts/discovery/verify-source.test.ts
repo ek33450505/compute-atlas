@@ -1052,6 +1052,19 @@ describe("verifySource", () => {
       expect(fetchPageTextImpl).toHaveBeenCalledTimes(2);
     });
 
+    it("passes an identifier-shaped network errorCode through, and drops a non-identifier one", async () => {
+      const run = async (errorCode: string | undefined) => {
+        const deps = makeDeps({
+          fetchPageTextImpl: vi.fn(async () => ({ ok: false, reason: "network_error", errorCode }) as FetchPageTextResult),
+          fetchImpl: waybackUnavailable(),
+        });
+        return (await verifySource("https://example.com/x", CLAIM, deps)).transportFailure;
+      };
+      expect(await run("ENOTFOUND")).toStrictEqual({ reason: "network_error", errorCode: "ENOTFOUND" });
+      expect(await run("getaddrinfo ENOTFOUND host@evil")).toStrictEqual({ reason: "network_error" });
+      expect(await run(undefined)).toStrictEqual({ reason: "network_error" });
+    });
+
     it("reports the transport failure on a size-cap rejection, while leaving the verdict 'escalate'", async () => {
       const deps = makeDeps({
         fetchPageTextImpl: vi.fn(async () => pageFail("too_large")),

@@ -19,15 +19,17 @@
 # /discovery-logs/ is gitignored with nothing tracked, so a CI job cannot see it.
 # Neon is the one store both the Mac and this runner can reach.
 #
-# THE FAILURE THIS EXISTS TO CATCH, observed 2026-09-05:
-# The Mac booted at 13:32:43, 32 minutes after the 13:00 schedule. macOS
-# StartCalendarInterval does NOT catch up a run missed while the machine was
-# off — it waits for the next occurrence. `launchctl print` showed `runs = 0`,
-# `last exit code = (never exited)`. Nothing errored, no log line was written,
-# no notification fired: the run simply never happened, and the only way to
-# notice was to go looking. run.sh's own stale-heartbeat check would have
-# reported the gap on the NEXT run that happened — i.e. a day late, and never
-# at all if the machine stayed off.
+# THE FAILURE THIS EXISTS TO CATCH, observed once, 2026-09-05:
+# The Mac booted at 13:32:43, 32 minutes after the 13:00 schedule. On that day
+# `launchctl print` showed `runs = 0` and `last exit code = (never exited)`:
+# the 13:00 run never happened. Nothing errored, no log line was written, and
+# no notification fired. The only way to notice was to go looking. The
+# documented behaviour (`man launchd.plist`, StartCalendarInterval) covers
+# sleep: events missed while the computer is asleep are coalesced into one
+# event on wake. That page says nothing about a machine that was powered off,
+# so this incident is recorded as one observation, not as a rule. run.sh's own
+# stale-heartbeat check would have reported the gap on the NEXT run that
+# happened, a day late, and never if the machine stayed off.
 #
 # WHAT A PASSING CHECK LOOKS LIKE WHILE THE BUG IS PRESENT: it does not pass.
 # check-heartbeat.ts fails closed on a stale row AND on a missing row — a

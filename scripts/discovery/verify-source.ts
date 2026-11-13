@@ -119,7 +119,12 @@ export interface VerificationResult {
    * date, the same 403 means a bot-wall. Additive and optional: existing
    * callers that switch on `verdict` are unaffected.
    */
-  transportFailure?: { reason: Extract<FetchPageTextResult, { ok: false }>["reason"]; httpStatus?: number };
+  transportFailure?: {
+    reason: Extract<FetchPageTextResult, { ok: false }>["reason"];
+    httpStatus?: number;
+    /** The fetcher's errno (e.g. "ENOTFOUND"), only when identifier-shaped; safe to log. */
+    errorCode?: string;
+  };
   /**
    * Set (to `true`) only on an `"unavailable"` verdict whose underlying
    * `callOllama` failure reason was exactly `"timeout"` — one model call hit
@@ -503,9 +508,15 @@ function describeFetchFailure(result: Extract<FetchPageTextResult, { ok: false }
 function toTransportFailure(
   result: Extract<FetchPageTextResult, { ok: false }>,
 ): NonNullable<VerificationResult["transportFailure"]> {
-  return result.httpStatus !== undefined
-    ? { reason: result.reason, httpStatus: result.httpStatus }
-    : { reason: result.reason };
+  const errorCode =
+    result.reason === "network_error" && result.errorCode !== undefined && /^[A-Z0-9_]{2,40}$/.test(result.errorCode)
+      ? result.errorCode
+      : undefined;
+  return {
+    reason: result.reason,
+    ...(result.httpStatus !== undefined ? { httpStatus: result.httpStatus } : {}),
+    ...(errorCode !== undefined ? { errorCode } : {}),
+  };
 }
 
 /**
