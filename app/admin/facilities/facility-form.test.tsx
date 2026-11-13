@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { mergeFacilityPatch } from "@/lib/facility-patch";
-import type { Facility } from "@/lib/schema";
+import { facilitySchema, type Facility } from "@/lib/schema";
 
 // vi.mock calls are hoisted above imports by Vitest. A plain top-level
 // `const mockX = vi.fn()` is NOT reliably safe to reference inside a
@@ -143,6 +143,69 @@ describe("facilityToFormState", () => {
 });
 
 describe("buildFacilityPayload — shallow-merge safety", () => {
+  // Pins the MERGED semantics: the form sends no curated keys, and
+  // mergeFacilityPatch carries them only while what they describe is unchanged.
+  const stored = () =>
+    makeFacility({
+      capacityMw: { operational: 100, planned: 200, basis: "it", itPlanned: 150, itOperational: 80 },
+      energy: { source: "grid", utility: "Duke", utilityEiaId: { id: 5416, sourceIndex: 0 } },
+      ids: { eiaPlantId: { id: 123, sourceIndex: 0 } },
+      parties: { ownerEntity: [{ name: "Acme LLC", sourceIndex: 0 }] },
+      construction: { expectedStart: { date: "2026", sourceIndex: 0 } },
+    });
+  const save = (existing: Facility, edit: (s: ReturnType<typeof facilityToFormState>) => void) => {
+    const state = facilityToFormState(existing);
+    edit(state);
+    const merged = mergeFacilityPatch(existing, buildFacilityPayload(state));
+    expect(facilitySchema.safeParse(merged).success).toBe(true);
+    return merged;
+  };
+
+  it("keeps basis and the IT figures, plus ids/parties/construction and utilityEiaId, when nothing changes", () => {
+    const existing = stored();
+    const merged = save(existing, () => {});
+    expect(merged.capacityMw).toEqual(existing.capacityMw);
+    expect(merged.energy).toEqual(existing.energy);
+    expect(merged.ids).toEqual(existing.ids);
+    expect(merged.parties).toEqual(existing.parties);
+    expect(merged.construction).toEqual(existing.construction);
+  });
+
+  it("drops basis but keeps the IT figures when planned MW changes", () => {
+    const merged = save(stored(), (s) => {
+      s.capacityMw.planned = "250";
+    });
+    expect(merged.capacityMw).toEqual({
+      planned: 250,
+      operational: 100,
+      itPlanned: 150,
+      itOperational: 80,
+    });
+  });
+
+  it("drops basis, itPlanned and itOperational on a switch to power_generation", () => {
+    const merged = save(stored(), (s) => {
+      s.facilityType = "power_generation";
+      s.generation = { technology: "solar" };
+    });
+    expect(merged.capacityMw).toEqual({ planned: 200, operational: 100 });
+  });
+
+  it("drops utilityEiaId when the utility changes", () => {
+    const merged = save(stored(), (s) => {
+      s.energy = { ...s.energy, utility: "Dominion" };
+    });
+    expect((merged.energy as Record<string, unknown>).utilityEiaId).toBeUndefined();
+    expect((merged.energy as Record<string, unknown>).utility).toBe("Dominion");
+  });
+
+  it("keeps utilityEiaId when the utility is unchanged but another energy field is edited", () => {
+    const merged = save(stored(), (s) => {
+      s.energy = { ...s.energy, notes: "edited" };
+    });
+    expect((merged.energy as Record<string, unknown>).utilityEiaId).toEqual({ id: 5416, sourceIndex: 0 });
+  });
+
   it("always submits location as a complete object, never a partial one", () => {
     const state = facilityToFormState(
       makeFacility({

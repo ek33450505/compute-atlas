@@ -43,8 +43,13 @@ export const enrichmentUpdateIntentSchema = z
     sources: z.array(sourceSchema).min(1).max(20),
     fields: z
       .object({
-        capacityMw: capacityMwSchema.strict().optional(),
-        energy: energySchema.strict().optional(),
+        // basis / itPlanned / itOperational / utilityEiaId are maintainer-curated
+        // only: omitted so `.strict()` REJECTS an intent that carries them.
+        capacityMw: capacityMwSchema
+          .omit({ basis: true, itPlanned: true, itOperational: true })
+          .strict()
+          .optional(),
+        energy: energySchema.omit({ utilityEiaId: true }).strict().optional(),
         water: waterSchema.strict().optional(),
         location: z
           .object({

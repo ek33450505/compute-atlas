@@ -211,6 +211,47 @@ describe("buildCreatePayload", () => {
 });
 
 describe("buildCorrectionPatch nested-merge safety", () => {
+  it("keeps maintainer-curated capacityMw and energy keys when a capacity or energy field is corrected", () => {
+    const existing = baseExistingFacility({
+      capacityMw: { planned: 100, operational: 50, basis: "it", itPlanned: 80, itOperational: 40 },
+      energy: { utility: "Duke", utilityEiaId: { id: 5416, sourceIndex: 0 } },
+    });
+    const cap = buildCorrectionPatch(
+      existing,
+      {
+        kind: "correction",
+        targetFacilityId: existing.id,
+        field: "capacityOperationalMw",
+        value: 60,
+        sourceUrl: "https://example.com/correction",
+      },
+      TODAY
+    );
+    const en = buildCorrectionPatch(
+      existing,
+      {
+        kind: "correction",
+        targetFacilityId: existing.id,
+        field: "energy",
+        value: "grid",
+        sourceUrl: "https://example.com/correction",
+      },
+      TODAY
+    );
+    expect("payload" in cap && cap.payload.capacityMw).toEqual({
+      planned: 100,
+      operational: 60,
+      basis: "it",
+      itPlanned: 80,
+      itOperational: 40,
+    });
+    expect("payload" in en && en.payload.energy).toEqual({
+      utility: "Duke",
+      utilityEiaId: { id: 5416, sourceIndex: 0 },
+      source: "grid",
+    });
+  });
+
   it("preserves capacityMw.planned when only operational is corrected", () => {
     const existing = baseExistingFacility({ capacityMw: { planned: 100, operational: 50 } });
     const input: CorrectionContributeInput = {
@@ -802,5 +843,25 @@ describe("notRecorded is not accepted from public intake", () => {
     expect("notRecorded" in parsed).toBe(false);
     const payload = buildCreatePayload(parsed as CreateContributeInput, TODAY);
     expect("notRecorded" in payload).toBe(false);
+  });
+});
+
+describe("maintainer-curated v2 fields are not accepted from public intake", () => {
+  it("are stripped by the create schema and absent from the built payload", () => {
+    const parsed = contributeInputSchema.parse({
+      ...baseCreateInput(),
+      ids: { epaFrsId: { id: "123", sourceIndex: 0 } },
+      parties: { tenant: [{ name: "Attacker LLC", sourceIndex: 0 }] },
+      construction: { expectedStart: { date: "2027", sourceIndex: 0 } },
+      capacityMw: { basis: "it" },
+      energy: { utilityEiaId: { id: 1, sourceIndex: 0 } },
+    });
+    const payload = buildCreatePayload(parsed as CreateContributeInput, TODAY) as unknown as Record<string, unknown>;
+    for (const key of ["ids", "parties", "construction"]) {
+      expect(key in parsed).toBe(false);
+      expect(key in payload).toBe(false);
+    }
+    expect(payload.capacityMw).toBeUndefined();
+    expect(payload.energy).toBeUndefined();
   });
 });

@@ -121,6 +121,12 @@ export function emptyFacilityFormState(): FacilityFormState {
   };
 }
 
+function withoutUtilityEiaId(energy: Facility["energy"]): FacilityFormState["energy"] {
+  const rest = { ...energy };
+  delete rest.utilityEiaId;
+  return rest;
+}
+
 /** Converts a loaded `Facility` (edit mode) into the form's string-keyed state shape. */
 export function facilityToFormState(facility: Facility): FacilityFormState {
   const base = emptyFacilityFormState();
@@ -160,7 +166,10 @@ export function facilityToFormState(facility: Facility): FacilityFormState {
     landAcres: facility.landAcres != null ? String(facility.landAcres) : "",
     statusHistory: facility.statusHistory,
     sources: facility.sources,
-    energy: facility.energy ?? {},
+    // utilityEiaId has no form input and is only valid while `utility` is
+    // unchanged; leaving it out lets mergeFacilityPatch decide whether to carry it
+    // instead of the patch stating a possibly stale id.
+    energy: withoutUtilityEiaId(facility.energy),
     water: facility.water ?? {},
     subsidies: facility.subsidies ?? [],
     jobs: facility.jobs ?? {},
