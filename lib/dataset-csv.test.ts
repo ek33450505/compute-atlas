@@ -154,6 +154,20 @@ describe("facilitiesToCsv", () => {
       "generation.unitCount",
       "generation.poweredFacilityIds",
       "sources.url",
+      // schema v2, appended after the original 48 so positional parsers keep working
+      "ids.epaFrsId",
+      "ids.eiaPlantId",
+      "energy.utilityEiaId",
+      "capacityMw.basis",
+      "capacityMw.itOperational",
+      "capacityMw.itPlanned",
+      "parties.ownerEntity",
+      "parties.tenant",
+      "parties.endUser",
+      "parties.generalContractor",
+      "construction.expectedStart",
+      "construction.expectedCompletion",
+      "construction.permitValuationUsd",
     ];
     expect(CSV_COLUMNS).toEqual(expected);
     const csv = facilitiesToCsv([dataCenter]);
@@ -271,6 +285,62 @@ describe("facilitiesToCsv", () => {
       const [row] = cellsOf([plant]);
       expect(row[col("generation.poweredFacilityIds")]).toBe("'-odd;ok");
     });
+  });
+});
+
+describe("schema v2 columns", () => {
+  const v2 = make({
+    id: "dc-v2",
+    capacityMw: { operational: 100, basis: "it", itOperational: 90, itPlanned: 150 },
+    energy: { utility: "OPPD", utilityEiaId: { id: 14127, sourceIndex: 0 } },
+    ids: { epaFrsId: { id: "110000123456", sourceIndex: 0 }, eiaPlantId: { id: 5555, sourceIndex: 0 } },
+    parties: {
+      ownerEntity: [
+        { name: "Alpha LLC", sourceIndex: 0 },
+        { name: "Beta; Gamma Inc", sourceIndex: 0 },
+      ],
+      tenant: [{ name: "=Evil Tenant", sourceIndex: 0 }],
+      endUser: [{ name: "Meta", sourceIndex: 0 }],
+      generalContractor: [{ name: "Build Co", sourceIndex: 0 }],
+    },
+    construction: {
+      expectedStart: { date: "2026-03", sourceIndex: 0 },
+      expectedCompletion: { date: "2028", sourceIndex: 0 },
+      permitValuationUsd: { amountUsd: 250000000, permitNumber: "B-1", sourceIndex: 0 },
+      phases: [{ name: "Phase 1", sourceIndex: 0 }],
+    },
+  });
+  const legacy = make({ id: "legacy" });
+  const first = CSV_COLUMNS.indexOf("ids.epaFrsId");
+
+  it("appends the 13 v2 columns last", () => {
+    expect(first).toBe(CSV_COLUMNS.length - 13);
+    expect(CSV_COLUMNS[first - 1]).toBe("sources.url");
+  });
+
+  it("renders every v2 value, ;-joining parties and escaping ; and formulas", () => {
+    const [row] = cellsOf([v2]);
+    expect(row.slice(first)).toEqual([
+      "110000123456",
+      "5555",
+      "14127",
+      "it",
+      "90",
+      "150",
+      "Alpha LLC;Beta%3B Gamma Inc",
+      "'=Evil Tenant",
+      "Meta",
+      "Build Co",
+      "2026-03",
+      "2028",
+      "250000000",
+    ]);
+  });
+
+  it("leaves 13 empty trailing cells on a legacy facility", () => {
+    const [row] = cellsOf([legacy]);
+    expect(row).toHaveLength(CSV_COLUMNS.length);
+    expect(row.slice(first)).toEqual(Array(13).fill(""));
   });
 });
 

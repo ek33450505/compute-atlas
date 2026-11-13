@@ -386,7 +386,8 @@ describe("/access/commercial dataset preview", () => {
     const terms = section.querySelectorAll("dt");
     expect(terms).toHaveLength(CSV_COLUMN_COUNT);
     expect(terms[0]).toHaveTextContent("id");
-    expect(terms[terms.length - 1]).toHaveTextContent("sources.url");
+    expect(terms[terms.length - 1]).toHaveTextContent(CSV_COLUMNS[CSV_COLUMNS.length - 1]);
+    expect(terms[terms.length - 1]).toHaveTextContent("construction.permitValuationUsd");
     const defs = [...section.querySelectorAll("dd")].map((d) => d.textContent);
     expect(defs[0]).toBe(CSV_COLUMN_NOTES.id);
     const miningIndex = CSV_COLUMNS.indexOf("mining.hashRateThPerS");
