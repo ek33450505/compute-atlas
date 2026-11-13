@@ -80,6 +80,7 @@ const GATE_SENDERS: Record<string, ReadonlySet<string>> = {
     "sendDatasetSubscriptionActiveEmail",
     "sendDatasetLinkReissuedEmail",
     "sendDatasetRenewalReminderEmail",
+    "sendDatasetTermChangedEmail",
     "sendDatasetEditionNoticeEmail",
   ]),
   // The maintainer's alert about a new dataset request.

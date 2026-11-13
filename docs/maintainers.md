@@ -564,8 +564,10 @@ Flow: `/access` request form → `/access/confirm` (the verify step is a form PO
 `/api/access/confirm`, so a mail scanner's GET prefetch cannot confirm) → `pending_review` → approve or
 reject in `/admin/access` → approval mail with the personal link `/access/dataset?t=…` → weekly edition
 (`vercel.json`) → downloads from `/api/dataset/file` → weekly notice mail → renewal reminders → one-click
-unsubscribe at `/api/dataset/unsubscribe`. A grant runs 365 days (`DATASET_GRANT_TERM_MS`,
-`lib/dataset-grants.ts`).
+unsubscribe at `/api/dataset/unsubscribe`. A free grant runs 90 days (`DATASET_FREE_GRANT_TERM_MS`, Ed 2026-11-13; renewal
+is the hand-reviewed renew link, reminded 30 days out); a commercial grant's expiry is set from its
+paid-through date (`lib/commercial-activation.ts`); `DATASET_COMMERCIAL_GRANT_TERM_MS` (365 days) applies only to
+the approval/renewal path. Both constants are in `lib/dataset-grants.ts`.
 
 ### Kill switch and redeploy
 
@@ -627,7 +629,7 @@ unsubscribe at `/api/dataset/unsubscribe`. A grant runs 365 days (`DATASET_GRANT
 - **Reissue** mails a new link and makes the old one stop working. Each grant has a 10-minute cooldown
   (`DATASET_REISSUE_COOLDOWN_MS`, `lib/dataset-admin.ts`).
 - **Revoke** makes the link stop working and sends no mail (Ed, 2026-11-09: there is no revoke notice).
-- **Extend** gives a fresh 365-day term (`DATASET_GRANT_TERM_MS`, `lib/dataset-grants.ts`) and sends no mail.
+- **Extend** gives a fresh 90-day term (`DATASET_FREE_GRANT_TERM_MS`, `lib/dataset-grants.ts`; free grants only) and sends no mail.
 
 ### Retention
 

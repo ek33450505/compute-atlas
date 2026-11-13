@@ -292,10 +292,10 @@ describe.each([
 });
 
 describe("buildDatasetApprovedEmail / buildDatasetLinkReissuedEmail specifics", () => {
-  it("approved: 365 days and the CC BY 4.0 attribution reminder pointing at /data", () => {
+  it("approved: 90 days and the CC BY 4.0 attribution reminder pointing at /data", () => {
     const mail = buildDatasetApprovedEmail({ siteUrl: SITE, accessToken: TOKEN });
     for (const body of [mail.text, mail.html]) {
-      expect(body).toContain("365 days");
+      expect(body).toContain("90 days");
       expect(body).not.toContain("12 months");
       expect(body).toContain("CC BY 4.0");
       expect(body).toContain(`${SITE}/data`);

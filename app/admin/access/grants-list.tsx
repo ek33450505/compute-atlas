@@ -196,7 +196,7 @@ function GrantRow({
         onResult(
           {
             tone: "success",
-            text: `Extended access for ${grant.name} by a fresh 12-month term. No email is sent.`,
+            text: `Extended access for ${grant.name} by a fresh 90-day term. No email is sent.`,
           },
           row,
         );

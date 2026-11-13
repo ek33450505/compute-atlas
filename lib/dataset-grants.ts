@@ -470,8 +470,13 @@ export async function verifyDatasetRequest(rawToken: string): Promise<VerifyData
   return existing?.verifiedAt ? { outcome: "verified" } : { outcome: "invalid" };
 }
 
-/** Length of a grant: approval, renewal and an admin extension all set `expires_at = now + term`. */
-export const DATASET_GRANT_TERM_MS = 365 * 24 * 60 * 60 * 1000;
+/**
+ * Length of a grant: approval, renewal and an admin extension all set `expires_at = now + term`.
+ * Free (education) grants run 90 days (Ed, 2026-11-13); a commercial grant's expiry is set from its paid-through date
+ * (lib/commercial-activation.ts); the 365-day term applies only to the approval/renewal path.
+ */
+export const DATASET_FREE_GRANT_TERM_MS = 90 * 24 * 60 * 60 * 1000;
+export const DATASET_COMMERCIAL_GRANT_TERM_MS = 365 * 24 * 60 * 60 * 1000;
 
 const NOTE_MAX_CODE_POINTS = 2000;
 
@@ -503,10 +508,18 @@ const grantIdSchema = z.string().uuid();
 /** Checked BEFORE any DB call: a malformed id must never reach Postgres, where it would raise 22P02. */
 const isGrantId = (id: string): boolean => grantIdSchema.safeParse(id).success;
 
+/**
+ * `now + term` chosen by the row's OWN `tier` column, so an UPDATE that does not know the tier still gives a
+ * commercial row exactly its old 365 days. Seconds, not `interval 'N days'`, which is calendar-aware and would
+ * drift with the session time zone.
+ */
+const termExpiry = (now: Date): SQL =>
+  sql`${now.toISOString()}::timestamptz + (case when ${datasetAccessGrantsTable.tier} = 'free' then ${DATASET_FREE_GRANT_TERM_MS / 1000}::double precision else ${DATASET_COMMERCIAL_GRANT_TERM_MS / 1000}::double precision end) * interval '1 second'`;
+
 /** A fresh term from `now`; clears the renewal bookkeeping. Shared by approval (both shapes) and `extendDatasetGrant`. */
-function extensionFields(now: Date) {
+function extensionFields(now: Date, expiresAt: Date | SQL = termExpiry(now)) {
   return {
-    expiresAt: new Date(now.getTime() + DATASET_GRANT_TERM_MS),
+    expiresAt,
     renewalRequestedAt: null,
     renewalRemindedAt: null,
     renewTokenHash: null,
@@ -517,7 +530,7 @@ function extensionFields(now: Date) {
  * Admin approval, in two shapes that the atomic UPDATEs tell apart. From
  * `pending_review` it activates the grant: mints the raw access token (hashed
  * for storage; the raw value exists ONLY in the returned mail intent), the raw
- * unsubscribe token (raw by the subscriptions precedent) and a 365-day expiry.
+ * unsubscribe token (raw by the subscriptions precedent) and a tier-based expiry (free 90 days, commercial 365).
  * Otherwise, on a RENEWAL_PENDING grant (`active` with a renewal request
  * outstanding, at ANY expiry: a request made before the date stays approvable
  * after it), it approves the renewal: a fresh term, the renewal bookkeeping
@@ -679,7 +692,7 @@ export async function extendDatasetGrant(id: string): Promise<{ ok: true } | Dat
   const now = new Date();
   const [extended] = await getDb()
     .update(datasetAccessGrantsTable)
-    .set(extensionFields(now))
+    .set(extensionFields(now, new Date(now.getTime() + DATASET_FREE_GRANT_TERM_MS)))
     // Free lane only: a commercial grant's term is its paid-through date, which PayPal moves.
     .where(
       and(
