@@ -43,12 +43,14 @@ const REQUESTER_KINDS: DatasetRequesterKind[] = [
   "dataset_edition_notice",
   "dataset_renewal_reminder",
   "dataset_link_reissued",
+  "dataset_term_changed",
 ];
 const STATUSES: DatasetGrantStatus[] = ["unverified", "pending_review", "active", "expired", "revoked", "rejected"];
 
 type Lifecycle = "live" | "renewal_pending" | "lapsed";
 type SeedOver = {
   email?: string;
+  tier?: "free" | "commercial";
   status?: DatasetGrantStatus;
   lifecycle?: Lifecycle;
 };
@@ -68,6 +70,8 @@ async function seedGrant(over: SeedOver = {}) {
       attributionAckAt: new Date(),
       termsVersion: "t",
       status,
+      tier: over.tier ?? "free",
+      paidThrough: over.tier === "commercial" ? new Date(Date.now() + 30 * DAY) : null,
       verifyTokenHash: `v${seq}`.padEnd(64, "0"),
       expiresAt: lifecycle === "live" ? new Date(Date.now() + 5 * DAY) : lifecycle ? new Date(Date.now() - DAY) : null,
       renewalRequestedAt: lifecycle === "renewal_pending" ? new Date(Date.now() - 2 * DAY) : null,
@@ -102,6 +106,19 @@ async function backdate(minutesAgo: number, kind: string, email: string, outcome
     createdAt: new Date(Date.now() - minutesAgo * 60 * 1000),
   });
 }
+
+describe("sendGrantGated: dataset_term_changed is free-tier only", () => {
+  it("skips a live commercial grant and sends to a live free one", async () => {
+    const commercial = await seedGrant({ lifecycle: "live", tier: "commercial" });
+    const send = sender();
+    const res = await grantGate("dataset_term_changed", commercial.id, commercial.email, send);
+    expect(res).toEqual({ sent: false, disposition: "skipped_unconfirmed" });
+    expect(send).not.toHaveBeenCalled();
+
+    const free = await seedGrant({ lifecycle: "live" });
+    expect(await grantGate("dataset_term_changed", free.id, free.email, send)).toEqual({ sent: true, disposition: "sent" });
+  });
+});
 
 describe("sendGrantGated: state gates", () => {
   for (const kind of REQUESTER_KINDS) {

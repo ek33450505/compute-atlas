@@ -181,14 +181,14 @@ export function buildDatasetApprovedEmail(input: { siteUrl: string; accessToken:
     "",
     url,
     "",
-    "The link is personal: do not share it. Access runs for 365 days from approval.",
+    "The link is personal: do not share it. Access runs for 90 days from approval; you can request a renewal before then.",
     "",
     `${ATTRIBUTION_TEXT} How to cite: ${dataUrl}`,
   ].join("\n");
   const html = paragraphs(
     "Your request for access to the Compute Atlas dataset was approved.",
     `<a href="${escapeHtml(url)}">Open your personal link</a>`,
-    "The link is personal: do not share it. Access runs for 365 days from approval.",
+    "The link is personal: do not share it. Access runs for 90 days from approval; you can request a renewal before then.",
     `${escapeHtml(ATTRIBUTION_TEXT)} <a href="${escapeHtml(dataUrl)}">How to cite</a>.`,
   );
   return { subject, text, html };
@@ -364,6 +364,24 @@ export function buildDatasetRenewalReminderEmail(input: {
     `<a href="${escapeHtml(url)}">Request a renewal</a>`,
     "Renewal requests are reviewed by hand. A renewal approved before that date continues without a break; if review is still pending when the date passes, downloads pause until it is approved. If you no longer need the data, ignore this email.",
   );
+  return { subject, text, html };
+}
+
+/**
+ * One-off notice that the free grant term is now 90 days. Written for the single-use population of
+ * scripts/apply-free-grant-term.ts: original-term grants with at least 7 days left (in practice ~86), so
+ * the ~30-day renewal reminder is true for every recipient. Not for general reuse. Carries no token and no link;
+ * `expiresAt` is the grant's new end.
+ */
+export function buildDatasetTermChangedEmail(input: { expiresAt: Date }): DatasetEmail {
+  const date = DATE_FORMAT.format(input.expiresAt);
+  const subject = "Your Compute Atlas dataset access term has changed";
+  const body =
+    "Free access to the Compute Atlas dataset now runs for 90 days from approval, instead of 365. Your access now ends on";
+  const after =
+    "(UTC). About 30 days before then you will get an email with a link to request a renewal, which is reviewed by hand. Nothing else about your access has changed.";
+  const text = `${body} ${date} ${after}`;
+  const html = paragraphs(`${body} ${escapeHtml(date)} ${after}`);
   return { subject, text, html };
 }
 

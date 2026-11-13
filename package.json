@@ -35,6 +35,7 @@
     "nhd:debt": "tsx scripts/update-nhd-debt.ts",
     "backfill:siting": "tsx --env-file-if-exists=.env.local scripts/backfill-siting-to-neon.ts",
     "ownership:apply": "tsx --env-file-if-exists=.env.local scripts/apply-ownership.ts",
+    "grants:term": "tsx --env-file-if-exists=.env.local scripts/apply-free-grant-term.ts",
     "siting:apply": "tsx --env-file-if-exists=.env.local scripts/apply-siting-context.ts",
     "siting:refresh": "npm run build:mapdata && tsx --env-file-if-exists=.env.local scripts/check-siting-additive.mjs && npm run siting:apply",
     "indexnow": "tsx scripts/indexnow.ts",

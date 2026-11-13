@@ -107,7 +107,7 @@ import { isLookupFailure, isSuppressed, mayEmail, suppressionStatuses, type Supp
  *   which a global row also blocks); required state: `dataset_verify` needs
  *   `unverified`, `dataset_rejected` and `dataset_commercial_redirect` need `rejected`, `dataset_already_active`
  *   needs live OR renewal-pending (never lapsed), `dataset_subscription_active` needs a live, `active`, commercial-tier grant, and approved / link_reissued /
- *   renewal_reminder / edition_notice need live. An edition notice also needs an
+ *   renewal_reminder / term_changed / edition_notice need live. An edition notice also needs an
  *   `editionId` (row target `dataset_edition`/`<editionId>:<grantId>`). The
  *   requester kinds `dataset_verify` + `dataset_already_active` share ONE
  *   per-address budget with two caps (DATASET_REQUESTER_CAP_*: 5 per hour;
@@ -484,6 +484,10 @@ export async function sendGrantGated(
       break;
     case "dataset_subscription_active":
       stateOk = live && grant.status === "active" && grant.tier === "commercial";
+      break;
+    case "dataset_term_changed":
+      // Free-tier notice only; a commercial grant never gets it (the script also selects free rows only).
+      stateOk = live && grant.tier === "free";
       break;
     default:
       stateOk = live;

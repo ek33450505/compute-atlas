@@ -69,7 +69,7 @@ export default function AccessPage() {
         <ol className="max-w-2xl list-decimal space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
           <li>Submit the form below.</li>
           <li>Confirm your address from the email. The link is valid for 7 days.</li>
-          <li>Once approved, a personal link serves the latest edition for 365 days.</li>
+          <li>Once approved, a personal link serves the latest edition for 90 days; renew before then to keep access.</li>
         </ol>
         {isCommercialTierEnabled() && (
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">

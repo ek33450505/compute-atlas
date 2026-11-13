@@ -40,6 +40,7 @@ export const DATASET_SEND_KINDS = [
   "dataset_edition_notice",
   "dataset_renewal_reminder",
   "dataset_link_reissued",
+  "dataset_term_changed",
 ] as const;
 export type DatasetSendKind = (typeof DATASET_SEND_KINDS)[number];
 

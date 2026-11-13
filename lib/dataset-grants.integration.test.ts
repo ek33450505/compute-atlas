@@ -26,7 +26,8 @@ import { hashToken } from "@/lib/token-hash";
 // resolves against the mocked module. None of these functions send mail: they
 // hand back a `mail` intent for the caller to act on, so lib/email needs no mock.
 import {
-  DATASET_GRANT_TERM_MS,
+  DATASET_COMMERCIAL_GRANT_TERM_MS,
+  DATASET_FREE_GRANT_TERM_MS,
   DATASET_ROTATION_COOLDOWN_MS,
   DATASET_TERMS_VERSION,
   DATASET_TOKEN_RE,
@@ -1221,7 +1222,7 @@ async function activeGrant(over: GrantInsert = {}) {
     status: "active",
     accessTokenHash: hashToken(accessToken),
     approvedAt: new Date(),
-    expiresAt: new Date(Date.now() + DATASET_GRANT_TERM_MS),
+    expiresAt: new Date(Date.now() + DATASET_FREE_GRANT_TERM_MS),
     ...over,
   });
   return { row, accessToken };
@@ -1234,10 +1235,45 @@ async function approve(id: string, opts: { reviewNote?: string } = {}) {
   return result.mail;
 }
 
-const expectNearTerm = (expiresAt: Date | null, from = Date.now()) => {
+const expectNearTerm = (expiresAt: Date | null, from = Date.now(), term = DATASET_FREE_GRANT_TERM_MS) => {
   expect(expiresAt).toBeInstanceOf(Date);
-  expect(Math.abs((expiresAt as Date).getTime() - (from + DATASET_GRANT_TERM_MS))).toBeLessThan(5_000);
+  expect(Math.abs((expiresAt as Date).getTime() - (from + term))).toBeLessThan(5_000);
 };
+
+describe("grant term by tier", () => {
+  it("free: approval, renewal approval and extension each set now + 90 days", async () => {
+    expect(DATASET_FREE_GRANT_TERM_MS).toBe(90 * 24 * 60 * 60 * 1000);
+    const pending = await pendingGrant({ email: "a@example.com" });
+    let before = Date.now();
+    await approve(pending.id);
+    expectNearTerm((await rowById(pending.id)).expiresAt, before);
+
+    const renewing = (await activeGrant({ email: "b@example.com", renewalRequestedAt: new Date(), expiresAt: new Date(Date.now() + 1000) })).row;
+    before = Date.now();
+    expect(await approveDatasetGrant(renewing.id)).toEqual({ ok: true, kind: "renewed" });
+    expectNearTerm((await rowById(renewing.id)).expiresAt, before);
+
+    const extendable = (await activeGrant({ email: "c@example.com", expiresAt: new Date(Date.now() + 1000) })).row;
+    before = Date.now();
+    expect(await extendDatasetGrant(extendable.id)).toEqual({ ok: true });
+    expectNearTerm((await rowById(extendable.id)).expiresAt, before);
+  });
+
+  it("commercial term unchanged: the shared UPDATE still gives a commercial row now + 365 days", async () => {
+    expect(DATASET_COMMERCIAL_GRANT_TERM_MS).toBe(365 * 24 * 60 * 60 * 1000);
+    const pending = await pendingGrant({ tier: "commercial", email: "d@example.com" });
+    let before = Date.now();
+    await approve(pending.id);
+    expectNearTerm((await rowById(pending.id)).expiresAt, before, DATASET_COMMERCIAL_GRANT_TERM_MS);
+
+    const renewing = (
+      await activeGrant({ tier: "commercial", email: "e@example.com", renewalRequestedAt: new Date(), expiresAt: new Date(Date.now() + 1000) })
+    ).row;
+    before = Date.now();
+    expect(await approveDatasetGrant(renewing.id)).toEqual({ ok: true, kind: "renewed" });
+    expectNearTerm((await rowById(renewing.id)).expiresAt, before, DATASET_COMMERCIAL_GRANT_TERM_MS);
+  });
+});
 
 describe("every mutator: an id that is not a UUID", () => {
   it("is not_eligible and never reaches the database", async () => {

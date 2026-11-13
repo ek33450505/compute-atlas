@@ -12,6 +12,7 @@ import {
   buildDatasetSubscriptionActiveEmail,
   buildDatasetRejectedEmail,
   buildDatasetRenewalReminderEmail,
+  buildDatasetTermChangedEmail,
   buildDatasetVerifyEmail,
   type CommercialAlertAction,
   type CommercialAlertReason,
@@ -649,6 +650,15 @@ export async function sendDatasetRenewalReminderEmail(input: {
   return sendViaResend(
     "sendDatasetRenewalReminderEmail",
     "RESEND_API_KEY not set — skipping dataset renewal reminder email send",
+    { from: fromAddress(), to: input.email, subject, text, html },
+  );
+}
+
+export async function sendDatasetTermChangedEmail(input: { email: string; expiresAt: Date }): Promise<SendOutcome> {
+  const { subject, text, html } = buildDatasetTermChangedEmail({ expiresAt: input.expiresAt });
+  return sendViaResend(
+    "sendDatasetTermChangedEmail",
+    "RESEND_API_KEY not set — skipping dataset term-changed email send",
     { from: fromAddress(), to: input.email, subject, text, html },
   );
 }
