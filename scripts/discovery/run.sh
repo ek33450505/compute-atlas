@@ -23,7 +23,8 @@ log() {
 # sweep of ~2,190 gap values (measured 2026-09-01 via selectGaps()), roughly
 # 10 hours of third-party-source crawling (proportional rescale of the
 # previously measured 12h/2,525-gap figure to the current 2-field gap
-# count — not a fresh measurement).
+# count — not a fresh measurement). Bounded runs are the normal case; see the
+# field-lane block below for the cursors.
 # This matters specifically because this lane now runs unattended
 # via launchd, not by hand: a hand-run operator would see the runtime blow
 # up and kill it; a scheduled job will not. submit-candidates.ts already
@@ -1732,7 +1733,7 @@ compute_cap() {
 }
 
 CAP="$(compute_cap)"
-log "review cap for this run: --max=${MAX_CANDIDATES:-$CAP} per state (burst=${BURST_CAP}/day for ${BURST_DAYS}d from ${BURST_START_DATE}, then ${STEADY_CAP}/day) — shared across new discovery + status + enrichment"
+log "review cap for this run: --max=${MAX_CANDIDATES:-$CAP} per state (burst=${BURST_CAP}/day for ${BURST_DAYS}d from ${BURST_START_DATE}, then ${STEADY_CAP}/day) — shared across new discovery + status refresh per state; the enrichment submit gets its own --max of the same value"
 
 # --- per-state loop -----------------------------------------------------
 # Everything below is isolated per state: a timeout, a no-array result, or a
@@ -1803,12 +1804,15 @@ queue_resubmit() {
   case "$_cand$_runlog" in
     *[[:space:]]*)
       log "WARN: not queuing resubmit for $_rid: a path contains whitespace and the queue format cannot carry it ($_cand, $_runlog)"
-      return 0
+      return 1
       ;;
   esac
   # The log may not exist if submit exited 3 before writing it: the drain
   # handles that (no log anywhere = nothing was POSTed).
-  printf '%s %s %s %s -\n' "$(date '+%s')" "$_st" "$_cand" "$_runlog" >>"$RESUBMIT_QUEUE"
+  printf '%s %s %s %s -\n' "$(date '+%s')" "$_st" "$_cand" "$_runlog" >>"$RESUBMIT_QUEUE" || {
+    log "WARN: not queuing resubmit for $_rid: could not write $RESUBMIT_QUEUE"
+    return 1
+  }
   log "queued for resubmit: state=$_st candidates=$_cand run-log=$_runlog"
 }
 
@@ -2108,7 +2112,7 @@ d
       log "WARN: submit-candidates failed for $RUN_ID (state=$STATE, exit $_src) — continuing with remaining states"
       FAILURES+=("$STATE: submit failed")
       # exit 3: gate/API unavailable, retry from this run's log next live run.
-      if (( _src == 3 )); then queue_resubmit "$STATE" "$OUTFILE" "$RUN_ID"; fi
+      if (( _src == 3 )); then queue_resubmit "$STATE" "$OUTFILE" "$RUN_ID" || log "WARN: resubmit for $RUN_ID was not queued"; fi
     elif [[ "${DISCOVERY_DRY_RUN:-false}" != "true" ]]; then
       # false-OK guard: a state whose candidates mostly fail schema validation
       # means the session could not read the schema/contract (2026-10-28: 93 of
@@ -2246,12 +2250,15 @@ else
   # values (measured 2026-09-01 evening via selectGaps() against
   # data/facilities.json: capacityMw.operational 1,074 + water.coolingType
   # 1,116), and each takes ~6-7s per source check with ~3 checks per value —
-  # an unbounded run is roughly 10 hours (proportional rescale of the
+  # an UNBOUNDED run is roughly 10 hours (proportional rescale of the
   # previously measured 12h/2,525-gap figure to the current 2,190-gap total;
   # the gap COUNT above is freshly measured, the 10h DURATION is still a
   # rescale, not a fresh timing measurement). That figure is for the two-field
   # list; since 2026-10-29 the extract list is one field, so the real horizon
-  # is smaller (not re-measured). Env-overridable so an operator
+  # is smaller (not re-measured). Each run is bounded by the limits below, and
+  # the per-lane cursors make successive runs continue where the last stopped
+  # instead of re-reading the same head of the table; the ~10 h figure is only
+  # what ONE unbounded run would cost. Env-overridable so an operator
   # can widen the sweep by hand without editing this script.
   #
   # ⚠️ Dropping energy.source/energy.utility (F7, 2026-09-01 — see below) does
@@ -2325,20 +2332,85 @@ else
     log "WARN: pdftotext not on PATH (poppler not installed) — every PDF source in this lane will go unread; continuing degraded"
   fi
 
+  # Per-lane resume cursors (Wave 5 item 5.2). The lane tools only READ the
+  # cursor (--cursor-file; a missing or empty file means start of table, so it
+  # is passed unconditionally) and propose a move via --next-cursor-out, a file
+  # written ONLY when the run proposes one. The next file is removed before each
+  # lane so a stale proposal can never be promoted. Dry runs never reach this
+  # block (the lane is skipped above), so only live runs read or persist it.
+  EXTRACT_CURSOR_FILE="$LOG_DIR/extract-cursor.txt"
+  EXTRACT_NEXT_CURSOR_FILE="$LOG_DIR/extract-next-cursor.txt"
+  VERIFY_CURSOR_FILE="$LOG_DIR/verify-cursor.txt"
+  VERIFY_NEXT_CURSOR_FILE="$LOG_DIR/verify-next-cursor.txt"
+
+  # submit_auth_rejected <runId>: "rejected" when the run log shows
+  # apiAuthRejected > 0, "none" when it is 0, "bad" when unreadable.
+  submit_auth_rejected() {
+    local _out
+    _out="$(node -e '
+try {
+  const n = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).apiAuthRejected;
+  console.log(Number.isSafeInteger(n) && n >= 0 ? (n > 0 ? "rejected" : "none") : "bad");
+} catch {
+  console.log("bad");
+}
+' "$LOG_DIR/run-$1.json" 2>/dev/null)" || _out="bad"
+    case "$_out" in
+      rejected | none) echo "$_out" ;;
+      *) echo bad ;;
+    esac
+  }
+
+  # promote_cursor <lane> <cursor file> <next-cursor file>: persist the lane's
+  # proposal, only when one exists. A failed write leaves the old cursor intact
+  # (cursor.ts --write is atomic), so the lane just repeats its window.
+  promote_cursor() {
+    local lane="$1" cursor_file="$2" next_file="$3" old="" new=""
+    [[ -s "$next_file" ]] || return 0
+    new="$(cat "$next_file")"
+    if [[ -s "$cursor_file" ]]; then old="$(cat "$cursor_file")"; fi
+    if run_bg_wait npx tsx scripts/discovery/cursor.ts --write "$cursor_file" "$new"; then
+      log "cursor: $lane ${old:-<start>} -> $new"
+    else
+      log "WARN: $lane cursor write failed — keeping ${old:-<start>}"
+      FAILURES+=("$lane: cursor write failed")
+    fi
+  }
+
   ENRICHMENT_OUTFILE="$LOG_DIR/enrichment-${ENRICHMENT_RUN_ID}.json"
   log "extracting fields (limit=${ENRICHMENT_LIMIT} fields=${EXTRACT_FIELDS})"
   EXTRACT_OK=true
+  rm -f "$EXTRACT_NEXT_CURSOR_FILE"
   if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/extract-fields.ts \
     --out "$ENRICHMENT_OUTFILE" \
     --limit="$ENRICHMENT_LIMIT" \
     --fields="$EXTRACT_FIELDS" \
     --run-id="$ENRICHMENT_RUN_ID" \
+    --cursor-file "$EXTRACT_CURSOR_FILE" \
+    --next-cursor-out "$EXTRACT_NEXT_CURSOR_FILE" \
     2>>"$LOG_DIR/extract-fields.err"; then
     log "WARN: extract-fields failed for $ENRICHMENT_RUN_ID — skipping submit (see extract-fields.err)"
     FAILURES+=("enrichment: extract-fields failed")
     EXTRACT_OK=false
   fi
 
+  # When the extract cursor moves (it never moves if extract-fields failed):
+  #  - submit exit 0, or nothing to submit: promote.
+  #  - exit 3 (API unavailable): promote ONLY if queue_resubmit really queued the
+  #    file. The next run drains the queue and would re-extract the same window
+  #    if the cursor stayed put, double-staging; if nothing was queued the
+  #    candidates are lost, so the window must be re-read.
+  #  - exit 1 (non-retryable 4xx rejections): promote. Pinning the window would
+  #    re-POST the already-staged siblings every run (duplicates); promoting
+  #    loses only the rejected candidates for one lap. A systemic 4xx batch
+  #    therefore advances the cursor past the whole window; the FAILURES entry /
+  #    degraded heartbeat is what surfaces it. EXCEPT when the API rejected our
+  #    token (apiAuthRejected > 0 in the run log): a 401 normally means nothing
+  #    was staged, so re-read next run. (One arriving mid-batch, after earlier
+  #    POSTs succeeded, would pin the cursor and re-POST those siblings next
+  #    run; rare, accepted.) An unreadable log is treated the same way.
+  #  - any other exit code: do not promote.
+  EXTRACT_SUBMIT_OK=true
   if [[ "$EXTRACT_OK" == "true" ]] && [[ -s "$ENRICHMENT_OUTFILE" ]]; then
     log "submitting enrichment candidates from $ENRICHMENT_OUTFILE"
     _src=0
@@ -2349,10 +2421,30 @@ else
     if (( _src != 0 )); then
       log "WARN: submit-candidates failed for $ENRICHMENT_RUN_ID (exit $_src) — continuing"
       FAILURES+=("enrichment: submit failed")
-      if (( _src == 3 )); then queue_resubmit - "$ENRICHMENT_OUTFILE" "$ENRICHMENT_RUN_ID"; fi
+      EXTRACT_SUBMIT_OK=false
+      if (( _src == 3 )); then
+        _queued=0
+        queue_resubmit - "$ENRICHMENT_OUTFILE" "$ENRICHMENT_RUN_ID" || _queued=$?
+        if (( _queued == 0 )); then
+          EXTRACT_SUBMIT_OK=true
+        else
+          log "WARN: enrichment resubmit not queued — extract cursor stays put"
+        fi
+      elif (( _src == 1 )); then
+        _auth="$(submit_auth_rejected "$ENRICHMENT_RUN_ID")"
+        case "$_auth" in
+          none) EXTRACT_SUBMIT_OK=true ;;
+          rejected) log "WARN: API rejected the intake token for $ENRICHMENT_RUN_ID — extract cursor stays put" ;;
+          *) log "WARN: run log for $ENRICHMENT_RUN_ID unreadable after submit exit 1 — extract cursor stays put" ;;
+        esac
+      fi
     fi
-  else
-    log "WARN: no enrichment candidates written for $ENRICHMENT_RUN_ID — skipping submit (nothing to stage)"
+  elif [[ "$EXTRACT_OK" == "true" ]]; then
+    # extract-fields always writes its --out file, so this means it vanished.
+    log "WARN: no enrichment candidates file for $ENRICHMENT_RUN_ID — skipping submit (nothing to stage)"
+  fi
+  if [[ "$EXTRACT_OK" == "true" && "$EXTRACT_SUBMIT_OK" == "true" ]]; then
+    promote_cursor extract "$EXTRACT_CURSOR_FILE" "$EXTRACT_NEXT_CURSOR_FILE"
   fi
 
   # verify-fields is read-only (never writes dataset data). Crash durability
@@ -2361,14 +2453,20 @@ else
   # progress output doesn't scroll off the terminal/launchd log buffer.
   VERIFY_OUTFILE="$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.json"
   log "verifying fields (limit=${VERIFY_LIMIT} fields=${VERIFY_FIELDS})"
+  rm -f "$VERIFY_NEXT_CURSOR_FILE"
   if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/verify-fields.ts \
     --limit="$VERIFY_LIMIT" \
     --fields="$VERIFY_FIELDS" \
     --out "$VERIFY_OUTFILE" \
     --run-id="$ENRICHMENT_RUN_ID" \
+    --cursor-file "$VERIFY_CURSOR_FILE" \
+    --next-cursor-out "$VERIFY_NEXT_CURSOR_FILE" \
     >"$LOG_DIR/verify-fields-${ENRICHMENT_RUN_ID}.log" 2>>"$LOG_DIR/verify-fields.err"; then
     log "WARN: verify-fields failed for $ENRICHMENT_RUN_ID — continuing (see verify-fields.err)"
     FAILURES+=("enrichment: verify-fields failed")
+  else
+    # Read-only lane: nothing downstream to wait on, so success alone promotes.
+    promote_cursor verify "$VERIFY_CURSOR_FILE" "$VERIFY_NEXT_CURSOR_FILE"
   fi
 
   # --- community-leads lane ---------------------------------------------------

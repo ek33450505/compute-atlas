@@ -86,6 +86,11 @@ missing) ;;
 garbage) echo "not json" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
 *) subvar="SUBMIT_SUBMITTED_$st"; printf '{"runId":"%s","discovered":%s,"submitted":%s,"skippedInvalid":%s,"skippedUnreachable":%s}\n' "$rid" "$1" "${!subvar:-${SUBMIT_SUBMITTED:-0}}" "$2" "${SUBMIT_UNREACHABLE:-0}" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
 esac
+# SUBMIT_AUTH_REJECTED=<n>: a summary carrying apiAuthRejected (the real
+# script's field), for the enrichment cursor-promotion rule.
+if [ -n "${SUBMIT_AUTH_REJECTED:-}" ] && [ "${SUBMIT_SUMMARY_MODE:-ok}" = ok ]; then
+	printf '{"runId":"%s","discovered":0,"submitted":0,"skippedInvalid":0,"apiAuthRejected":%s}\n' "$rid" "$SUBMIT_AUTH_REJECTED" >"$DISCOVERY_LOG_DIR/run-$rid.json"
+fi
 # Exit code seam: SUBMIT_RESUBMIT_RC for a --resume-from-log call, else
 # SUBMIT_RC_ENRICHMENT for the enrichment run, else SUBMIT_RC (default 0).
 # SUBMIT_CRASH_ON_RESUME=1: after checkpointing its log, TERM the parent run.sh
@@ -138,12 +143,46 @@ case "\$*" in
 *extract-fields.ts*)
 	# EXTRACT_WRITES_OUT=1: leave a non-empty --out file so the enrichment
 	# submit runs; default writes nothing (the lane skips its submit).
-	if [ "\${EXTRACT_WRITES_OUT:-0}" = 1 ]; then
-		while [ \$# -gt 0 ]; do
-			if [ "\$1" = --out ]; then echo '[]' >"\$2"; fi
-			shift
-		done
+	# EXTRACT_NEXT=<id>: propose that cursor via --next-cursor-out (the file is
+	# written only when set, like the real tool). EXTRACT_RC: exit code.
+	echo "extract \$*" >>"$TEST_TMP/lane-argv.log"
+	while [ \$# -gt 0 ]; do
+		if [ "\$1" = --out ] && [ "\${EXTRACT_WRITES_OUT:-0}" = 1 ]; then echo '[]' >"\$2"; fi
+		if [ "\$1" = --next-cursor-out ] && [ -n "\${EXTRACT_NEXT:-}" ]; then echo "\$EXTRACT_NEXT" >"\$2"; fi
+		shift
+	done
+	exit \${EXTRACT_RC:-0}
+	;;
+*verify-fields.ts*)
+	# Same seam for the read-only verify lane: VERIFY_NEXT / VERIFY_RC.
+	echo "verify \$*" >>"$TEST_TMP/lane-argv.log"
+	while [ \$# -gt 0 ]; do
+		if [ "\$1" = --next-cursor-out ] && [ -n "\${VERIFY_NEXT:-}" ]; then echo "\$VERIFY_NEXT" >"\$2"; fi
+		shift
+	done
+	exit \${VERIFY_RC:-0}
+	;;
+*scripts/discovery/cursor.ts*)
+	# cursor.ts --write <path> <id>: CURSOR_WRITE_RC nonzero = failed write,
+	# old file untouched (the real tool is atomic).
+	# Parsed by flag, not position: a changed call shape fails loudly (exit 2,
+	# nothing written) instead of writing a stray file.
+	_cw_path=""; _cw_id=""; _cw_seen=0
+	while [ \$# -gt 0 ]; do
+		if [ "\$1" = --write ]; then
+			_cw_seen=1
+			[ \$# -ge 3 ] || break
+			_cw_path="\$2"; _cw_id="\$3"
+			break
+		fi
+		shift
+	done
+	if [ "\$_cw_seen" != 1 ] || [ -z "\$_cw_path" ] || [ -z "\$_cw_id" ]; then
+		echo "cursor.ts stub: expected '--write <path> <id>', got: \$*" >&2
+		exit 2
 	fi
+	[ "\${CURSOR_WRITE_RC:-0}" = 0 ] || exit \$CURSOR_WRITE_RC
+	printf '%s\n' "\$_cw_id" >"\$_cw_path"
 	exit 0
 	;;
 *check-sources.ts*)
@@ -4518,4 +4557,135 @@ _hb_field() {
 	[ -n "$ts_n" ] && [ -n "$ts_s" ] && [ -n "$sh_n" ] && [ -n "$sh_s" ]
 	[ "$ts_n" = "$sh_n" ]
 	[ "$ts_s" = "$sh_s" ]
+}
+
+# --- extract/verify lane cursors (Wave 5 item 5.2 wiring) --------------------
+# The fake npx writes --next-cursor-out from EXTRACT_NEXT / VERIFY_NEXT and
+# fakes `cursor.ts --write` (CURSOR_WRITE_RC). Lane argv is in lane-argv.log.
+
+@test "cursor lane: first run passes --next-cursor-out and a cursor path that does not exist" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ ! -e "$LOG_DIR/extract-cursor.txt" ]
+	grep "^extract " "$TEST_TMP/lane-argv.log" | grep -q -- "--cursor-file $LOG_DIR/extract-cursor.txt --next-cursor-out $LOG_DIR/extract-next-cursor.txt"
+	grep "^verify " "$TEST_TMP/lane-argv.log" | grep -q -- "--cursor-file $LOG_DIR/verify-cursor.txt --next-cursor-out $LOG_DIR/verify-next-cursor.txt"
+}
+
+@test "cursor lane: extract proposal is promoted after a successful submit" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-b" ]
+	[[ "$output" == *"cursor: extract <start> -> fac-b"* ]] || return 1
+}
+
+@test "cursor lane: extract proposal is promoted when there is nothing to submit" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_NEXT=fac-b
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-b" ]
+}
+
+@test "cursor lane: submit exit 3 with the file queued promotes the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=3
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ -s "$LOG_DIR/resubmit-queue" ]
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-b" ]
+}
+
+@test "cursor lane: submit exit 3 with the queue write skipped keeps the cursor and the run goes on" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=3 VERIFY_NEXT=fac-v
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	if [ "$(id -u)" = 0 ]; then skip "read-only file is writable as root"; fi
+	# An empty read-only queue: the drain skips it (not -s), the append fails.
+	: >"$LOG_DIR/resubmit-queue"
+	chmod 444 "$LOG_DIR/resubmit-queue"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[[ "$output" == *"resubmit not queued"* ]] || return 1
+	# the run was not aborted: the verify lane after it still ran and promoted
+	[ "$(tr -d ' \n' <"$LOG_DIR/verify-cursor.txt")" = "fac-v" ]
+}
+
+@test "cursor lane: submit exit 1 with no auth rejection promotes the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=1 SUBMIT_AUTH_REJECTED=0
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-b" ]
+}
+
+@test "cursor lane: submit exit 1 with an auth rejection keeps the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=1 SUBMIT_AUTH_REJECTED=1
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[[ "$output" == *"rejected the intake token"* ]] || return 1
+}
+
+@test "cursor lane: submit exit 1 with an unreadable run log keeps the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=1 SUBMIT_SUMMARY_MODE=missing
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[[ "$output" == *"unreadable after submit exit 1"* ]] || return 1
+}
+
+@test "cursor lane: any other submit exit code keeps the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_WRITES_OUT=1 EXTRACT_NEXT=fac-b SUBMIT_RC_ENRICHMENT=2
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+}
+
+@test "cursor lane: a failed extract does not promote the extract cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_NEXT=fac-b EXTRACT_RC=1
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+}
+
+@test "cursor lane: a stale next-cursor file is removed before the lane and never promoted" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	echo stale-x >"$LOG_DIR/extract-next-cursor.txt"
+	echo stale-y >"$LOG_DIR/verify-next-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[ ! -e "$LOG_DIR/verify-cursor.txt" ]
+}
+
+@test "cursor lane: a stale verify next-cursor file is removed before the lane and never promoted" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false
+	echo fac-a >"$LOG_DIR/verify-cursor.txt"
+	echo stale-y >"$LOG_DIR/verify-next-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/verify-cursor.txt")" = "fac-a" ]
+	[ ! -e "$LOG_DIR/verify-next-cursor.txt" ]
+}
+
+@test "cursor lane: verify proposal is promoted on success and not on failure" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false VERIFY_NEXT=fac-v
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/verify-cursor.txt")" = "fac-v" ]
+	rm -f "$LOG_DIR/verify-cursor.txt"
+	export VERIFY_RC=1
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/verify-cursor.txt" ]
+}
+
+@test "cursor lane: a failed cursor write warns, records a failure and keeps the old cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false EXTRACT_NEXT=fac-b CURSOR_WRITE_RC=1
+	echo fac-a >"$LOG_DIR/extract-cursor.txt"
+	run bash "$RUN_SH"
+	[ "$(tr -d ' \n' <"$LOG_DIR/extract-cursor.txt")" = "fac-a" ]
+	[[ "$output" == *"extract cursor write failed"* ]] || return 1
+	[[ "$output" == *"extract: cursor write failed"* ]] || return 1
+}
+
+@test "cursor lane: a dry run never reaches the lane, so neither reads nor writes a cursor" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=true EXTRACT_NEXT=fac-b
+	run bash "$RUN_SH"
+	[ ! -e "$LOG_DIR/extract-cursor.txt" ]
+	[ ! -e "$TEST_TMP/lane-argv.log" ]
 }
