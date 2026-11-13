@@ -242,6 +242,19 @@ HB_RUN_IDS=()
 HB_STATES=()
 HB_STATUSES=()
 HB_ELAPSED=()
+# Aligned with HB_STATES: per-state yield counts from the submit run log, "" when
+# unknown (crash, skipped, failed). The heartbeat omits a field whose value is "".
+HB_SUBMITTED=()
+HB_DISCOVERED=()
+HB_UNREACHABLE=()
+# Zero-yield streak: the PREVIOUS local heartbeat's consecutiveZeroYieldRuns,
+# loaded once by load_prev_zero_yield (before the heartbeat is overwritten).
+PREV_ZERO_YIELD=0
+PREV_ZERO_YIELD_LOADED=false
+# Mirror check-heartbeat.ts (ZERO_YIELD_RUNS_ALARM / ZERO_YIELD_STATUS); a
+# parity test in tests/discovery/run.bats keeps them equal.
+ZERO_YIELD_RUNS_ALARM=5
+ZERO_YIELD_STATUS="zero_yield"
 # Failure ledger for the alert + exit-status decision at the bottom. Populated
 # per state; a non-empty ledger means this run gets a notification AND a
 # nonzero exit (open item #1) rather than completing silently as before.
@@ -449,6 +462,28 @@ notify_bounded() {
   wait "$_np" 2>/dev/null || true
 }
 
+# load_prev_zero_yield: sets PREV_ZERO_YIELD from the existing local heartbeat's
+# top-level consecutiveZeroYieldRuns, once. Missing/unparseable/not a
+# non-negative safe integer -> 0. Must run before heartbeat.json is overwritten.
+load_prev_zero_yield() {
+  [[ "$PREV_ZERO_YIELD_LOADED" == "true" ]] && return 0
+  PREV_ZERO_YIELD_LOADED=true
+  local _out=""
+  if [[ -f "$LOG_DIR/heartbeat.json" ]]; then
+    _out="$(node -e '
+try {
+  const s = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+  const n = s.consecutiveZeroYieldRuns;
+  console.log(Number.isSafeInteger(n) && n >= 0 && n < 1e9 ? n : 0);
+} catch {
+  console.log(0);
+}
+' "$LOG_DIR/heartbeat.json" 2>/dev/null)" || _out=""
+  fi
+  [[ "$_out" =~ ^[0-9]{1,9}$ ]] || _out=0
+  PREV_ZERO_YIELD="$_out"
+}
+
 # write_and_publish_heartbeat [status [unbounded]]: writes heartbeat.json from
 # the HB_* arrays and publishes it to Neon. The status is ok/degraded from
 # FAILURES unless the caller passes one (the exit trap passes "crashed"). An
@@ -456,13 +491,33 @@ notify_bounded() {
 # is "unbounded" (the pre-cursor refusal path runs outside any trap).
 write_and_publish_heartbeat() {
   local _override="${1:-}" _unbounded="${2:-}" _h _entry _hb_status HEARTBEAT_ENTRIES=""
+  local _yield_fields _v _total=0 _all_known=true _streak
+  load_prev_zero_yield
   for (( _h = 0; _h < ${#HB_STATES[@]}; _h++ )); do
+    # Optional yield fields: emitted only for a non-negative integer, never "".
+    _yield_fields=""
+    _v="${HB_SUBMITTED[$_h]-}"
+    if [[ "$_v" =~ ^[0-9]{1,15}$ ]]; then _yield_fields="$_yield_fields,
+      \"submitted\": $_v"; fi
+    _v="${HB_DISCOVERED[$_h]-}"
+    if [[ "$_v" =~ ^[0-9]{1,15}$ ]]; then _yield_fields="$_yield_fields,
+      \"discovered\": $_v"; fi
+    _v="${HB_UNREACHABLE[$_h]-}"
+    if [[ "$_v" =~ ^[0-9]{1,15}$ ]]; then _yield_fields="$_yield_fields,
+      \"skippedUnreachable\": $_v"; fi
     _entry="    {
       \"runId\": \"${HB_RUN_IDS[$_h]}\",
       \"state\": \"${HB_STATES[$_h]}\",
       \"claudeStatus\": \"${HB_STATUSES[$_h]}\",
-      \"elapsedSecs\": ${HB_ELAPSED[$_h]}
+      \"elapsedSecs\": ${HB_ELAPSED[$_h]}$_yield_fields
     }"
+    # Streak inputs: a state counts only when "ok" with a known submitted.
+    _v="${HB_SUBMITTED[$_h]-}"
+    if [[ "${HB_STATUSES[$_h]}" == "ok" && "$_v" =~ ^[0-9]{1,15}$ ]]; then
+      _total=$(( _total + _v ))
+    else
+      _all_known=false
+    fi
     if [[ -z "$HEARTBEAT_ENTRIES" ]]; then
       HEARTBEAT_ENTRIES="$_entry"
     else
@@ -474,14 +529,33 @@ $_entry"
   if (( ${#FAILURES[@]} > 0 )); then
     _hb_status="degraded"
   fi
+  # Zero-yield streak. A refused/crashed heartbeat (override) and any run where a
+  # batch state's claude status (HB_STATUSES) is not ok, or its submitted count is
+  # unknown, carry the previous streak unchanged: a failing run is not evidence of
+  # zero yield (and is already red). Only a run with every batch state ok and
+  # every submitted count known moves it. FAILURES from other lanes (enrichment,
+  # leads, resubmit drain) do not stop the count, since discovery itself staged
+  # nothing; the heartbeat label then stays "degraded" (already red).
+  _streak="$PREV_ZERO_YIELD"
+  if [[ -z "$_override" && "$_all_known" == "true" && ${#HB_STATES[@]} -gt 0 ]]; then
+    if (( _total == 0 )); then _streak=$(( PREV_ZERO_YIELD + 1 )); else _streak=0; fi
+  fi
   if [[ -n "$_override" ]]; then
     _hb_status="$_override"
+  elif (( _streak >= ZERO_YIELD_RUNS_ALARM )) && [[ "$_hb_status" == "ok" ]]; then
+    _hb_status="$ZERO_YIELD_STATUS"
+    log "WARN: zero yield for $_streak consecutive runs"
+    # Notify only on the transition into the alarm; the watchdog stays red after.
+    if (( PREV_ZERO_YIELD < ZERO_YIELD_RUNS_ALARM )); then
+      notify "Compute Atlas discovery: zero yield" "Zero yield for $_streak consecutive runs"
+    fi
   fi
   cat >"$LOG_DIR/heartbeat.json" <<EOF
 {
   "lastRunAt": "$(date '+%Y-%m-%dT%H:%M:%S%z')",
   "status": "$_hb_status",
   "failureCount": ${#FAILURES[@]},
+  "consecutiveZeroYieldRuns": $_streak,
   "states": [
 $HEARTBEAT_ENTRIES
   ]
@@ -563,6 +637,9 @@ handle_unclean_exit() {
       HB_STATES+=("${BATCH_STATES[$_i]}")
       HB_STATUSES+=("skipped")
       HB_ELAPSED+=(0)
+      HB_SUBMITTED+=("")
+      HB_DISCOVERED+=("")
+      HB_UNREACHABLE+=("")
     done
   else
     log "ERROR: run exited uncleanly (status $_rc) after every state had a status; cursor left to the post-loop re-queue block"
@@ -822,6 +899,8 @@ if [[ -n "${DISCOVERY_STALE_HOURS:-}" ]]; then
   fi
 fi
 DISCOVERY_STALE_HOURS="$_stale_budget"
+# Same previous heartbeat: load its zero-yield streak before it is overwritten.
+load_prev_zero_yield
 if [[ -f "$LOG_DIR/heartbeat.json" ]]; then
   _prev_iso="$(sed -n 's/.*"lastRunAt"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$LOG_DIR/heartbeat.json" | head -1)"
   if [[ -n "$_prev_iso" ]]; then
@@ -1473,18 +1552,20 @@ try {
 fi
 
 # --- false-OK guard ----------------------------------------------------------
-# submit_summary_counts <runId>: print "<discovered> <skippedInvalid>" from the
-# run summary submit-candidates.ts writes to $LOG_DIR/run-<runId>.json, or
-# "bad" when the file is missing/unparseable or either field is not a
-# non-negative integer. Fail-closed: callers treat anything but two integers as
-# "summary unreadable", never as OK.
+# submit_summary_counts <runId>: print "<discovered> <skippedInvalid> <submitted>
+# <skippedUnreachable>" from the run summary submit-candidates.ts writes to
+# $LOG_DIR/run-<runId>.json, or "bad" when the file is missing/unparseable or
+# discovered/skippedInvalid is not a non-negative integer. Fail-closed: callers
+# treat anything but integers there as "summary unreadable", never as OK. The
+# last two are heartbeat yield only: "-" when not a non-negative integer.
 submit_summary_counts() {
   local _out
   _out="$(node -e '
 try {
   const s = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
   const ok = (n) => Number.isSafeInteger(n) && n >= 0;
-  console.log(ok(s.discovered) && ok(s.skippedInvalid) ? s.discovered + " " + s.skippedInvalid : "bad");
+  const opt = (n) => (ok(n) ? n : "-");
+  console.log(ok(s.discovered) && ok(s.skippedInvalid) ? s.discovered + " " + s.skippedInvalid + " " + opt(s.submitted) + " " + opt(s.skippedUnreachable) : "bad");
 } catch {
   console.log("bad");
 }
@@ -1665,6 +1746,9 @@ HB_RUN_IDS=()
 HB_STATES=()
 HB_STATUSES=()
 HB_ELAPSED=()
+HB_SUBMITTED=()
+HB_DISCOVERED=()
+HB_UNREACHABLE=()
 
 # FAILURES (the failure ledger) is declared with the run ledger near the top,
 # because the lock and stale-gap checks feed it before this point.
@@ -1855,6 +1939,9 @@ for STATE in "${BATCH_STATES[@]}"; do
     HB_STATES+=("$STATE")
     HB_STATUSES+=("skipped")
     HB_ELAPSED+=(0)
+    HB_SUBMITTED+=("")
+    HB_DISCOVERED+=("")
+    HB_UNREACHABLE+=("")
     log "discovery run $RUN_ID complete"
     continue
   fi
@@ -2006,6 +2093,7 @@ d
   # --- submit step (deterministic — staging queue only) ---------------------
   # `if !` (never bare) so a nonzero submit exit for THIS state cannot trip
   # set -e and abort the remaining states in the batch.
+  HB_SUB_SUBMITTED="" HB_SUB_DISCOVERED="" HB_SUB_UNREACHABLE=""
   if [[ "$SUSPECT_SHORT" == "true" ]]; then
     log "skipping submit for $RUN_ID (suspect_short empty array — nothing to stage)"
   elif [[ "$CLAUDE_ARRAY_OK" == "true" ]]; then
@@ -2027,8 +2115,12 @@ d
       # 98 skippedInvalid, run still printed OK). Degrade only — no rewind.
       # Integer math: ratio > 0.5 is 2*invalid > discovered, floor of 5.
       # Dry-run is exempt, like the suspect_short guard.
-      SUB_DISCOVERED="" SUB_INVALID=""
-      read -r SUB_DISCOVERED SUB_INVALID <<<"$(submit_summary_counts "$RUN_ID")" || true
+      SUB_DISCOVERED="" SUB_INVALID="" SUB_SUBMITTED="" SUB_UNREACHABLE=""
+      read -r SUB_DISCOVERED SUB_INVALID SUB_SUBMITTED SUB_UNREACHABLE <<<"$(submit_summary_counts "$RUN_ID")" || true
+      # Heartbeat yield fields; "-" (field absent/invalid in the log) is unknown.
+      [[ "$SUB_SUBMITTED" =~ ^[0-9]{1,15}$ ]] && HB_SUB_SUBMITTED="$SUB_SUBMITTED"
+      [[ "$SUB_UNREACHABLE" =~ ^[0-9]{1,15}$ ]] && HB_SUB_UNREACHABLE="$SUB_UNREACHABLE"
+      [[ "$SUB_DISCOVERED" =~ ^[0-9]{1,15}$ ]] && HB_SUB_DISCOVERED="$SUB_DISCOVERED"
       if [[ -z "$SUB_INVALID" ]]; then
         log "WARN: submit summary unreadable for $RUN_ID (state=$STATE) — cannot rule out a broken schema read"
         FAILURES+=("$STATE: submit summary unreadable — cannot verify candidate validity")
@@ -2065,6 +2157,9 @@ d
     HB_STATES+=("$STATE")
     HB_STATUSES+=("$HEARTBEAT_STATUS")
     HB_ELAPSED+=("$STATE_ELAPSED")
+    HB_SUBMITTED+=("$HB_SUB_SUBMITTED")
+    HB_DISCOVERED+=("$HB_SUB_DISCOVERED")
+    HB_UNREACHABLE+=("$HB_SUB_UNREACHABLE")
   fi
 
   log "discovery run $RUN_ID complete"

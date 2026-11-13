@@ -84,7 +84,7 @@ set -- $counts
 case "${SUBMIT_SUMMARY_MODE:-ok}" in
 missing) ;;
 garbage) echo "not json" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
-*) printf '{"runId":"%s","discovered":%s,"submitted":0,"skippedInvalid":%s}\n' "$rid" "$1" "$2" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
+*) subvar="SUBMIT_SUBMITTED_$st"; printf '{"runId":"%s","discovered":%s,"submitted":%s,"skippedInvalid":%s,"skippedUnreachable":%s}\n' "$rid" "$1" "${!subvar:-${SUBMIT_SUBMITTED:-0}}" "$2" "${SUBMIT_UNREACHABLE:-0}" >"$DISCOVERY_LOG_DIR/run-$rid.json" ;;
 esac
 # Exit code seam: SUBMIT_RESUBMIT_RC for a --resume-from-log call, else
 # SUBMIT_RC_ENRICHMENT for the enrichment run, else SUBMIT_RC (default 0).
@@ -4379,4 +4379,143 @@ seed_resubmit_entry() {
 	run bash "$RUN_SH"
 	[ "$(cat "$LOG_DIR/resubmit-queue")" = "$before" ]
 	[ ! -e "$SUBMIT_ARGV_LOG" ] || ! grep -q "submit" "$SUBMIT_ARGV_LOG"
+}
+
+# --- per-state yield + zero-yield streak (heartbeat) -------------------------
+# check-heartbeat.ts documents the streak; run.sh computes it from the previous
+# LOCAL heartbeat.json's top-level consecutiveZeroYieldRuns.
+
+_seed_streak() {
+	printf '{\n  "lastRunAt": "%s",\n  "status": "ok",\n  "consecutiveZeroYieldRuns": %s,\n  "states": []\n}\n' \
+		"$(date '+%Y-%m-%dT%H:%M:%S%z')" "$1" >"$LOG_DIR/heartbeat.json"
+}
+
+# _hb_field <js expression over h>: prints the value, "undefined" when absent.
+_hb_field() {
+	node -e "const h = JSON.parse(require('fs').readFileSync('$LOG_DIR/heartbeat.json', 'utf8')); console.log(String($1));"
+}
+
+@test "yield: an ok state carries submitted/discovered/skippedUnreachable; the file stays valid JSON" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="7 1" SUBMIT_SUBMITTED=4 SUBMIT_UNREACHABLE=2
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.states[0].submitted')" = "4" ]
+	[ "$(_hb_field 'h.states[0].discovered')" = "7" ]
+	[ "$(_hb_field 'h.states[0].skippedUnreachable')" = "2" ]
+}
+
+@test "yield: a failed state omits the yield fields (never empty or null)" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	printf '#!/usr/bin/env bash\necho "You have hit your session limit"\nexit 1\n' >"$BIN_DIR/claude"
+	chmod +x "$BIN_DIR/claude"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(_hb_field 'h.states[0].claudeStatus')" = "blocked" ]
+	[ "$(_hb_field 'h.states[0].submitted')" = "undefined" ]
+	[ "$(_hb_field 'h.states[0].discovered')" = "undefined" ]
+	[ "$(_hb_field 'h.states[0].skippedUnreachable')" = "undefined" ]
+}
+
+@test "streak: an all-ok zero-submit run increments it" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 2
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "3" ]
+	[ "$(_hb_field 'h.status')" = "ok" ]
+}
+
+@test "streak: a run that submitted something resets it to 0" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1 SUBMIT_COUNTS="3 0" SUBMIT_SUBMITTED=3
+	_seed_streak 4
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "0" ]
+}
+
+@test "streak: a degraded run leaves it unchanged" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 3
+	printf '#!/usr/bin/env bash\necho "You have hit your session limit"\nexit 1\n' >"$BIN_DIR/claude"
+	chmod +x "$BIN_DIR/claude"
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "3" ]
+}
+
+@test "streak: a refused run (PREFLIGHT_RC=1) leaves it unchanged" {
+	export DISCOVERY_ENABLED=true PREFLIGHT_RC=1
+	_seed_streak 3
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	[ "$(_hb_field 'h.status')" = "refused" ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "3" ]
+}
+
+@test "streak: a crashed run (TERM mid-batch) leaves it unchanged" {
+	export DISCOVERY_ENABLED=true DISCOVERY_DRY_RUN=false STATES_PER_RUN=3
+	echo "TX" >"$LOG_DIR/cursor.txt"
+	_seed_streak 3
+	_term_run_mid_batch
+	[ "$RUN_RC" -eq 143 ]
+	[ "$(_hb_field 'h.status')" = "crashed" ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "3" ]
+}
+
+@test "streak: the 5th consecutive zero-yield run reports zero_yield and notifies" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 4
+	run bash "$RUN_SH"
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "5" ]
+	[ "$(_hb_field 'h.status')" = "zero_yield" ]
+	[[ "$output" == *"zero yield for 5 consecutive runs"* ]] || return 1
+	grep -q "zero yield" "$NOTIFY_CALL_LOG"
+}
+
+@test "streak: the 6th consecutive zero-yield run stays zero_yield and does not notify again" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 5
+	run bash "$RUN_SH"
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "6" ]
+	[ "$(_hb_field 'h.status')" = "zero_yield" ]
+	[[ "$output" == *"zero yield for 6 consecutive runs"* ]] || return 1
+	! grep -q "zero yield" "$NOTIFY_CALL_LOG"
+}
+
+@test "streak: the 4th zero-yield run is still ok" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak 3
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.status')" = "ok" ]
+}
+
+@test "streak: a garbage previous streak counts as 0" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	printf '{"lastRunAt":"%s","consecutiveZeroYieldRuns":"abc","states":[]}\n' "$(date '+%Y-%m-%dT%H:%M:%S%z')" >"$LOG_DIR/heartbeat.json"
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "1" ]
+}
+
+@test "streak: a negative previous streak counts as 0" {
+	export DISCOVERY_ENABLED=true STATES_PER_RUN=1
+	_seed_streak -7
+	run bash "$RUN_SH"
+	[ "$(_hb_field 'h.consecutiveZeroYieldRuns')" = "1" ]
+}
+
+# Parse the exported constants out of check-heartbeat.ts and run.sh's assignments.
+@test "parity: ZERO_YIELD_RUNS_ALARM and ZERO_YIELD_STATUS match check-heartbeat.ts" {
+	local ts="$BATS_TEST_DIRNAME/../../scripts/discovery/check-heartbeat.ts"
+	local ts_n ts_s sh_n sh_s
+	ts_n="$(sed -n 's/^export const ZERO_YIELD_RUNS_ALARM = \([0-9][0-9]*\);.*/\1/p' "$ts")"
+	ts_s="$(sed -n 's/^export const ZERO_YIELD_STATUS = "\([^"]*\)";.*/\1/p' "$ts")"
+	sh_n="$(sed -n 's/^ZERO_YIELD_RUNS_ALARM=\([0-9][0-9]*\)$/\1/p' "$RUN_SH")"
+	sh_s="$(sed -n 's/^ZERO_YIELD_STATUS="\([^"]*\)"$/\1/p' "$RUN_SH")"
+	[ -n "$ts_n" ] && [ -n "$ts_s" ] && [ -n "$sh_n" ] && [ -n "$sh_s" ]
+	[ "$ts_n" = "$sh_n" ]
+	[ "$ts_s" = "$sh_s" ]
 }
