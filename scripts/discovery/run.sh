@@ -1842,12 +1842,23 @@ flush_resubmit_queue() {
 # else drop + failure.
 drain_resubmit_queue() {
   local _line _i _epoch _st _cand _runlog _prev _extra _now _age_epoch _new_id _newlog _rc _resume _state_arg _resume_arg
-  [[ -s "$RESUBMIT_QUEUE" ]] || return 0
+  # Fail closed like the prune lane: an unreadable queue is left untouched, the
+  # drain is skipped, and the run continues (errexit must not abort it).
+  local _qcontent
+  if [[ -e "$RESUBMIT_QUEUE" || -L "$RESUBMIT_QUEUE" ]]; then
+    # Read once with a checkable status; a while loop's status hides a read error.
+    if [[ ! -f "$RESUBMIT_QUEUE" ]] || ! _qcontent="$(cat -- "$RESUBMIT_QUEUE")"; then
+      log "WARN: resubmit queue unreadable, drain skipped: $RESUBMIT_QUEUE"
+      FAILURES+=("resubmit: queue unreadable, drain skipped")
+      return 0
+    fi
+  fi
+  [[ -n "${_qcontent:-}" ]] || return 0
   _now="$(date '+%s')"
   RQ_LINES=()
   while IFS= read -r _line || [[ -n "$_line" ]]; do
     RQ_LINES+=("$_line")
-  done <"$RESUBMIT_QUEUE"
+  done <<<"$_qcontent"
   for ((_i = 0; _i < ${#RQ_LINES[@]}; _i++)); do
     _line="${RQ_LINES[_i]}"
     [[ -n "$_line" ]] || continue
@@ -2032,9 +2043,10 @@ prune_old_logs() {
   # "no match" and would delete a queued checkpoint.
   # FAIL CLOSED: a queue that exists but cannot be read leaves the protected
   # set unknown, so nothing is deleted or trimmed (errexit is off in here).
-  local _prot=() _qe _qs _qc _qr _qp _qx _is_prot _k _halt=false
+  local _prot=() _qe _qs _qc _qr _qp _qx _is_prot _k _halt=false _qcontent=""
   if [[ -e "$RESUBMIT_QUEUE" || -L "$RESUBMIT_QUEUE" ]]; then
-    if [[ ! -f "$RESUBMIT_QUEUE" || ! -r "$RESUBMIT_QUEUE" ]] || ! : <"$RESUBMIT_QUEUE"; then
+    # Read once with a checkable status; a while loop's status hides a read error.
+    if [[ ! -f "$RESUBMIT_QUEUE" ]] || ! _qcontent="$(cat -- "$RESUBMIT_QUEUE")"; then
       log "WARN: prune: resubmit-queue unreadable; nothing deleted"
       FAILURES+=("prune: resubmit-queue unreadable; nothing deleted")
       return 0
@@ -2043,11 +2055,7 @@ prune_old_logs() {
       if [[ -n "${_qc:-}" ]]; then _prot+=("${_qc##*/}"); fi
       if [[ -n "${_qr:-}" ]]; then _prot+=("${_qr##*/}"); fi
       if [[ -n "${_qp:-}" ]]; then _prot+=("${_qp##*/}"); fi
-    done <"$RESUBMIT_QUEUE" || {
-      log "WARN: prune: resubmit-queue unreadable; nothing deleted"
-      FAILURES+=("prune: resubmit-queue unreadable; nothing deleted")
-      return 0
-    }
+    done <<<"$_qcontent"
   fi
 
   # Classify: "<pattern index>|<mtime>|<path>". -links 1: a hardlinked file may
