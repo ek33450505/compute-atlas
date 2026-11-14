@@ -334,16 +334,16 @@ describe("buildDatasetCommercialRedirectEmail", () => {
     expect(mail.text).toContain(`${SITE}/access/commercial`);
     for (const body of [mail.text, mail.html]) {
       expect(body).toContain("$150/month");
-      expect(body).toContain("Everyone else can subscribe: $150/month or $1,500/year.");
+      expect(body).toContain("Everyone else, including educators and researchers, can subscribe: $150/month or $1,500/year.");
       expect(body).not.toContain("months free");
-      expect(body).toContain("free for students and educators");
-      expect(body).toContain("If you are a student or educator, send a new request at");
+      expect(body).toContain("free for currently enrolled students");
+      expect(body).toContain("If you are a currently enrolled student, send a new request at");
     }
   });
 
-  it("points students and educators to a new request at /access from a school address", () => {
+  it("points students to a new request at /access from a school address", () => {
     expect(mail.html).toContain(`send a new request at <a href="${SITE}/access">${SITE}/access</a> from your school email address`);
-    expect(mail.text).toContain(`send a new request at ${SITE}/access from your school email address and choose "Student or educator".`);
+    expect(mail.text).toContain(`send a new request at ${SITE}/access from your school email address and choose "Currently enrolled student".`);
   });
 
   it("never says donation", () => {
@@ -361,7 +361,7 @@ describe("buildDatasetSubscriptionActiveEmail", () => {
 
   it("carries the token only in its link, with a fixed subject", () => {
     expectTokenOnlyInLink(mail, `${SITE}/access/dataset?t=${ENCODED}`);
-    expect(mail.subject).toBe("Your Compute Atlas commercial access is active");
+    expect(mail.subject).toBe("Your Compute Atlas dataset subscription is active");
   });
 
   it("states the single-person scope, weekly refresh, billing, cancellation and the CC BY credit", () => {

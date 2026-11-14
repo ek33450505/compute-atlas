@@ -8,12 +8,12 @@ const privacy = DATASET_PRIVACY_NOTICE.join("\n");
 
 describe("dataset terms", () => {
   it("pins the terms version", () => {
-    expect(DATASET_TERMS_VERSION).toBe("2026-11-12.1");
+    expect(DATASET_TERMS_VERSION).toBe("2026-11-13.1");
   });
 
   it("commercial terms keep the licence whole and state the price, PayPal and one-person scope", () => {
     expect(commercial).toContain("CC BY 4.0");
-    expect(commercial).toContain("$150 per month or $1,500 per year, plus applicable tax, paid through PayPal. A PayPal account is required.");
+    expect(commercial).toContain("$150 per month or $1,500 per year, plus applicable tax, paid through PayPal. The fee pays for preparing and delivering the files; it is not a licence fee. A PayPal account is required.");
     expect(commercial).toContain("one named person");
     expect(commercial).toContain("continues under the terms accepted at checkout until it is cancelled");
     expect(commercial).toContain("in your PayPal account's automatic payments settings");

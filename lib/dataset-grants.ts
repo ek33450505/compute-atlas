@@ -22,7 +22,7 @@ import { isSuppressed, mayEmail } from "@/lib/suppressions";
 import { hashToken } from "@/lib/token-hash";
 
 /** The single source of the version string a grant records. The final terms text is in lib/dataset-terms.ts; bump this version whenever that text changes. */
-export const DATASET_TERMS_VERSION = "2026-11-12.1";
+export const DATASET_TERMS_VERSION = "2026-11-13.1";
 
 /** Shape of every raw dataset token (`generateToken`: 256 bits, base64url, 43 chars). Checked before any DB call. */
 export const DATASET_TOKEN_RE = /^[A-Za-z0-9_-]{43}$/;
@@ -223,7 +223,7 @@ export async function requestDatasetAccess(
 ): Promise<DatasetRequestResult> {
   // A non-academic request is refused while the paid tier is on, before any row, cap count or mail. The
   // decision uses the submitted category alone, so it reveals nothing about any address and does not
-  // weaken the fixed 202 an academic request gets. Free access is education-only, so every other
+  // weaken the fixed 202 an academic request gets. Free access is for students only, so every other
   // category is sent to the paid tier. It runs BEFORE the honeypot so such a submission gets the same
   // 422 whether or not the honeypot field is filled (the honeypot stays uniform for academic
   // requests). It needs a schema-valid body, so it parses first; the 400 for an invalid body is still
@@ -472,7 +472,7 @@ export async function verifyDatasetRequest(rawToken: string): Promise<VerifyData
 
 /**
  * Length of a grant: approval, renewal and an admin extension all set `expires_at = now + term`.
- * Free (education) grants run 90 days (Ed, 2026-11-13); a commercial grant's expiry is set from its paid-through date
+ * Free (student) grants run 90 days (Ed, 2026-11-13); a commercial grant's expiry is set from its paid-through date
  * (lib/commercial-activation.ts); the 365-day term applies only to the approval/renewal path.
  */
 export const DATASET_FREE_GRANT_TERM_MS = 90 * 24 * 60 * 60 * 1000;

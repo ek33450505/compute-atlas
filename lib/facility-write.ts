@@ -9,6 +9,7 @@ import { docToRow } from "@/lib/db/serialize";
 import { computeDocDiff, type DiffEntry } from "@/lib/doc-diff";
 import { insertFacilityHistoryRow } from "@/lib/facility-history";
 import { isPlainObject, mergeFacilityPatch } from "@/lib/facility-patch";
+import { reconcileSourceIndices, refPathToIssuePath } from "@/lib/source-reconcile";
 import { statusUpdateIntentSchema, applyStatusUpdate } from "@/lib/status-update";
 import { enrichmentUpdateIntentSchema, applyEnrichmentUpdate } from "@/lib/enrichment-update";
 
@@ -154,11 +155,15 @@ export async function createFacility(
  * (null, a string, an array) is a 400.
  *
  * `source` attributes the resulting audit-log row (see `createFacility`).
+ * `opts.sourceOrigins` (`[newIndex] = oldIndex | null`) lets a caller that
+ * reorders `sources` have carried `sourceIndex` refs re-pointed
+ * (`lib/source-reconcile.ts`); without it a moved or removed carried citation is a 409.
  */
 export async function updateFacility(
   id: string,
   patch: unknown,
-  source: string = "admin-direct"
+  source: string = "admin-direct",
+  opts?: { sourceOrigins?: readonly (number | null)[] }
 ): Promise<WriteResult> {
   if (!isPlainObject(patch)) {
     return { ok: false, status: 400, error: "Patch must be a JSON object" };
@@ -169,7 +174,24 @@ export async function updateFacility(
   }
   const existingRow = found.row;
 
-  const merged = { ...mergeFacilityPatch(existingRow.doc, patch), id };
+  const reconciled = reconcileSourceIndices(
+    existingRow.doc,
+    patch,
+    { ...mergeFacilityPatch(existingRow.doc, patch), id },
+    opts?.sourceOrigins
+  );
+  if (!reconciled.ok) {
+    return {
+      ok: false,
+      status: reconciled.status,
+      error: reconciled.error,
+      issues: reconciled.citing.map((path) => ({
+        path: refPathToIssuePath(path),
+        message: "cites a source that moved or was removed",
+      })),
+    };
+  }
+  const merged = reconciled.doc;
   const parsed = facilitySchema.safeParse(merged);
   if (!parsed.success) {
     return { ok: false, status: 400, error: "Invalid facility", issues: parsed.error.issues };

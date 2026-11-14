@@ -19,7 +19,7 @@ import { ACCESS_LINK_CLASS, AccessNotOpen, AccessShell } from "../not-open";
 // While the flag is off the page is a thin "not open yet" notice, so keep it out of the index.
 export function generateMetadata(): Metadata {
   return {
-    title: "Commercial access to the dataset",
+    title: "Dataset subscription",
     description:
       `The full Compute Atlas dataset of US data centers, crypto-mining sites and power plants: weekly JSON and CSV files with sources and a changelog. ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}.`,
     alternates: { canonical: "/access/commercial" },
@@ -340,22 +340,16 @@ export default async function CommercialAccessPage({
             Cancel anytime from your PayPal account; access runs to the end of the paid period. No
             refunds for partial periods, except where the law requires one.{" "}
             <Link href="/access/terms" className={ACCESS_LINK_CLASS}>
-              Commercial access terms
+              Dataset subscription terms
             </Link>
             .
           </li>
           <li>Payment is handled by PayPal; a PayPal account is required. Compute Atlas never sees your payment details.</li>
+          <li>One named person per subscription.</li>
           <li>
-            One named person per subscription. For a team,{" "}
-            <Link href="/contact" className={ACCESS_LINK_CLASS}>
-              contact us
-            </Link>
-            .
-          </li>
-          <li>
-            Students and educators: access is free and reviewed by hand against a school email address. See{" "}
+            Currently enrolled students: access is free and reviewed by hand against a school email address. See{" "}
             <Link href="/access" className={ACCESS_LINK_CLASS}>
-              dataset access
+              free student access
             </Link>
             .
           </li>

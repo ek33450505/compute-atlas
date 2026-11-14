@@ -19,6 +19,10 @@ import {
 const f = (facilityType: string, state: string, operator: string, sources: number) =>
   ({ facilityType, operator, location: { state }, sources: Array.from({ length: sources }, () => ({})) }) as never;
 
+// A fixture whose sources carry a url, so the CSV getters behind coverage can run.
+const fu = (facilityType: string, state: string, operator: string) =>
+  ({ facilityType, operator, location: { state }, sources: [{ url: "https://example.com/s" }] }) as never;
+
 afterEach(() => {
   vi.restoreAllMocks();
   mocks.getAllFacilities.mockReset();
@@ -45,8 +49,33 @@ describe("countDataset", () => {
       stateCodes: ["OH", "TX", "VA"],
       operators: 3,
       sourceLinks: 6,
+      coverage: [],
       asOf: "2026-11-12T01:04:00.000Z",
     });
+  });
+
+  it("keeps the headline counts and returns no coverage when a source has no url", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const counts = countDataset([f("data_center", "TX", "A", 1), f("crypto_mining", "OH", "B", 0)]);
+    expect(counts).toMatchObject({ facilities: 2, dataCenters: 1, cryptoSites: 1, sourceLinks: 1, coverage: [] });
+    expect(spy).toHaveBeenCalledWith(expect.stringMatching(/^dataset offer: coverage failed \(code: \w+\)$/));
+  });
+
+  it("counts a coverage field only where the record has a value", () => {
+    const counts = countDataset([
+      { ...(fu("data_center", "TX", "A") as object), capacityMw: { operational: 50 }, landAcres: 10 } as never,
+      fu("data_center", "TX", "B"),
+    ]);
+    expect(counts.coverage.map((c) => c.label)).toEqual([
+      "Operational MW",
+      "Planned MW",
+      "Serving utility",
+      "Cooling type",
+      "Investment",
+      "Site acreage",
+    ]);
+    expect(counts.coverage.find((c) => c.key === "capacityMw.operational")).toMatchObject({ filled: 1, applicable: 2 });
+    expect(counts.coverage.find((c) => c.key === "landAcres")).toMatchObject({ filled: 1, applicable: 2 });
   });
 
   it("handles an empty list", () => {

@@ -4,6 +4,7 @@ import { unstable_cache } from "next/cache";
 import { FACILITIES_TAG } from "@/lib/cache-tags";
 import { getAllFacilities } from "@/lib/data";
 import { redactedErrorCode } from "@/lib/db-error";
+import { computeCoverage } from "@/lib/dataset-coverage";
 import { latestPublishedEdition } from "@/lib/dataset-editions";
 import { facilitySchema, type Facility } from "@/lib/schema";
 
@@ -19,6 +20,8 @@ export interface DatasetCounts {
   stateCodes: string[];
   operators: number;
   sourceLinks: number;
+  /** Records with a value for a few headline fields, in `COVERAGE_FIELDS` order. */
+  coverage: Array<{ key: string; label: string; filled: number; applicable: number }>;
   /**
    * ISO instant the facilities were COUNTED, not the moment a page rendered, so a cached value keeps its
    * age. It is not the database read time: `getAllFacilities` has its own cache, so the facility set
@@ -51,12 +54,18 @@ export const SAMPLE_FACILITY_IDS: readonly string[] = [
   "homer-city-energy-campus-generation-pa",
 ];
 
-type CountableFacility = Pick<Facility, "facilityType" | "operator" | "sources"> & {
-  location: Pick<Facility["location"], "state">;
-};
+/** The fields /dataset quotes coverage for, in display order. */
+const COVERAGE_FIELDS: ReadonlyArray<readonly [key: string, label: string]> = [
+  ["capacityMw.operational", "Operational MW"],
+  ["capacityMw.planned", "Planned MW"],
+  ["energy.utility", "Serving utility"],
+  ["water.coolingType", "Cooling type"],
+  ["investmentUsd", "Investment"],
+  ["landAcres", "Site acreage"],
+];
 
 export function countDataset(
-  facilities: readonly CountableFacility[],
+  facilities: readonly Facility[],
   readAt: Date = new Date(),
 ): DatasetCounts {
   const states = new Set<string>();
@@ -75,6 +84,17 @@ export function countDataset(
     if (f.operator) operators.add(f.operator);
     sourceLinks += f.sources?.length ?? 0;
   }
+  // Coverage runs every CSV getter, so one malformed stored record must not take the headline counts down with it.
+  let coverage: DatasetCounts["coverage"] = [];
+  try {
+    const rows = computeCoverage(facilities, null);
+    coverage = COVERAGE_FIELDS.flatMap(([key, label]) => {
+      const row = rows.find((r) => r.key === key);
+      return row ? [{ key, label, filled: row.filled, applicable: row.applicable }] : [];
+    });
+  } catch (err) {
+    console.error(`dataset offer: coverage failed (code: ${redactedErrorCode(err)})`);
+  }
   return {
     facilities: facilities.length,
     dataCenters,
@@ -84,6 +104,7 @@ export function countDataset(
     stateCodes: [...states].sort(),
     operators: operators.size,
     sourceLinks,
+    coverage,
     asOf: readAt.toISOString(),
   };
 }

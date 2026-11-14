@@ -1,4 +1,5 @@
 import { buildChangelog } from "@/lib/dataset-changelog";
+import { coverageMap, computeCoverage, withDeltas } from "@/lib/dataset-coverage";
 import { facilitiesToCsv } from "@/lib/dataset-csv";
 import { DatasetBlobError, DATASET_EDITION_FILES, deleteEditionPrefix, putEditionFile } from "@/lib/dataset-blob";
 import {
@@ -144,6 +145,17 @@ export async function buildEdition(opts: BuildEditionOptions = {}): Promise<Edit
       builtAt: readAt,
     });
     const recordCount = snapshot.facilities.length;
+    let siting: Record<string, unknown> | null = null;
+    try {
+      const parsed: unknown = JSON.parse(bodyOf("siting-context.json"));
+      if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) siting = parsed as Record<string, unknown>;
+    } catch (err) {
+      console.error(`dataset edition: siting parse failed (code: ${redactedErrorCode(err)})`);
+    }
+    const coverageRows = computeCoverage(snapshot.facilities, siting);
+    const prevSummary: unknown = prev?.changelogSummary;
+    const prevCoverage =
+      typeof prevSummary === "object" && prevSummary !== null ? (prevSummary as Record<string, unknown>).coverage : undefined;
     const fileBodies: Record<(typeof DATASET_EDITION_FILES)[number], string> = {
       "facilities.json": bodyOf("facilities.json"),
       "facilities.csv": facilitiesToCsv(snapshot.facilities),
@@ -155,6 +167,7 @@ export async function buildEdition(opts: BuildEditionOptions = {}): Promise<Edit
         recordCount,
         initial: changelog.initial,
         summary,
+        coverage: withDeltas(coverageRows, prevCoverage),
       }),
     };
 
@@ -170,7 +183,7 @@ export async function buildEdition(opts: BuildEditionOptions = {}): Promise<Edit
       readAt,
       recordCount,
       files,
-      changelogSummary: summary,
+      changelogSummary: { ...summary, coverage: coverageMap(coverageRows) },
     });
     if (!published) {
       logFailure("publish", "claim_lost");

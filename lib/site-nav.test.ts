@@ -25,8 +25,8 @@ describe("getSiteNavGroups", () => {
     const dataset = getSiteNavGroups().find((g) => g.label === "Dataset")!;
     expect(dataset.links).toEqual([
       { label: "Dataset", href: "/dataset" },
-      { label: "Commercial access", href: "/access/commercial" },
-      { label: "Free access for education", href: "/access" },
+      { label: "Dataset subscription", href: "/access/commercial" },
+      { label: "Free access for students", href: "/access" },
       { label: "Cite & license", href: "/data" },
     ]);
   });

@@ -296,13 +296,13 @@ describe("buildDatasetJsonLd", () => {
 
   it("describes access with commercial on", () => {
     expect(buildDatasetJsonLd({ commercial: true }).conditionsOfAccess).toBe(
-      "Facility pages are free to read. Data files require approved access: free for students and educators, paid for commercial use.",
+      "Facility pages are free to read. Data files require approved access: free for currently enrolled students, paid subscription for everyone else.",
     );
   });
 
   it("describes access with commercial off", () => {
     expect(buildDatasetJsonLd({ commercial: false }).conditionsOfAccess).toBe(
-      "Facility pages are free to read. Data files require approved access, free for students and educators.",
+      "Facility pages are free to read. Data files require approved access, free for currently enrolled students.",
     );
   });
 });

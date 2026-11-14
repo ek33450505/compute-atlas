@@ -1,5 +1,5 @@
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { mergeFacilityPatch } from "@/lib/facility-patch";
@@ -472,5 +472,127 @@ describe("FacilityForm — edit mode", () => {
       city: "Austin",
       precision: "exact",
     });
+  });
+});
+
+describe("FacilityForm — source editor keeps citations in step", () => {
+  beforeEach(() => {
+    mockUpdateFacilityAction.mockReset();
+  });
+
+  /**
+   * Opens the status-history row's source picker (the first "Source…" combobox
+   * in the form; the closed trigger renders no label) and returns the selected
+   * option's text.
+   */
+  async function selectedStatusHistorySource(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(screen.getAllByRole("combobox", { name: /^source/i })[0]);
+    const selected = (await screen.findAllByRole("option")).find(
+      (o) => o.getAttribute("aria-selected") === "true"
+    );
+    await user.keyboard("{Escape}");
+    return selected?.textContent;
+  }
+
+  function threeSourceFacility(citedIndex: number) {
+    const src = (label: string) => ({
+      url: `https://example.com/${label}`,
+      label,
+      retrievedAt: "2026-01-01",
+      kind: "press" as const,
+    });
+    return makeFacility({
+      sources: [src("Source A"), src("Source B"), src("Source C")],
+      statusHistory: [{ status: "proposed", date: "2026-01-01", sourceIndex: citedIndex }],
+    });
+  }
+
+  it("keeps a status-history picker on the same source after a move", async () => {
+    const user = userEvent.setup({ delay: null });
+    render(
+      <FacilityForm mode="edit" initialState={facilityToFormState(threeSourceFacility(2))} />
+    );
+    expect(await selectedStatusHistorySource(user)).toMatch(/^3\..*Source C/);
+
+    await user.click(screen.getByRole("button", { name: /move source 3 up/i }));
+
+    expect(screen.getByDisplayValue("Source C")).toHaveAttribute("name", "sources.1.label");
+    expect(await selectedStatusHistorySource(user)).toMatch(/^2\..*Source C/);
+  });
+
+  it("blocks removing a cited source, names the citation and keeps the row", async () => {
+    const user = userEvent.setup({ delay: null });
+    render(
+      <FacilityForm mode="edit" initialState={facilityToFormState(threeSourceFacility(0))} />
+    );
+
+    const remove = screen.getByRole("button", { name: /remove source 1/i });
+    await user.click(remove);
+
+    const row = screen.getByRole("group", { name: /^source 1$/i });
+    expect(within(row).getByRole("status")).toHaveTextContent(
+      "Cited by status history entry 1. Change those citations first."
+    );
+    expect(screen.getByDisplayValue("Source A")).toBeInTheDocument();
+    expect(document.activeElement).toBe(remove);
+  });
+
+  it("shifts a later citation to the same source when an uncited source is removed", async () => {
+    const user = userEvent.setup({ delay: null });
+    render(
+      <FacilityForm mode="edit" initialState={facilityToFormState(threeSourceFacility(2))} />
+    );
+
+    await user.click(screen.getByRole("button", { name: /remove source 1/i }));
+
+    expect(screen.queryByDisplayValue("Source A")).not.toBeInTheDocument();
+    expect(await selectedStatusHistorySource(user)).toMatch(/^2\..*Source C/);
+  });
+
+  it("sends sourceOrigins reflecting a move plus an add on submit", async () => {
+    const user = userEvent.setup({ delay: null });
+    mockUpdateFacilityAction.mockResolvedValue({
+      ok: true,
+      facility: { id: "test-facility", name: "Test Facility" },
+    });
+    render(
+      <FacilityForm mode="edit" initialState={facilityToFormState(threeSourceFacility(2))} />
+    );
+
+    await user.click(screen.getByRole("button", { name: /move source 3 up/i }));
+    await user.click(screen.getByRole("button", { name: /add source/i }));
+    // The new row's required fields must be filled or native validation blocks submit.
+    await user.type(document.getElementById("sources.3.url") as HTMLElement, "https://example.com/new");
+    await user.type(document.getElementById("sources.3.label") as HTMLElement, "Source D");
+    await user.type(document.getElementById("sources.3.retrievedAt") as HTMLElement, "2026-02-02");
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    await waitFor(() => expect(mockUpdateFacilityAction).toHaveBeenCalled());
+    const [, payload, origins] = mockUpdateFacilityAction.mock.calls[0];
+    expect(origins).toEqual([0, 2, 1, null]);
+    expect(payload.statusHistory[0].sourceIndex).toBe(1);
+  });
+
+  it("lists carried citations the server could not remap, in plain words", async () => {
+    const user = userEvent.setup({ delay: null });
+    mockUpdateFacilityAction.mockResolvedValue({
+      ok: false,
+      error: "Some citations point at a removed source.",
+      issues: [
+        { path: ["stakeholders", 1, "sourceIndex"], message: "removed" },
+        { path: ["construction", "disturbedAcres", "sourceIndex"], message: "removed" },
+      ],
+    });
+    render(
+      <FacilityForm mode="edit" initialState={facilityToFormState(threeSourceFacility(2))} />
+    );
+
+    await user.click(screen.getByRole("button", { name: /save changes/i }));
+
+    expect(
+      await screen.findByText(
+        /These citations point at a source you removed or moved: stakeholders entry 2, construction disturbed acres\. Reload the page to discard all unsaved changes, or ask the maintainer to edit those fields\./
+      )
+    ).toBeInTheDocument();
   });
 });

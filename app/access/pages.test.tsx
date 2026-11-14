@@ -33,7 +33,7 @@ describe("/access", () => {
     expect(screen.getAllByRole("listitem").length).toBeGreaterThanOrEqual(3);
     expect(screen.getByText(/^access terms$/i)).toBeInTheDocument();
     expect(screen.getByText(/^privacy notice$/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/terms version 2026-11-12\.1/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/terms version 2026-11-13\.1/i).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: "How to cite" })).toHaveAttribute("href", "/data");
     expect(screen.getByRole("button", { name: /request access/i })).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/draft|pending review/i);
@@ -43,13 +43,13 @@ describe("/access", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
     const { unmount } = render(<AccessPage />);
-    expect(screen.getByText(/free for students and\s+educators/i)).toBeInTheDocument();
+    expect(screen.getByText(/free for currently enrolled\s+students/i)).toBeInTheDocument();
     expect(screen.getByText(/personal addresses \(Gmail, Outlook and similar\) are declined/i)).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "commercial access" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "dataset subscription" })).not.toBeInTheDocument();
     unmount();
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(<AccessPage />);
-    expect(screen.getByRole("link", { name: /^commercial access$/i })).toHaveAttribute("href", "/access/commercial");
+    expect(screen.getByRole("link", { name: /^dataset subscription$/i })).toHaveAttribute("href", "/access/commercial");
   });
 
   it("explains why requests are reviewed by hand when enabled", () => {

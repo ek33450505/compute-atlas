@@ -15,7 +15,7 @@ describe("/access/terms", () => {
     render(<AccessTermsPage />);
     expect(screen.getByRole("heading", { level: 1, name: "Dataset access terms" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Access terms" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Commercial subscriptions" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Dataset subscriptions" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Privacy notice" })).toBeInTheDocument();
     expect(screen.getByText(`Terms version ${DATASET_TERMS_VERSION}.`)).toBeInTheDocument();
     expect(screen.getByText(/plus applicable tax/)).toBeInTheDocument();
@@ -26,7 +26,7 @@ describe("/access/terms", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "");
     render(<AccessTermsPage />);
     expect(screen.getByText(/not open yet/i)).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Commercial subscriptions" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Dataset subscriptions" })).not.toBeInTheDocument();
     expect(generateMetadata().robots).toEqual({ index: false, follow: false });
   });
 

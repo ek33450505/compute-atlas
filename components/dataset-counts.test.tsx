@@ -13,6 +13,7 @@ const COUNTS: Counts = {
   stateCodes: ["TX", "VA"],
   operators: 5,
   sourceLinks: 9,
+  coverage: [],
   asOf: "2026-11-12T01:04:00.000Z",
 };
 

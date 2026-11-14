@@ -47,7 +47,7 @@ export default function AccessTermsPage() {
         dek={<>Terms version {DATASET_TERMS_VERSION}.</>}
       />
       <TermsSection heading="Access terms" paragraphs={DATASET_ACCESS_TERMS} />
-      <TermsSection heading="Commercial subscriptions" paragraphs={DATASET_COMMERCIAL_TERMS} />
+      <TermsSection heading="Dataset subscriptions" paragraphs={DATASET_COMMERCIAL_TERMS} />
       <TermsSection heading="Privacy notice" paragraphs={DATASET_PRIVACY_NOTICE} />
     </AccessShell>
   );

@@ -28,23 +28,23 @@ describe("SiteFooter", () => {
     vi.unstubAllEnvs();
   });
 
-  it("shows the Free access and Commercial access links while sharing and the commercial tier are on", () => {
+  it("shows the Free access and Dataset subscription links while sharing and the commercial tier are on", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(<SiteFooter />);
     expect(
-      screen.getByRole("link", { name: "Free access for education" })
+      screen.getByRole("link", { name: "Free access for students" })
     ).toHaveAttribute("href", "/access");
     expect(
-      screen.getByRole("link", { name: "Commercial access" })
+      screen.getByRole("link", { name: "Dataset subscription" })
     ).toHaveAttribute("href", "/access/commercial");
   });
 
   it("hides both access links while dataset sharing is off", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "");
     render(<SiteFooter />);
-    expect(screen.queryByRole("link", { name: "Free access for education" })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Commercial access" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Free access for students" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Dataset subscription" })).toBeNull();
   });
 
   it("renders the wordmark/home link with an accessible name that includes its visible text", () => {

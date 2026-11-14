@@ -1,4 +1,5 @@
 import type { DatasetChangelogSummary } from "@/lib/dataset-changelog";
+import type { CoverageRow } from "@/lib/dataset-coverage";
 import { CODEBOOK_CONVENTIONS, CODEBOOK_ENTRIES, STABLE_ID_STATEMENT, type CodebookEntry } from "@/lib/dataset-codebook";
 import { DATASET_LICENSE_URL, siteConfig } from "@/lib/site";
 
@@ -21,6 +22,8 @@ export interface BuildReadmeInput {
    */
   initial: boolean;
   summary?: DatasetChangelogSummary;
+  /** Per-field coverage with the change since the previous edition; the section is omitted when absent or empty. */
+  coverage?: ReadonlyArray<CoverageRow & { delta: number | null }>;
 }
 
 const WRAP_COLUMNS = 80;
@@ -81,7 +84,7 @@ function assertEditionDate(value: string): void {
 }
 
 export function buildReadme(input: BuildReadmeInput): string {
-  const { editionDate, editionId, recordCount, summary, initial } = input;
+  const { editionDate, editionId, recordCount, summary, initial, coverage } = input;
   assertEditionDate(editionDate);
   if (!/^[A-Za-z0-9._-]+$/.test(editionId)) {
     throw new Error(`buildReadme: editionId must match [A-Za-z0-9._-]+, got ${JSON.stringify(editionId)}`);
@@ -146,6 +149,28 @@ export function buildReadme(input: BuildReadmeInput): string {
     out.push(`${summary.added} added, ${summary.updated} updated, ${summary.removed} removed.`);
     for (const headline of summary.headlines) out.push(...wrap(headline, WRAP_COLUMNS, "- ", "  "));
     out.push("Details are in changelog.json.");
+  }
+
+  if (coverage && coverage.length > 0) {
+    section("Coverage");
+    out.push(
+      ...wrap(
+        "Records with a value, by field. A field counts only the records of the facility types it applies to (see Field definitions); join keys count every record.",
+        WRAP_COLUMNS,
+      ),
+    );
+    const showChange = coverage.some((row) => row.delta !== null);
+    if (!showChange) out.push("No earlier edition carries coverage counts, so no change is shown.");
+    out.push("");
+    const width = Math.max(...coverage.map((row) => row.key.length));
+    const count = (v: number) => v.toLocaleString("en-US");
+    for (const row of coverage) {
+      let line = `  ${row.key.padEnd(width)}  ${count(row.filled)} of ${count(row.applicable)}`;
+      if (showChange) {
+        line += row.delta === null ? " (new)" : row.delta > 0 ? ` (+${count(row.delta)})` : row.delta < 0 ? ` (-${count(-row.delta)})` : " (0)";
+      }
+      out.push(line);
+    }
   }
 
   out.push("", `Edition: ${editionDate} (${editionId})`);

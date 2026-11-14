@@ -205,7 +205,7 @@ export interface DatasetJsonLd {
  * It lives on the dataset's landing page (/dataset), rendered only while
  * dataset sharing is on, by Ed's decision of 2026-11-12 (GSC audit F4); home
  * no longer carries it. Data files are not free for everyone
- * (approved access: free for students and educators, paid otherwise),
+ * (approved access: free for currently enrolled students, paid otherwise),
  * so `isAccessibleForFree` is false; the license stays CC BY 4.0. `commercial`
  * is passed in, not read from env, so the builder stays pure and the wording
  * matches what /dataset shows.
@@ -241,8 +241,8 @@ export function buildDatasetJsonLd(opts: {
     license: DATASET_LICENSE_URL,
     isAccessibleForFree: false,
     conditionsOfAccess: opts.commercial
-      ? "Facility pages are free to read. Data files require approved access: free for students and educators, paid for commercial use."
-      : "Facility pages are free to read. Data files require approved access, free for students and educators.",
+      ? "Facility pages are free to read. Data files require approved access: free for currently enrolled students, paid subscription for everyone else."
+      : "Facility pages are free to read. Data files require approved access, free for currently enrolled students.",
     creator: { "@type": "Person", name: "Edward Kubiak", url: siteConfig.url },
     publisher: { "@type": "Organization", name: siteConfig.name, url: siteConfig.url },
     spatialCoverage: { "@type": "Place", name: "United States" },

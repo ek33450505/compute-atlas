@@ -840,6 +840,58 @@ export function remapV2SourceIndices<T extends V2SourceIndexCarrier>(
   return out;
 }
 
+// Structural view of the v1 sourceIndex-bearing fields (optional unless noted).
+export interface V1SourceIndexCarrier {
+  statusHistory?: { sourceIndex?: number }[];
+  emissions?: { sourceIndex?: number };
+  subsidies?: { sourceIndex?: number }[];
+  stakeholders?: { sourceIndex: number }[];
+  jobs?: { sourceIndex?: number };
+  community?: { sourceIndex?: number };
+}
+export type SourceIndexCarrier = V1SourceIndexCarrier & V2SourceIndexCarrier;
+
+// Every sourceIndex in a facility, v1 and v2, as `{ path, index }`. Absent
+// optional indices are skipped. `lib/source-index.test.ts` walks `facilitySchema`
+// and fails if a sourceIndex-bearing field is added without being listed here.
+export function sourceIndexRefs(f: SourceIndexCarrier): { path: string; index: number }[] {
+  const out: { path: string; index: number }[] = [];
+  const add = (path: string, index: number | undefined) => {
+    if (index !== undefined) out.push({ path, index });
+  };
+  f.statusHistory?.forEach((e, i) => add(`statusHistory[${i}].sourceIndex`, e.sourceIndex));
+  add("emissions.sourceIndex", f.emissions?.sourceIndex);
+  f.subsidies?.forEach((s, i) => add(`subsidies[${i}].sourceIndex`, s.sourceIndex));
+  f.stakeholders?.forEach((s, i) => add(`stakeholders[${i}].sourceIndex`, s.sourceIndex));
+  add("jobs.sourceIndex", f.jobs?.sourceIndex);
+  add("community.sourceIndex", f.community?.sourceIndex);
+  out.push(...v2SourceIndexRefs(f));
+  return out;
+}
+
+// Returns a NEW facility with every sourceIndex (v1 and v2) replaced by
+// remap(path, index). Absent fields stay absent; nothing is mutated.
+export function remapSourceIndices<T extends SourceIndexCarrier>(
+  f: T,
+  remap: (path: string, index: number) => number
+): T {
+  const opt = <R extends { sourceIndex?: number }>(path: string, r: R): R =>
+    r.sourceIndex === undefined ? r : { ...r, sourceIndex: remap(path, r.sourceIndex) };
+  const out: T = remapV2SourceIndices(f, remap);
+  if (f.statusHistory)
+    out.statusHistory = f.statusHistory.map((e, i) => opt(`statusHistory[${i}].sourceIndex`, e));
+  if (f.emissions) out.emissions = opt("emissions.sourceIndex", f.emissions);
+  if (f.subsidies) out.subsidies = f.subsidies.map((s, i) => opt(`subsidies[${i}].sourceIndex`, s));
+  if (f.stakeholders)
+    out.stakeholders = f.stakeholders.map((s, i) => ({
+      ...s,
+      sourceIndex: remap(`stakeholders[${i}].sourceIndex`, s.sourceIndex),
+    }));
+  if (f.jobs) out.jobs = opt("jobs.sourceIndex", f.jobs);
+  if (f.community) out.community = opt("community.sourceIndex", f.community);
+  return out;
+}
+
 // Shared cross-branch validation: sourceIndex fields must reference an
 // in-range entry in `sources[]`. Hoisted so both union branches enforce it
 // identically instead of duplicating the superRefine per-branch.

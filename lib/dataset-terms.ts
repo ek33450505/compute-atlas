@@ -13,13 +13,13 @@ export const DATASET_ACCESS_TERMS: readonly string[] = [
 
 /** Terms for commercial subscriptions, applied on top of DATASET_ACCESS_TERMS (final; bump DATASET_TERMS_VERSION in lib/dataset-grants.ts whenever this text changes). */
 export const DATASET_COMMERCIAL_TERMS: readonly string[] = [
-  "A commercial subscription is for everyone outside education: companies, consultancies, investors, utilities, law firms, journalists, nonprofits and government. It gives one named person weekly access to the dataset through a personal link. The link must not be shared. Access for a team is by arrangement through /contact.",
+  "A dataset subscription is for everyone who is not a currently enrolled student: companies, consultancies, investors, utilities, law firms, journalists, nonprofits, government, educators and researchers. It gives one named person weekly access to the dataset through a personal link. The link must not be shared. Access for a team is by arrangement through /contact.",
   "Don't share the personal link. The downloaded data remains licensed CC BY 4.0 and must be credited. These terms never narrow that licence.",
-  "The price is $150 per month or $1,500 per year, plus applicable tax, paid through PayPal. A PayPal account is required. A subscription renews until cancelled, and continues under the terms accepted at checkout until it is cancelled.",
+  "The price is $150 per month or $1,500 per year, plus applicable tax, paid through PayPal. The fee pays for preparing and delivering the files; it is not a licence fee. A PayPal account is required. A subscription renews until cancelled, and continues under the terms accepted at checkout until it is cancelled.",
   "Cancel at any time from the download page or in your PayPal account's automatic payments settings. Access continues to the end of the paid period.",
   "There are no refunds for partial periods, except where the law requires one. The maintainer may refund at their discretion.",
   "Access may be revoked for misuse such as sharing links. Revoking cancels that subscription and ends access. You may subscribe again later.",
-  "Free access for students and educators is separate, is reviewed by hand, and is verified against a school email address.",
+  "Free access is for currently enrolled students only. It is separate from a subscription, is reviewed by hand against a school email address, lasts 90 days, and can be renewed while the student remains enrolled. Educators, researchers and everyone else use a subscription.",
 ];
 
 /** Privacy notice for dataset access requests (final; bump DATASET_TERMS_VERSION in lib/dataset-grants.ts whenever this text changes). */

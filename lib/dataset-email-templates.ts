@@ -73,7 +73,7 @@ const paragraphs = (...parts: string[]): string => parts.map((p) => `<p>${p}</p>
 
 const CATEGORY_LABEL: Record<DatasetRequestEcho["category"], string> = {
   journalist: "Journalist",
-  academic: "Student or educator",
+  academic: "Currently enrolled student",
   nonprofit: "Nonprofit",
   government: "Government",
   commercial: "Commercial",
@@ -218,11 +218,11 @@ export function buildDatasetRejectedEmail(input: {
 export function buildDatasetCommercialRedirectEmail(input: { siteUrl: string }): DatasetEmail {
   const url = `${input.siteUrl}${COMMERCIAL_PATH}`;
   const subject = "Your Compute Atlas dataset access request";
-  const free = "The full dataset is free for students and educators, verified against a school email address.";
-  const paid = `Everyone else can subscribe: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}.`;
+  const free = "The full dataset is free for currently enrolled students, verified against a school email address.";
+  const paid = `Everyone else, including educators and researchers, can subscribe: ${formatPlanPrice("monthly")} or ${formatPlanPrice("annual")}.`;
   const access = `${input.siteUrl}/access`;
-  const replyLead = "If you are a student or educator, send a new request at";
-  const replyTail = 'from your school email address and choose "Student or educator".';
+  const replyLead = "If you are a currently enrolled student, send a new request at";
+  const replyTail = 'from your school email address and choose "Currently enrolled student".';
   const reply = `${replyLead} ${access} ${replyTail}`;
   const text = ["Thank you for your request for the Compute Atlas dataset.", free, "", paid, url, "", reply].join("\n");
   const html = paragraphs(
@@ -238,7 +238,7 @@ export function buildDatasetCommercialRedirectEmail(input: { siteUrl: string }):
 export function buildDatasetSubscriptionActiveEmail(input: { siteUrl: string; accessToken: string }): DatasetEmail {
   const url = `${input.siteUrl}/access/dataset?t=${encodeURIComponent(input.accessToken)}`;
   const dataUrl = `${input.siteUrl}/data`;
-  const subject = "Your Compute Atlas commercial access is active";
+  const subject = "Your Compute Atlas dataset subscription is active";
   const refresh = "The dataset refreshes weekly.";
   const seats = "A subscription gives one named person weekly access through a personal link.";
   const billing =

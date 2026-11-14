@@ -14,6 +14,7 @@ import {
   loadOfferEdition,
   n,
 } from "@/lib/dataset-offer";
+import { formatEditionDate } from "@/lib/edition-date";
 import { breadcrumbJsonLdString, datasetJsonLdString } from "@/lib/seo";
 import { MAX_ROWS } from "@/lib/table-query";
 import { statesPhrase } from "@/lib/us-states";
@@ -27,8 +28,8 @@ export function generateMetadata(): Metadata {
     description: !isDatasetSharingEnabled()
       ? "Dataset access for Compute Atlas is not open yet."
       : isCommercialTierEnabled()
-        ? `The full Compute Atlas dataset as weekly JSON and CSV files: free for students and educators, ${formatPlanPrice("monthly")} for everyone else.`
-        : "The full Compute Atlas dataset as weekly JSON and CSV files, free for students and educators.",
+        ? `The full Compute Atlas dataset as weekly JSON and CSV files: free for currently enrolled students, ${formatPlanPrice("monthly")} for everyone else.`
+        : "The full Compute Atlas dataset as weekly JSON and CSV files, free for currently enrolled students.",
     alternates: { canonical: "/dataset" },
     ...(isDatasetSharingEnabled() ? {} : { robots: { index: false, follow: false } }),
   };
@@ -42,7 +43,7 @@ const LINK_CLASS =
 
 /**
  * /dataset — the file offer ("Dataset" in the nav): what the files hold, the
- * free and commercial access cards, and why the commercial tier costs money.
+ * student and subscription access cards, and why the subscription costs money.
  * How to cite and the license live on /data. While sharing is off the page
  * advertises nothing and is noindexed. Counts and the latest edition are read
  * only when sharing is on, through 24h-cached, fail-soft loaders, and the page
@@ -131,11 +132,12 @@ export default async function DatasetPage() {
                 className="space-y-3 rounded-lg border border-border p-5"
               >
                 <h3 id="free-access-heading" className="font-display text-xl text-foreground">
-                  Free
+                  Students
                 </h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">
-                  For students and educators, verified by hand against a school email address. The
-                  same weekly files through a personal link.
+                  For currently enrolled students, verified by hand against a school email address. The
+                  same weekly files through a personal link, for 90 days at a time, renewable
+                  while you are enrolled.
                 </p>
                 <Link href="/access?from=data" className={BUTTON_CLASS}>
                   Request access
@@ -150,18 +152,13 @@ export default async function DatasetPage() {
                     id="commercial-access-heading"
                     className="font-display text-xl text-foreground"
                   >
-                    Commercial
+                    Dataset Subscription
                   </h3>
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    For everyone else: companies, consultancies, investors, utilities, law firms,
-                    journalists, nonprofits and government. {formatPlanPrice("monthly")} or{" "}
+                    For companies, consultancies, investors, utilities, law firms, journalists,
+                    nonprofits, government, educators and researchers. {formatPlanPrice("monthly")} or{" "}
                     {formatPlanPrice("annual")}, plus applicable tax. Your download link arrives
-                    as soon as payment completes. Cancel anytime. One link per subscription; for
-                    a team,{" "}
-                    <Link href="/contact" className={LINK_CLASS}>
-                      contact us
-                    </Link>
-                    .
+                    as soon as payment completes. Cancel anytime. One link per subscription.
                   </p>
                   <Link href="/access/commercial" className={BUTTON_CLASS}>
                     Preview the files and plans
@@ -210,6 +207,28 @@ export default async function DatasetPage() {
                 releases.
               </li>
             </ul>
+            {counts && counts.coverage.length > 0 && (
+              <>
+                <h3 className="font-display text-xl text-foreground">Field coverage</h3>
+                <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+                  Records with a value, counted on {formatEditionDate(counts.asOf)}. A field counts
+                  only the records of the facility types it applies to.
+                </p>
+                <dl className="grid max-w-2xl grid-cols-[auto_1fr] gap-x-6 gap-y-1 font-mono text-sm">
+                  {counts.coverage.map((row) => (
+                    <div key={row.key} className="contents">
+                      <dt className="text-muted-foreground">{row.label}</dt>
+                      <dd className="text-foreground">{`${n(row.filled)} of ${n(row.applicable)}`}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+                  New editions list all {CSV_COLUMN_COUNT} columns and the join keys in their README,
+                  with the change since the previous edition once an earlier one carries these
+                  counts.
+                </p>
+              </>
+            )}
           </section>
 
           {commercial && (
@@ -224,9 +243,8 @@ export default async function DatasetPage() {
                 The data is CC BY 4.0 for everyone, and a subscription does not change that: the
                 fee pays for the work, not a license. Finding, reading and citing{" "}
                 {counts ? n(counts.sourceLinks) : "thousands of"} public sources, checking for
-                changes every week and delivering clean files is the work. Commercial
-                subscriptions pay for it and keep the files free for students and
-                educators. The map and every facility page stay free for everyone.
+                changes every week and delivering clean files is the work.
+                Subscriptions pay for it and keep the files free for students. The map and every facility page stay free for everyone.
               </p>
             </section>
           )}
