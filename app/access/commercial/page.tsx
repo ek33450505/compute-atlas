@@ -122,8 +122,9 @@ export default async function CommercialAccessPage({
           </li>
           <li>
             siting-context.json: nearest water and transmission, basin water stress and aquifer per
-            facility, plus join keys where computed (county FIPS, EPA eGRID2023 subregion, and
-            census tract for exactly pinned sites)
+            facility, plus join keys where computed (county FIPS, EPA eGRID2023 subregion, census
+            tract for exactly pinned sites, and the balancing authority of the
+            facility&apos;s EIA-matched utility, with its ISO/RTO where it has one)
           </li>
           <li>changelog.json: records added, updated and removed since the previous edition</li>
           <li>A new edition every Friday, and an email when it is ready</li>
@@ -215,7 +216,7 @@ export default async function CommercialAccessPage({
         </h2>
         <ul className="max-w-2xl list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
           <li>Site selection and development: where projects are proposed, by whom, near which grid and water.</li>
-          <li>Utilities and energy: announced load, on-site generation and the utility named in each filing.</li>
+          <li>Utilities and energy: announced load, on-site generation, and the utility named in each filing with its EIA utility id where matched.</li>
           <li>Investors and analysts: the pipeline by status, operator and state, with a weekly changelog to track it.</li>
           <li>Law, policy and newsrooms: the permits, rate cases and county decisions behind each site.</li>
         </ul>
