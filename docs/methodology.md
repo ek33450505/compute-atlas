@@ -193,6 +193,9 @@ facility needs a recompute).
   the value is a geographic approximation of which grid region a site falls in,
   not a statement about where it is interconnected. A site inside the
   separate multiple-subregions layer carries `egridMultiple`.
+- **Balancing authority / ISO-RTO** — the EIA balancing authority code and, for
+  the seven RTOs, the RTO name, taken from the facility's utility in EIA-861
+  rather than from its pin; see the last paragraph of this section.
 
 A facility is re-queried when it is new, its pin moved or its precision changed,
 or when an earlier run left something to retry: a key missing after a failed
@@ -216,10 +219,18 @@ the one the pin falls in), `tract_county_mismatch`, `egrid_multi_unknown` and
 multiple-subregions point query failed. A recompute that computes eGRID clears
 it; while eGRID is carried forward the flag is kept.
 
-Balancing authority and ISO/RTO are not computed. The public polygon layers
-reviewed for them either overlapped substantially or carried no clear licence,
-so a point lookup would publish guesses. They may later be derived from the EIA
-utility id (`energy.utilityEiaId`) instead.
+Balancing authority and ISO/RTO are derived from the facility's EIA utility id
+(`energy.utilityEiaId`), not from its pin: the public polygon layers reviewed for
+a point lookup either overlapped substantially or carried no clear licence. The
+value is the balancing authority code that EIA-861 2025 reports on the utility's
+bundled-sales and delivery rows in the facility's state; if the utility has only
+energy-only sales rows there, those are used instead. `isoRto` is set only when
+that code is one of the seven RTOs (PJM, MISO, ERCOT, CAISO, NYISO, ISO-NE, SPP).
+`multiple_hits:balancingAuthority` means
+the utility reports more than one code in that state, and `ba_unknown` means it
+reports none; both leave no value. Only records with `energy.utilityEiaId` are
+computed. This describes the utility, not the site's own interconnection. If
+EIA-861 cannot be loaded, the existing values are carried forward.
 
 ## Zero fabrication
 

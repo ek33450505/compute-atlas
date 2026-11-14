@@ -49,7 +49,7 @@
  *                                             vet with check-siting-additive.mjs, publish with
  *                                             siting:apply, the Neon export refreshes the snapshot)
  *
- * Usage: node scripts/build-map-data.mjs [--skip-nhd | --backfill-nhd]
+ * Usage: npm run build:mapdata -- [--skip-nhd | --backfill-nhd]
  *   --skip-nhd      Skip the slow (~5min) live USGS NHD nearest-water pass and
  *                   the water/power/drought overlay rebuild. Reuses the
  *                   EXISTING snapshot data/siting-context.json's nearestWater/
@@ -82,6 +82,8 @@ import { lineString as turfLineString, point as turfPoint } from '@turf/helpers'
 import { buildHeroPoints } from './build-hero-points.mjs';
 import { buildHeroPlate } from './build-hero-plate.mjs';
 import { buildPipelineHistory } from './build-pipeline-history.mjs';
+import { applyBalancingAuthority, BA_FLAGS, baSourceLabel, buildBaIndex, computeBalancingAuthority } from './balancing-authority.ts';
+import { DEFAULT_EIA861_PATH, ensureEia861Zip, loadEia861 } from './eia861.ts';
 import {
   computeAllJoinKeys,
   preflightJoinKeys,
@@ -1769,6 +1771,8 @@ export async function fetchEgridPolygons({ fetchAll = fetchArcGISAll } = {}) {
  * its value and flags are carried forward, and it costs no failure budget. eGRID is a local
  * point-in-polygon lookup: the polygons are downloaded once per run, and only when some facility
  * needs a recompute; a failed download makes eGRID fail its pre-flight, so it is carried forward.
+ * Balancing authority is a local lookup from the facility's EIA utility id; it runs on every
+ * non-skipped pass, even when nothing needs a recompute, and is carried forward if EIA-861 cannot be loaded.
  * Returns `{ byId, stats, failedServices }`.
  */
 export async function runJoinKeys(
@@ -1782,6 +1786,7 @@ export async function runJoinKeys(
     log = console.log,
     warn = console.error,
     loadEgrid = () => fetchEgridPolygons(),
+    loadEia = async () => loadEia861(await ensureEia861Zip(resolve(repoRoot, DEFAULT_EIA861_PATH))),
   } = {},
 ) {
   const existingById = {};
@@ -1837,7 +1842,61 @@ export async function runJoinKeys(
         're-run build:mapdata (e.g. with --skip-nhd) until 0 are deferred',
     );
   }
+  await applyBalancingAuthorityPass(facilities, byId, existingById, { loadEia, log, warn });
   return { byId, stats, failedServices: failed };
+}
+
+/** Sets balancingAuthority/isoRto/flags/sources.ba on every byId entry (mutates byId), or carries them forward from `existingById`. */
+async function applyBalancingAuthorityPass(facilities, byId, existingById, { loadEia, log, warn }) {
+  let data = null;
+  try {
+    data = await loadEia();
+  } catch (err) {
+    // lint-no-raw-error-logs: allow -- public-API fetch and local file reads; imports no DB code, so the error cannot carry bound params
+    const reason = err instanceof Error ? err.message : String(err);
+    warn(`  [warn] join-keys: EIA-861 load FAILED (${reason}): not computing balancing authority this run, carrying existing values forward`);
+  }
+  if (!data) {
+    for (const id of Object.keys(byId)) {
+      const old = existingById[id];
+      if (!old) continue;
+      const flag = (old.flags ?? []).find((f) => BA_FLAGS.includes(f));
+      if (old.balancingAuthority === undefined && old.isoRto === undefined && flag === undefined && old.sources?.ba === undefined) continue;
+      // Rebuilt entries lost the BA data; put the previous values back through the same key-order-preserving path.
+      byId[id] = applyBalancingAuthority(
+        byId[id],
+        { balancingAuthority: old.balancingAuthority, isoRto: old.isoRto, flag },
+        old.sources?.ba ?? 'carried forward',
+      );
+    }
+    return;
+  }
+  const idx = buildBaIndex(data);
+  const label = baSourceLabel(data.provenance);
+  const tally = { set: 0, rto: 0, multiple: 0, unknown: 0, noUtility: 0 };
+  const dropped = [];
+  for (const f of facilities) {
+    if (!byId[f.id]) continue;
+    const result = computeBalancingAuthority(f, idx);
+    byId[f.id] = applyBalancingAuthority(byId[f.id], result, label);
+    if (existingById[f.id]?.balancingAuthority && !result?.balancingAuthority) dropped.push(f.id);
+    if (!result) tally.noUtility++;
+    else if (result.balancingAuthority) {
+      tally.set++;
+      if (result.isoRto) tally.rto++;
+    } else if (result.flag === 'ba_unknown') tally.unknown++;
+    else tally.multiple++;
+  }
+  log(
+    `Balancing authority: ${tally.set} set (${tally.rto} in an RTO), ${tally.multiple} multiple, ` +
+      `${tally.unknown} unknown, ${tally.noUtility} without a utility id, ${dropped.length} previously set values dropped`,
+  );
+  if (dropped.length > 0) {
+    warn(
+      `  [warn] join-keys: ${dropped.length} previously set balancingAuthority values dropped (utility id removed, now multiple or unknown): ` +
+        `${dropped.slice(0, 10).join(', ')}${dropped.length > 10 ? ', ...' : ''}`,
+    );
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -21,7 +21,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "build:basemap": "node scripts/build-parchment-style.mjs",
-    "build:mapdata": "node scripts/build-map-data.mjs",
+    "build:mapdata": "tsx scripts/build-map-data.mjs",
     "build:heropoints": "node scripts/build-hero-points.mjs",
     "build:heroplate": "node scripts/build-hero-plate.mjs",
     "build:pipelinehistory": "node scripts/build-pipeline-history.mjs",

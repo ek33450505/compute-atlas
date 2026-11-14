@@ -17,7 +17,16 @@ export interface CoverageRow {
   applicable: number;
 }
 
-const JOIN_KEYS = ["countyFips", "tractGeoid", "egridSubregion"] as const;
+const JOIN_KEYS = ["countyFips", "tractGeoid", "egridSubregion", "balancingAuthority"] as const;
+
+/**
+ * Join keys that exist only for records with a prerequisite field: balancingAuthority is derived from
+ * `energy.utilityEiaId`, so its denominator is the records carrying one. (`isoRto` is not reported: it exists
+ * only for RTO balancing authorities, so a fill rate against any denominator would read as a gap.)
+ */
+const JOIN_KEY_APPLICABLE: Partial<Record<(typeof JOIN_KEYS)[number], (f: Facility) => boolean>> = {
+  balancingAuthority: (f) => f.energy?.utilityEiaId !== undefined,
+};
 
 const APPLIES_TO = new Map(CODEBOOK_ENTRIES.map((e) => [e.path, e.appliesTo] as const));
 
@@ -54,7 +63,8 @@ export function computeCoverage(
         const value = isRecord(joinKeys) ? joinKeys[key] : undefined;
         if (typeof value === "string" && value !== "") count++;
       }
-      rows.push({ key: `joinKeys.${key}`, filled: count, applicable: facilities.length });
+      const applies = JOIN_KEY_APPLICABLE[key];
+      rows.push({ key: `joinKeys.${key}`, filled: count, applicable: applies ? facilities.filter(applies).length : facilities.length });
     }
   }
   return rows;

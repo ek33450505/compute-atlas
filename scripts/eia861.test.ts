@@ -251,7 +251,7 @@ describe("readXlsxSheet", () => {
 });
 
 type Rows = string[][];
-function fixtureZip(over: { sales?: Rows; utility?: Rows; territory?: Rows; territoryStates?: Rows } = {}): Buffer {
+function fixtureZip(over: { sales?: Rows; utility?: Rows; territory?: Rows; territoryStates?: Rows; delivery?: Rows } = {}): Buffer {
   // Columns deliberately in a different order from the real files.
   const utilityHeader = ["State", "Extra", "Utility Name", "Utility Number"];
   const utility: Rows = over.utility ?? [
@@ -277,6 +277,7 @@ function fixtureZip(over: { sales?: Rows; utility?: Rows; territory?: Rows; terr
     ["Footnote text with an empty utility number"],
   ];
   const salesT: Rows = [["b"], ["b"], salesHeader, ["PR", "PR", "7", "Bundled", "O", "A"]];
+  const delivery: Rows = over.delivery ?? [["b"], ["b"], salesHeader, ["ERCO", "TX", "44372", "Delivery", "O", "C"]];
   return makeZip({
     "Utility_Data_2025.xlsx": makeXlsx([
       { name: "Territories", file: "sheet1.xml", rows: utilityTerr },
@@ -290,6 +291,7 @@ function fixtureZip(over: { sales?: Rows; utility?: Rows; territory?: Rows; terr
       { name: "States", file: "sheet1.xml", rows: sales },
       { name: "Territories", file: "sheet2.xml", rows: salesT },
     ]),
+    "Delivery_Companies_2025.xlsx": makeXlsx([{ name: "Delivery Companies", file: "sheet1.xml", rows: delivery }]),
   });
 }
 
@@ -309,6 +311,7 @@ describe("loadEia861", () => {
     expect(d.salesBa).toEqual([
       { id: 55, state: "MS", part: "A", serviceType: "Bundled", baCode: "TVA" },
       { id: 7, state: "PR", part: "A", serviceType: "Bundled", baCode: "PR" },
+      { id: 44372, state: "TX", part: "C", serviceType: "Delivery", baCode: "ERCO" },
     ]);
   });
 
@@ -330,6 +333,11 @@ describe("loadEia861", () => {
   it("throws when a sheet has no data rows", () => {
     const zip = fixtureZip({ territory: [["County", "Utility Name", "Utility Number", "State"]] });
     expect(() => loadEia861(zip, provFor(zip))).toThrow(/Counties_Territories.*no data rows/);
+  });
+
+  it("throws when Delivery_Companies has no data rows", () => {
+    const zip = fixtureZip({ delivery: [["b"], ["b"], ["BA Code", "State", "Utility Number", "Service Type", "Part"]] });
+    expect(() => loadEia861(zip, provFor(zip))).toThrow(/Delivery Companies.*no data rows/);
   });
 
   it("throws on a size or sha mismatch", () => {
@@ -417,8 +425,9 @@ describe.skipIf(!existsSync(REAL))("real EIA-861 2025 file", () => {
     expect(data.utilities.size).toBe(1720);
     // Service_Territory: 11803 + 90 raw rows, none are 88888, so no rows dropped.
     expect(data.territory.length).toBe(11893);
-    // Sales_Ult_Cust: 2869 + 11 = 2880 numeric-id rows, minus 3 rows of 88888 = 2877.
-    expect(data.salesBa.length).toBe(2877);
+    // Sales_Ult_Cust: 2869 + 11 = 2880 numeric-id rows, minus 3 rows of 88888 = 2877, plus the 7 rows of
+    // Delivery_Companies (Texas delivery-only utilities that have no Sales_Ult_Cust rows) = 2884.
+    expect(data.salesBa.length).toBe(2884);
   });
 
   it("has known spot rows", () => {
@@ -426,5 +435,6 @@ describe.skipIf(!existsSync(REAL))("real EIA-861 2025 file", () => {
     expect(data.utilities.get(4110)).toEqual({ id: 4110, name: "Commonwealth Edison Co", state: "IL" });
     expect(data.territory).toContainEqual(expect.objectContaining({ id: 55, state: "MS", county: "Monroe" }));
     expect(data.salesBa).toContainEqual(expect.objectContaining({ id: 55, state: "MS", baCode: "TVA" }));
+    expect(data.salesBa).toContainEqual(expect.objectContaining({ id: 44372, state: "TX", serviceType: "Delivery", baCode: "ERCO" }));
   });
 });

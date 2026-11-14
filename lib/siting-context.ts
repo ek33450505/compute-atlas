@@ -7,7 +7,7 @@ import sitingContextRaw from "@/data/siting-context.json";
 import { getDb, readsUseDatabase } from "@/lib/db/client";
 import { redactedErrorCode } from "@/lib/db-error";
 import { sitingContextTable } from "@/lib/db/schema";
-import { sitingContextSchema, waterStressSchema } from "@/lib/siting-context-schema";
+import { sitingContextSchema, waterStressSchema, type ISO_RTO_VALUES } from "@/lib/siting-context-schema";
 
 /**
  * Nearest named surface-water feature to a facility, straight-line distance.
@@ -62,16 +62,19 @@ export interface Aquifer {
  * Keys for joining a facility to external datasets, computed at build time from the pin: county
  * and tract by ArcGIS point query, eGRID by point-in-polygon against EPA's polygons. `tractGeoid`
  * exists only for exact pins. `egridSubregion` is EPA's ZIP-dissolved representational polygon,
- * not the grid the site actually draws from.
+ * not the grid the site actually draws from. `balancingAuthority` and `isoRto` are utility-level, from
+ * EIA-861, and exist only where `energy.utilityEiaId` is set.
  */
 export interface JoinKeys {
   countyFips?: string;
   tractGeoid?: string;
   egridSubregion?: string;
   egridMultiple?: true;
+  balancingAuthority?: string;
+  isoRto?: (typeof ISO_RTO_VALUES)[number];
   pin: { lat: number; lon: number; precision: "exact" | "approximate" | "representative_multi_site" };
   flags?: string[];
-  sources: { county: string; tract?: string; egrid: string };
+  sources: { county: string; tract?: string; egrid: string; ba?: string };
   computedAt: string;
 }
 

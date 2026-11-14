@@ -62,6 +62,23 @@ describe("computeCoverage", () => {
   });
 });
 
+describe("computeCoverage balancing authority", () => {
+  const withUtility = make({
+    id: "dc-u",
+    name: "Example Campus U",
+    energy: { utility: "Example Utility", utilityEiaId: { id: 100, sourceIndex: 0 } },
+  });
+
+  it("uses the records with an EIA utility id as the denominator and reports no isoRto row", () => {
+    const rows = computeCoverage([...FACILITIES, withUtility], {
+      "dc-u": { joinKeys: { balancingAuthority: "PJM", isoRto: "PJM" } },
+    });
+    expect(row(rows, "joinKeys.balancingAuthority")).toEqual({ key: "joinKeys.balancingAuthority", filled: 1, applicable: 1 });
+    expect(rows.some((r) => r.key === "joinKeys.isoRto")).toBe(false);
+    expect(row(rows, "joinKeys.countyFips").applicable).toBe(4);
+  });
+});
+
 describe("coverageMap", () => {
   it("maps each key to its filled count", () => {
     expect(coverageMap([{ key: "a", filled: 2, applicable: 5 }])).toEqual({ a: 2 });

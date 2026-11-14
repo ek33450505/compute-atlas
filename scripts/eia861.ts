@@ -2,11 +2,13 @@
  * Reader for the U.S. EIA Form EIA-861 final data (a ZIP of .xlsx workbooks). EIA data is U.S.
  * government public domain.
  *
- * This module only downloads/verifies the pinned ZIP and parses three tables:
- *   - Utility_Data      -> utility id, name, home state
- *   - Service_Territory -> utility x state x county
- *   - Sales_Ult_Cust    -> utility x state x part x service type x balancing authority code
- * Matching facilities to utilities and deriving balancing authority are later units.
+ * This module only downloads/verifies the pinned ZIP and parses four sheets of three tables:
+ *   - Utility_Data        -> utility id, name, home state
+ *   - Service_Territory   -> utility x state x county
+ *   - Sales_Ult_Cust and Delivery_Companies (one `salesBa` list)
+ *                         -> utility x state x part x service type x balancing authority code
+ * Matching facilities to utilities is scripts/utility-eia-match.ts (the utility-matching CLI); deriving
+ * balancing authority from `salesBa` is scripts/balancing-authority.ts.
  *
  * Columns are located BY HEADER TEXT, never by fixed letter, and every sheet is resolved by NAME
  * through workbook.xml and its rels. The file is pinned by byte size and SHA-256; a mismatch
@@ -313,6 +315,18 @@ export function loadEia861(zip: Buffer, provenance: Eia861Provenance = EIA861_20
         baCode: r.get("BA Code"),
       });
     }
+  }
+
+  // Texas delivery-only utilities (Oncor, CenterPoint, ...) have no Sales_Ult_Cust rows: the retail providers report the sales.
+  const deliveryBook = workbook("Delivery_Companies");
+  for (const r of readTable(deliveryBook, "Delivery Companies", ["Utility Number", "Part", "Service Type", "State", "BA Code"])) {
+    salesBa.push({
+      id: Number(r.get("Utility Number")),
+      state: r.get("State"),
+      part: r.get("Part"),
+      serviceType: r.get("Service Type"),
+      baCode: r.get("BA Code"),
+    });
   }
 
   return { provenance, utilities, territory, salesBa };
