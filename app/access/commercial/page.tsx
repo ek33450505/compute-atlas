@@ -121,8 +121,9 @@ export default async function CommercialAccessPage({
             spreadsheet{csvBytes !== undefined ? ` (${formatMegabytes(csvBytes)})` : ""}
           </li>
           <li>
-            siting-context.json: nearest water and transmission, basin water stress and aquifer,
-            per facility
+            siting-context.json: nearest water and transmission, basin water stress and aquifer per
+            facility, plus join keys where computed (county FIPS, EPA eGRID2023 subregion, and
+            census tract for exactly pinned sites)
           </li>
           <li>changelog.json: records added, updated and removed since the previous edition</li>
           <li>A new edition every Friday, and an email when it is ready</li>

@@ -35,6 +35,8 @@ const DB_CLIENT = "lib/db/client";
 const ALLOWED_OWNER_DB: Record<string, string> = {
   "scripts/discovery/leads-lane.ts":
     "writes through lib/submissions and lib/leads (createSubmission, updateLeadStatus, promoteLead) as the owner",
+  "scripts/discovery/permit-lane.ts":
+    "inserts `new` leads through lib/leads (createDiscoveryLead) and reads lead urls for dedupe as the owner",
   "scripts/discovery/publish-heartbeat.ts": "upserts the discovery_heartbeat row as the owner",
   "scripts/discovery/check-heartbeat.ts":
     "reads discovery_heartbeat; runs in CI (discovery-watchdog.yml) on the DATABASE_URL Actions secret (moving to ci_monitor)",

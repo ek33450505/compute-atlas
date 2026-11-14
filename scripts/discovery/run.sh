@@ -1977,6 +1977,7 @@ _PRUNE_PATTERNS=(
   '^verify-fields-[0-9]{8}T[0-9]{6}-enrichment\.json$'
   '^verify-fields-[0-9]{8}T[0-9]{6}-enrichment\.log$'
   '^leads-lane-[0-9]{8}T[0-9]{6}-leads\.json$'
+  '^permit-lane-[0-9]{8}T[0-9]{6}-permits\.json$'
   '^retention-prune-[0-9]{8}T[0-9]{6}\.log$'
   '^source-health-[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}-[0-9]{2}-[0-9]{2}-[0-9]{3}Z\.json$'
 )
@@ -2722,6 +2723,46 @@ try {
   else
     # Read-only lane: nothing downstream to wait on, so success alone promotes.
     promote_cursor verify "$VERIFY_CURSOR_FILE" "$VERIFY_NEXT_CURSOR_FILE"
+  fi
+
+  # --- permit lane (Texas TCEQ TXR15) -----------------------------------------
+  # Reads recent construction stormwater permits from TCEQ's public search
+  # (1 request/second) and files a `new` lead for each permit whose site name or
+  # permittee looks like a data center or crypto site, is SIC 7374, or exactly
+  # matches a known operator. It never writes a facility or submission and never
+  # stores contact data; the leads lane below works its leads in this same run.
+  # Bounded by PERMIT_LEADS_LIMIT (new leads per run) over a PERMIT_LOOKBACK_DAYS
+  # window (default 120: TCEQ's search can surface a permit weeks after its
+  # coverage date, so a short window misses it; duplicates are skipped across
+  # runs). The window is searched in <=30-day chunks; estimate, not measured per
+  # run: ~2,800 rows is ~56 result pages + 4 POSTs at 1 request/second, about a
+  # minute. Quiet runs are normal. Inside the dry-run guard because it inserts
+  # leads. PERMIT_LANE_ENABLED=false skips it. A failure is recorded but never
+  # aborts the rest of the run. Summary JSON goes to stdout, captured to file.
+  if [[ "${PERMIT_LANE_ENABLED:-true}" == "false" ]]; then
+    log "permit lane disabled (PERMIT_LANE_ENABLED=false) — skipping"
+  else
+    PERMIT_LEADS_LIMIT="$(validate_positive_int_env PERMIT_LEADS_LIMIT 5)"
+    PERMIT_LOOKBACK_DAYS="$(validate_positive_int_env PERMIT_LOOKBACK_DAYS 120)"
+    # The lane itself refuses values past these caps (exit 2), so fall back here instead.
+    if [[ "$PERMIT_LEADS_LIMIT" -gt 50 ]]; then
+      log "WARN: PERMIT_LEADS_LIMIT=${PERMIT_LEADS_LIMIT} is above the maximum 50 — falling back to default 5"
+      PERMIT_LEADS_LIMIT=5
+    fi
+    if [[ "$PERMIT_LOOKBACK_DAYS" -gt 365 ]]; then
+      log "WARN: PERMIT_LOOKBACK_DAYS=${PERMIT_LOOKBACK_DAYS} is above the maximum 365 — falling back to default 120"
+      PERMIT_LOOKBACK_DAYS=120
+    fi
+    PERMITS_RUN_ID="$(date '+%Y%m%dT%H%M%S')-permits"
+    log "checking TCEQ permits (limit=${PERMIT_LEADS_LIMIT} lookback-days=${PERMIT_LOOKBACK_DAYS})"
+    if ! run_bg_wait npx tsx --env-file=.env.local scripts/discovery/permit-lane.ts \
+      --limit="$PERMIT_LEADS_LIMIT" \
+      --lookback-days="$PERMIT_LOOKBACK_DAYS" \
+      --run-id="$PERMITS_RUN_ID" \
+      >"$LOG_DIR/permit-lane-${PERMITS_RUN_ID}.json" 2>>"$LOG_DIR/permit-lane.err"; then
+      log "WARN: permit lane failed for $PERMITS_RUN_ID — continuing (see permit-lane.err)"
+      FAILURES+=("permits: lane failed")
+    fi
   fi
 
   # --- community-leads lane ---------------------------------------------------

@@ -168,6 +168,9 @@ describe("facilitiesToCsv", () => {
       "construction.expectedStart",
       "construction.expectedCompletion",
       "construction.permitValuationUsd",
+      "construction.disturbedAcres",
+      "construction.receivingWater",
+      "construction.receivingWater.segment",
     ];
     expect(CSV_COLUMNS).toEqual(expected);
     const csv = facilitiesToCsv([dataCenter]);
@@ -307,14 +310,16 @@ describe("schema v2 columns", () => {
       expectedStart: { date: "2026-03", sourceIndex: 0 },
       expectedCompletion: { date: "2028", sourceIndex: 0 },
       permitValuationUsd: { amountUsd: 250000000, permitNumber: "B-1", sourceIndex: 0 },
+      disturbedAcres: { value: 304.5, sourceIndex: 0 },
+      receivingWater: { name: "Brushy Creek", segment: "0828", sourceIndex: 0 },
       phases: [{ name: "Phase 1", sourceIndex: 0 }],
     },
   });
   const legacy = make({ id: "legacy" });
   const first = CSV_COLUMNS.indexOf("ids.epaFrsId");
 
-  it("appends the 13 v2 columns last", () => {
-    expect(first).toBe(CSV_COLUMNS.length - 13);
+  it("appends the 16 v2 columns last", () => {
+    expect(first).toBe(CSV_COLUMNS.length - 16);
     expect(CSV_COLUMNS[first - 1]).toBe("sources.url");
   });
 
@@ -334,13 +339,16 @@ describe("schema v2 columns", () => {
       "2026-03",
       "2028",
       "250000000",
+      "304.5",
+      "Brushy Creek",
+      "0828",
     ]);
   });
 
-  it("leaves 13 empty trailing cells on a legacy facility", () => {
+  it("leaves 16 empty trailing cells on a legacy facility", () => {
     const [row] = cellsOf([legacy]);
     expect(row).toHaveLength(CSV_COLUMNS.length);
-    expect(row.slice(first)).toEqual(Array(13).fill(""));
+    expect(row.slice(first)).toEqual(Array(16).fill(""));
   });
 });
 

@@ -51,6 +51,7 @@
     "submissions": "tsx --env-file=.env.local scripts/submissions.ts",
     "email-sends": "tsx --env-file=.env.local scripts/email-sends.ts",
     "check-sources": "tsx --env-file=.env.local scripts/discovery/check-sources.ts",
+    "permits:tceq-review": "tsx --env-file-if-exists=.env.local scripts/tceq-known-sites.ts",
     "discovery:heartbeat": "tsx --env-file=.env.local scripts/discovery/publish-heartbeat.ts",
     "discovery:now": "launchctl kickstart gui/$(id -u)/com.compute-atlas.discovery",
     "census-sources": "tsx --env-file=.env.local scripts/discovery/census-sources.ts",

@@ -329,6 +329,12 @@ an unparseable limit would otherwise disable the bound entirely, so `run.sh` val
 before use.
 The leads lane (`leads-lane.ts`: public URL tips → pending submissions) also runs on every scheduled run in
 `run.sh`, after the field-extraction lane, bounded by `LEADS_LIMIT` (default 10).
+The permit lane (`permit-lane.ts`: Texas TCEQ TXR15 construction stormwater permits → `new` leads) runs just before it,
+bounded by `PERMIT_LEADS_LIMIT` (default 5) over a `PERMIT_LOOKBACK_DAYS` (default 120) window and killable with
+`PERMIT_LANE_ENABLED=false`; it covers Texas only. Its TCEQ client never reads a permit's address or site-location
+fields. A lead names the permittee only on an exact match to a known operator, and the site name (with the permit
+coordinates) only when it carries a data-center keyword or the operator matched and it passes the best-effort address
+guard in `tceq-names.ts`; otherwise "withheld". That guard is a heuristic, not a guarantee (see `docs/discovery-pipeline.md`).
 Architecture and the safety contract: `docs/discovery-pipeline.md`; operator mechanics
 (launchd, `ollama pull`, running it by hand): `docs/discovery-runbook.md`. It uses the Claude Code subscription (not the metered
 API) and runs via `launchd` on the maintainer's machine Mon-Fri at 13:00 local — treat it as an operator

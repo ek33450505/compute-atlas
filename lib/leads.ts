@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, asc, eq, desc, inArray, ne, or, sql } from "drizzle-orm";
+import { and, asc, eq, desc, ilike, inArray, ne, or, sql } from "drizzle-orm";
 
 import { getDb } from "@/lib/db/client";
 import { facilitiesTable, leadsTable, submissionsTable, type LeadRow } from "@/lib/db/schema";
@@ -69,6 +69,47 @@ export async function createLead(input: unknown, ipHash: string): Promise<LeadRe
     .returning({ id: leadsTable.id });
 
   return { ok: true, id: row.id, url };
+}
+
+export type DiscoveryLeadResult = { ok: true; id: string } | { ok: false; error: string };
+
+/**
+ * Inserts a `new` lead on behalf of a discovery lane (scripts/discovery/permit-lane.ts).
+ * Same envelope validation as a public tip, but no attribution (a lead's attribution
+ * flows into submission provenance and can surface as a public contributor credit)
+ * and no submitter hash (nobody submitted it, so there is nothing to rate-limit).
+ * The error string is generic on purpose: it never echoes the note back.
+ */
+export async function createDiscoveryLead(input: { url: string; note: string }): Promise<DiscoveryLeadResult> {
+  const parsed = leadInputSchema.safeParse({ url: input.url, note: input.note });
+  if (!parsed.success) {
+    const field = parsed.error.issues[0]?.path.join(".") || "input";
+    return { ok: false, error: `Invalid lead (${field})` };
+  }
+  const db = getDb();
+  const [row] = await db
+    .insert(leadsTable)
+    .values({ url: parsed.data.url, note: parsed.data.note, submitterIpHash: null })
+    .returning({ id: leadsTable.id });
+  return { ok: true, id: row.id };
+}
+
+/** Escapes LIKE wildcards so a fragment is matched literally. */
+function escapeLike(fragment: string): string {
+  return fragment.replace(/[\\%_]/g, (c) => `\\${c}`);
+}
+
+/**
+ * Urls of leads (ANY status) containing `fragment`, case-insensitively, for a lane's duplicate check.
+ * Parameterized; the fragment is matched literally (LIKE wildcards escaped).
+ */
+export async function listLeadUrlsContaining(fragment: string): Promise<string[]> {
+  const db = getDb();
+  const rows = await db
+    .select({ url: leadsTable.url })
+    .from(leadsTable)
+    .where(ilike(leadsTable.url, `%${escapeLike(fragment)}%`));
+  return rows.map((r) => r.url);
 }
 
 /**

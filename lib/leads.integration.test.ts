@@ -22,6 +22,8 @@ import {
   listLeadSubmissionOutcomes,
   listNewLeadsOldestFirst,
   deferLeadIfNew,
+  createDiscoveryLead,
+  listLeadUrlsContaining,
 } from "@/lib/leads";
 import { submissionsTable, leadsTable } from "@/lib/db/schema";
 import type { Facility } from "@/lib/schema";
@@ -802,5 +804,54 @@ describe("deferLeadIfNew", () => {
     expect(res).toMatchObject({ ok: false, status: 409 });
     const [after] = await tdb.db.select().from(leadsTable).where(eq(leadsTable.id, row.id));
     expect(after.status).toBe("promoted");
+  });
+});
+
+describe("createDiscoveryLead", () => {
+  it("inserts a new lead with no attribution and no submitter hash", async () => {
+    const result = await createDiscoveryLead({ url: "https://example.com/permit?x=1", note: "permit lane note" });
+    expect(result.ok).toBe(true);
+    const [row] = await tdb.db.select().from(leadsTable);
+    expect(row.status).toBe("new");
+    expect(row.note).toBe("permit lane note");
+    expect(row.attribution).toBeNull();
+    expect(row.submitterIpHash).toBeNull();
+  });
+
+  it("rejects a non-http url and an over-long note without inserting", async () => {
+    const badUrl = await createDiscoveryLead({ url: "javascript:alert(1)", note: "x" });
+    expect(badUrl.ok).toBe(false);
+    const longNote = await createDiscoveryLead({ url: "https://example.com/a", note: "n".repeat(501) });
+    expect(longNote).toEqual({ ok: false, error: "Invalid lead (note)" });
+    expect(await tdb.db.select().from(leadsTable)).toHaveLength(0);
+  });
+});
+
+describe("listLeadUrlsContaining", () => {
+  it("returns urls of every status that contain the fragment, matched literally", async () => {
+    const a = await createDiscoveryLead({ url: "https://www2.tceq.texas.gov/wq_dpa/index.cfm?lgl_ident_txt=TXR1", note: "a" });
+    await createDiscoveryLead({ url: "https://www2.tceq.texas.gov/wq_dpa/index.cfm?lgl_ident_txt=TXR2", note: "b" });
+    await createDiscoveryLead({ url: "https://example.com/other", note: "c" });
+    await createDiscoveryLead({ url: "https://wwwXtceqXtexasXgov/wqXdpa/", note: "d" });
+    if (!a.ok) throw new Error("setup failed");
+    await updateLeadStatus(a.id, "dismissed");
+
+    const urls = await listLeadUrlsContaining("www2.tceq.texas.gov/wq_dpa/");
+    expect(urls.sort()).toEqual([
+      "https://www2.tceq.texas.gov/wq_dpa/index.cfm?lgl_ident_txt=TXR1",
+      "https://www2.tceq.texas.gov/wq_dpa/index.cfm?lgl_ident_txt=TXR2",
+    ]);
+  });
+
+  it("matches case-insensitively", async () => {
+    await tdb.db.insert(leadsTable).values({ url: "HTTPS://WWW2.TCEQ.TEXAS.GOV/WQ_DPA/INDEX.CFM?LGL_IDENT_TXT=TXR9", note: "u" });
+    expect(await listLeadUrlsContaining("www2.tceq.texas.gov/wq_dpa/")).toHaveLength(1);
+  });
+
+  it("treats % and _ in the fragment as literal characters", async () => {
+    await createDiscoveryLead({ url: "https://example.com/a_b", note: "a" });
+    await createDiscoveryLead({ url: "https://example.com/axb", note: "b" });
+    expect(await listLeadUrlsContaining("a_b")).toEqual(["https://example.com/a_b"]);
+    expect(await listLeadUrlsContaining("%")).toEqual([]);
   });
 });
