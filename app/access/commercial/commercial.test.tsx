@@ -271,7 +271,7 @@ describe("/access/commercial", () => {
     ]);
     expect(screen.getByRole("link", { name: "table" })).toHaveAttribute("href", "/table");
     expect(text).toContain("the free table and facility pages may be all you need.");
-    expect(text).toContain("siting-context.json: nearest water and transmission, basin water stress and aquifer, per facility");
+    expect(text).toContain("siting-context.json: nearest water and transmission, basin water stress and aquifer per facility, plus join keys where computed (county FIPS, EPA eGRID2023 subregion, and census tract for exactly pinned sites)");
     expect(text).not.toMatch(/months free|What is included/);
   });
 
