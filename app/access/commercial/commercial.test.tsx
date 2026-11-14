@@ -121,7 +121,7 @@ describe("/access/commercial", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     await renderPage();
     expect(screen.getAllByText(/plus applicable tax/)).toHaveLength(3);
-    expect(screen.getByText(/One named person per subscription/)).toBeInTheDocument();
+    expect(screen.getByText("One personal download link per subscription. Files you download can be shared across your organization or group.")).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "contact us" })).toBeNull();
     expect(
       screen.getByText(/Cancel anytime from your PayPal account; access runs to the end of the paid period\. No refunds for partial periods, except where the law requires one\./)
@@ -271,7 +271,8 @@ describe("/access/commercial", () => {
     ]);
     expect(screen.getByRole("link", { name: "table" })).toHaveAttribute("href", "/table");
     expect(text).toContain("the free table and facility pages may be all you need.");
-    expect(text).toContain("siting-context.json: nearest water and transmission, basin water stress and aquifer per facility, plus join keys where computed (county FIPS, EPA eGRID2023 subregion, and census tract for exactly pinned sites)");
+    expect(text).toContain("siting-context.json: nearest water and transmission, basin water stress and aquifer per facility, plus join keys where computed (county FIPS, EPA eGRID2023 subregion, census tract for exactly pinned sites, and the balancing authority of the facility's EIA-matched utility, with its ISO/RTO where it has one)");
+    expect(text).toContain("Utilities and energy: announced load, on-site generation, and the utility named in each filing with its EIA utility id where matched.");
     expect(text).not.toMatch(/months free|What is included/);
   });
 

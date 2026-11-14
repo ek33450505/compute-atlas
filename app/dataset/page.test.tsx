@@ -99,6 +99,12 @@ describe("DatasetPage", () => {
     expect(screen.getByText("Operational MW").nextElementSibling).toHaveTextContent("0 of 4");
   });
 
+  it("names the EIA utility id among the fields", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    const { container } = render(await DatasetPage());
+    expect((container.textContent ?? "").replace(/\s+/g, " ")).toContain("energy source, utility and its EIA utility id where matched, cooling");
+  });
+
   it("renders no coverage when the counts read fails", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     mocks.getAllFacilities.mockRejectedValue(new Error("down"));

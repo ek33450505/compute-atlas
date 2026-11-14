@@ -659,7 +659,7 @@ and the constants together. Summary:
   and the privacy notice says so (Ed, 2026-11-09).
 - A download-log write failure does not block the download. The log fails **open** (`lib/dataset-download.ts`).
 - Per-address mail caps: `lib/email-gate.ts`, with the limits in `lib/email-sends.ts`.
-- The terms and privacy notice are final (version `2026-11-13.1`). Ed decided on 2026-11-09 not to seek legal review. Bump `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts` whenever their text changes.
+- The terms and privacy notice are final (version `2026-11-14.1`). Ed decided on 2026-11-09 not to seek legal review. Bump `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts` whenever their text changes.
 
 ### Tracing a leaked file
 
@@ -700,10 +700,14 @@ plus applicable tax (Ed handles sales tax himself; there is no tax engine); buye
 CC BY 4.0): a revoked buyer may subscribe again, and a duplicate subscription gets no second grant and alerts you when its payment lands; no
 automatic refunds anywhere. Tax must not be added to the PayPal charge: activation requires the payment to equal the
 plan price exactly (`lib/commercial-activation.ts:270`), so a different charge is not activated and raises an
-`unmatched_subscription` alert. The public terms (`lib/dataset-terms.ts`, version `2026-11-13.1`) say the
+`unmatched_subscription` alert. The public terms (`lib/dataset-terms.ts`, version `2026-11-14.1`) say the
 same. Changing their text means bumping `DATASET_TERMS_VERSION` in `lib/dataset-grants.ts`. Seats were dropped
-(2026-11-10): one named person per subscription, the personal link is strictly personal, teams by arrangement
-through `/contact`. Free access is for currently enrolled students only (Ed, 2026-11-13; educators were dropped from the free tier that day and use the paid plans; existing educator grants run out their 90-day term), separate and
+(2026-11-10): one named person per subscription, and the personal link is strictly personal. Since terms
+2026-11-14.1 (Ed's decision of 2026-11-13) files downloaded through the link may be shared within the subscriber's
+organization or group; this replaced teams by arrangement through `/contact`. Free access is for currently enrolled
+students only (Ed, 2026-11-13; educators were dropped from the free tier that day and use the paid plans; existing
+educator grants run out their 90-day term, and the renewal reminder about 30 days before expiry, sent to every free
+grant, says free renewals are for enrolled students and links the subscription), separate and
 hand-reviewed. Rule (Ed, 2026-11-12): verify by hand against a school email address; decline personal addresses (Gmail, Outlook and similar) in `/admin/access`; no form enforcement, and the stored category value stays `academic`; everyone else, journalists, nonprofits and educators included, is pointed to the commercial tier.
 
 PayPal setup (a live REST app under Ed's business account; do the sandbox first with `PAYPAL_ENV=sandbox` and

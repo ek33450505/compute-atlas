@@ -11,11 +11,15 @@ import { z } from "zod";
 // field (`splitRiskLabel(label)`, `distanceMi.toFixed`). Loose objects: an extra
 // key is accepted and kept, so downstream readers see the exact stored shape.
 export const waterStressSchema = z.looseObject({ cat: z.number(), label: z.string() });
+/** The seven ISO/RTO names a `balancingAuthority` can map to. */
+export const ISO_RTO_VALUES = ["PJM", "MISO", "ERCOT", "CAISO", "NYISO", "ISO-NE", "SPP"] as const;
 export const joinKeysSchema = z.looseObject({
   countyFips: z.string().regex(/^\d{5}$/).optional(),
   tractGeoid: z.string().regex(/^\d{11}$/).optional(),
   egridSubregion: z.string().min(1).optional(),
   egridMultiple: z.literal(true).optional(),
+  balancingAuthority: z.string().regex(/^[A-Z0-9]{2,6}$/).optional(),
+  isoRto: z.enum(ISO_RTO_VALUES).optional(),
   pin: z.looseObject({
     lat: z.number(),
     lon: z.number(),
@@ -26,6 +30,7 @@ export const joinKeysSchema = z.looseObject({
     county: z.string(),
     tract: z.string().optional(),
     egrid: z.string(),
+    ba: z.string().optional(),
   }),
   computedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });

@@ -188,8 +188,8 @@ export default async function DatasetPage() {
                 <strong className="font-medium text-foreground">Every field.</strong>{" "}
                 {CSV_COLUMN_COUNT}{" "}
                 CSV columns per facility (status, operator, address and
-                coordinates, operational and planned MW, energy source and utility, cooling, water
-                use, investment, acreage, jobs, dates) plus, in JSON, each record&apos;s status
+                coordinates, operational and planned MW, energy source, utility and its EIA utility id where matched, cooling,
+                water use, investment, acreage, jobs, dates) plus, in JSON, each record&apos;s status
                 history, emissions, subsidies and full source citations.
               </li>
               <li>

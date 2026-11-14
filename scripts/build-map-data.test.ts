@@ -31,6 +31,8 @@ import {
 } from "./build-map-data.mjs";
 import { point as turfPoint, lineString } from "@turf/helpers";
 
+import { EIA861_2025 } from "./eia861";
+
 function mockFetchOnce(body: unknown, status = 200) {
   return vi.fn(async () => ({
     ok: status >= 200 && status < 300,
@@ -1432,6 +1434,7 @@ describe("join keys wiring", () => {
       delayMs: 0,
       query,
       loadEgrid: fakeLoadEgrid(),
+      loadEia: async () => fakeEia(),
       limits: { maxFailures: 1 },
     } as never);
     expect(stats?.skipped).toBeGreaterThan(0);
@@ -1463,7 +1466,15 @@ describe("join keys wiring", () => {
 
   const fac = (id: string, lat: number, precision = "exact") =>
     ({ id, location: { lat, lon: -77.5, precision, county: "Loudoun" } }) as never;
-  const silent = { log: () => {}, warn: () => {}, delayMs: 0, loadEgrid: fakeLoadEgrid() };
+  const fakeEia = () => ({
+    provenance: EIA861_2025,
+    utilities: new Map(),
+    territory: [],
+    salesBa: [{ id: 19876, state: "VA", part: "A", serviceType: "Bundled", baCode: "PJM" }],
+  });
+  const silent = { log: () => {}, warn: () => {}, delayMs: 0, loadEgrid: fakeLoadEgrid(), loadEia: async () => fakeEia() };
+  const facWithUtility = (id: string, lat: number) =>
+    ({ id, location: { lat, lon: -77.5, precision: "exact", county: "Loudoun", state: "VA" }, energy: { utilityEiaId: { id: 19876, sourceIndex: 0 } } }) as never;
   const oldKeys = {
     countyFips: "51107",
     tractGeoid: "51107000000",
@@ -1501,6 +1512,67 @@ describe("join keys wiring", () => {
     const merged = mergeSitingContextEntry(existing.a as never, {} as never, withJoinKeys({}, byId.a), { nhdRan: true });
     expect(merged.joinKeys).toEqual(oldKeys);
     expect(urls.filter((u) => !u.includes("-77.4875"))).toEqual([]);
+  });
+
+  describe("balancing authority pass", () => {
+    const baKeys = { balancingAuthority: "PJM", isoRto: "PJM", sources: { ...oldKeys.sources, ba: "old label" } };
+
+    it("adds BA keys for a facility with a utility id and none for one without", async () => {
+      const { query } = fakeQuery();
+      const log = vi.fn();
+      const { byId: raw } = await runJoinKeys([facWithUtility("a", 39), fac("b", 39.1)], {}, { ...silent, log, query });
+      const byId = raw as Record<string, Record<string, unknown> & { sources: Record<string, string> }>;
+      expect(byId.a).toMatchObject({ balancingAuthority: "PJM", isoRto: "PJM" });
+      expect(byId.a.sources.ba).toMatch(/^EIA-861 2025/);
+      expect(byId.b).not.toHaveProperty("balancingAuthority");
+      expect(byId.b.sources).not.toHaveProperty("ba");
+      expect(log).toHaveBeenCalledWith("Balancing authority: 1 set (1 in an RTO), 0 multiple, 0 unknown, 1 without a utility id, 0 previously set values dropped");
+    });
+
+    it("carries BA keys forward on a recomputed entry when EIA-861 fails to load, and warns", async () => {
+      const { query } = fakeQuery();
+      const existing = { a: { joinKeys: { ...oldKeys, ...baKeys, flags: ["ba_unknown"], pin: { lat: 40, lon: -77.5, precision: "exact" } } } };
+      const warn = vi.fn();
+      const loadEia = vi.fn(async () => {
+        throw new Error("EIA down");
+      });
+      const { byId: raw } = await runJoinKeys([facWithUtility("a", 39)], existing as never, { ...silent, warn, query, loadEia });
+      const byId = raw as Record<string, Record<string, unknown> & { sources: Record<string, string> }>;
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/EIA-861 load FAILED \(EIA down\)/));
+      expect(byId.a.countyFips).toBe("51107"); // genuinely recomputed
+      expect(byId.a).toMatchObject({ balancingAuthority: "PJM", isoRto: "PJM", flags: ["ba_unknown"] });
+      expect(byId.a.sources.ba).toBe("old label");
+    });
+
+    it("counts and warns about previously set values that are now dropped", async () => {
+      const { query } = fakeQuery();
+      const existing = { a: { joinKeys: { ...oldKeys, ...baKeys } }, b: { joinKeys: { ...oldKeys, ...baKeys } } };
+      const log = vi.fn();
+      const warn = vi.fn();
+      // a keeps its utility id; b lost it.
+      const { byId: raw } = await runJoinKeys([facWithUtility("a", 39), fac("b", 39.1)], existing as never, { ...silent, log, warn, query });
+      const byId = raw as Record<string, Record<string, unknown>>;
+      expect(byId.b).not.toHaveProperty("balancingAuthority");
+      expect(log).toHaveBeenCalledWith(expect.stringContaining("1 previously set values dropped"));
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/1 previously set balancingAuthority values dropped.*: b$/));
+    });
+
+    it("skip makes no BA change and never loads EIA-861", async () => {
+      const existing = { a: { joinKeys: { ...oldKeys, ...baKeys } } };
+      const loadEia = vi.fn(async () => fakeEia());
+      const { byId } = await runJoinKeys([facWithUtility("a", 39)], existing as never, { ...silent, skip: true, loadEia });
+      expect(byId).toEqual({ a: existing.a.joinKeys });
+      expect(loadEia).not.toHaveBeenCalled();
+    });
+
+    it("runs when nothing needs a join-key recompute", async () => {
+      const { query, urls } = fakeQuery();
+      const existing = { a: { joinKeys: oldKeys } };
+      const { byId: raw } = await runJoinKeys([facWithUtility("a", 39)], existing as never, { ...silent, query });
+      const byId = raw as Record<string, Record<string, unknown> & { sources: Record<string, string> }>;
+      expect(urls).toEqual([]);
+      expect(byId.a).toMatchObject({ balancingAuthority: "PJM", computedAt: oldKeys.computedAt });
+    });
   });
 
   it("a failed service does not burn the failure budget: 30 facilities, all still queried for the others", async () => {

@@ -367,6 +367,7 @@ describe("buildDatasetSubscriptionActiveEmail", () => {
   it("states the single-person scope, weekly refresh, billing, cancellation and the CC BY credit", () => {
     for (const body of [mail.text, mail.html]) {
       expect(body).toContain("one named person weekly access through a personal link");
+      expect(body).toContain("The files you download may be shared within your organization or group.");
       expect(body).toContain("refreshes weekly");
       expect(body).toContain("Your subscription");
       expect(body).toContain("access continues to the end of the period you have paid for");
@@ -466,6 +467,14 @@ describe("buildDatasetRenewalReminderEmail", () => {
       expect(body).toContain("before then");
       expect(body).toContain("downloads pause");
       expect(body).not.toContain("is reviewed before access continues");
+    }
+  });
+
+  it("tells non-students that free renewals are for enrolled students and links the subscription", () => {
+    for (const body of [mail.text, mail.html]) {
+      expect(body).toContain("Free renewals are for currently enrolled students.");
+      expect(body).toContain("Educators, researchers and anyone no longer enrolled can keep receiving the files with a");
+      expect(count(body, `${SITE}/access/commercial`)).toBe(1);
     }
   });
 
