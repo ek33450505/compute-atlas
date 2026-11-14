@@ -58,6 +58,12 @@ export interface FacilityFormState {
   // --- Extension points: empty/default shape only, no UI in this sub-unit ---
   statusHistory: Facility["statusHistory"];
   sources: Facility["sources"];
+  /**
+   * Parallel to `sources`: `sourceOrigins[i]` is the index this row had in the
+   * stored doc's `sources`, or `null` for a row added in this session. Sent in
+   * edit mode so the server can remap refs the form does not state.
+   */
+  sourceOrigins: (number | null)[];
   energy: NonNullable<Facility["energy"]> | Record<string, never>;
   water: NonNullable<Facility["water"]> | Record<string, never>;
   subsidies: NonNullable<Facility["subsidies"]>;
@@ -112,6 +118,7 @@ export function emptyFacilityFormState(): FacilityFormState {
     landAcres: "",
     statusHistory: [],
     sources: [],
+    sourceOrigins: [],
     energy: {},
     water: {},
     subsidies: [],
@@ -166,6 +173,7 @@ export function facilityToFormState(facility: Facility): FacilityFormState {
     landAcres: facility.landAcres != null ? String(facility.landAcres) : "",
     statusHistory: facility.statusHistory,
     sources: facility.sources,
+    sourceOrigins: facility.sources.map((_, i) => i),
     // utilityEiaId has no form input and is only valid while `utility` is
     // unchanged; leaving it out lets mergeFacilityPatch decide whether to carry it
     // instead of the patch stating a possibly stale id.

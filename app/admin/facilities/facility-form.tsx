@@ -28,7 +28,17 @@ import {
   createFacilityAction,
   updateFacilityAction,
 } from "@/app/admin/facilities/facility-form-actions";
-import { FacilitySourcesSection } from "@/app/admin/facilities/facility-sources-section";
+import {
+  FacilitySourcesSection,
+  emptySource,
+} from "@/app/admin/facilities/facility-sources-section";
+import {
+  describeCarriedIssuePaths,
+  findSourceCitations,
+  joinWords,
+  remapRefsForRemove,
+  remapRefsForSwap,
+} from "@/app/admin/facilities/source-ref-remap";
 import { FacilityStatusHistorySection } from "@/app/admin/facilities/facility-status-history-section";
 import { FacilitySubsidiesSection } from "@/app/admin/facilities/facility-subsidies-section";
 import { FacilityEnergyWaterSection } from "@/app/admin/facilities/facility-energy-water-section";
@@ -609,12 +619,14 @@ export function FacilityForm({
   const [state, setState] = useState<FacilityFormState>(initialState);
   const [errors, setErrors] = useState<FieldIssues>({});
   const [formError, setFormError] = useState<string | undefined>(undefined);
+  const [carriedPaths, setCarriedPaths] = useState<string[]>([]);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(undefined);
     setErrors({});
+    setCarriedPaths([]);
 
     const payload = buildFacilityPayload(state);
 
@@ -622,7 +634,7 @@ export function FacilityForm({
       const result =
         mode === "create"
           ? await createFacilityAction(payload)
-          : await updateFacilityAction(state.id, payload);
+          : await updateFacilityAction(state.id, payload, state.sourceOrigins);
 
       if (result.ok) {
         const verb = mode === "create" ? "Created" : "Updated";
@@ -644,7 +656,44 @@ export function FacilityForm({
 
       setErrors(issuesToFieldMap(result.issues));
       setFormError(result.error);
+      setCarriedPaths(describeCarriedIssuePaths(result.issues));
     });
+  }
+
+  function addSource() {
+    setState((prev) => ({
+      ...prev,
+      sources: [...prev.sources, emptySource()],
+      sourceOrigins: [...prev.sourceOrigins, null],
+    }));
+  }
+
+  function moveSource(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= state.sources.length) return;
+    setState((prev) => {
+      const sources = [...prev.sources];
+      const sourceOrigins = [...prev.sourceOrigins];
+      [sources[index], sources[target]] = [sources[target], sources[index]];
+      [sourceOrigins[index], sourceOrigins[target]] = [sourceOrigins[target], sourceOrigins[index]];
+      return { ...prev, ...remapRefsForSwap(prev, index, target), sources, sourceOrigins };
+    });
+  }
+
+  /** Returns a message when the row is cited (and so kept), else null after removing it. */
+  function removeSource(index: number): string | null {
+    if (state.sources.length <= 1) return null;
+    const citedBy = findSourceCitations(state, index);
+    if (citedBy.length > 0) {
+      return `Cited by ${joinWords(citedBy)}. Change those citations first.`;
+    }
+    setState((prev) => ({
+      ...prev,
+      ...remapRefsForRemove(prev, index),
+      sources: prev.sources.filter((_, i) => i !== index),
+      sourceOrigins: prev.sourceOrigins.filter((_, i) => i !== index),
+    }));
+    return null;
   }
 
   return (
@@ -661,6 +710,9 @@ export function FacilityForm({
       <FacilitySourcesSection
         sources={state.sources}
         onChange={(next) => setState((prev) => ({ ...prev, sources: next }))}
+        onAdd={addSource}
+        onMove={moveSource}
+        onRemove={removeSource}
       />
       <FacilityStatusHistorySection
         statusHistory={state.statusHistory}
@@ -710,6 +762,13 @@ export function FacilityForm({
       {formError ? (
         <p role="alert" className="text-sm text-destructive">
           {formError}
+        </p>
+      ) : null}
+      {carriedPaths.length > 0 ? (
+        <p role="alert" className="text-sm text-destructive">
+          These citations point at a source you removed or moved: {carriedPaths.join(", ")}.
+          Reload the page to discard all unsaved changes, or ask the maintainer to edit those
+          fields.
         </p>
       ) : null}
 

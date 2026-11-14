@@ -1,10 +1,21 @@
 import { useState } from "react";
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { Source } from "@/lib/schema";
-import { FacilitySourcesSection } from "./facility-sources-section";
+import {
+  FacilitySourcesSection as Section,
+  type FacilitySourcesSectionProps,
+} from "./facility-sources-section";
+
+/** Section with no-op defaults for the callbacks a given test does not care about. */
+function FacilitySourcesSection(
+  props: Pick<FacilitySourcesSectionProps, "sources" | "onChange"> &
+    Partial<FacilitySourcesSectionProps>
+) {
+  return <Section onAdd={vi.fn()} onMove={vi.fn()} onRemove={() => null} {...props} />;
+}
 
 function makeSource(overrides: Partial<Source> = {}): Source {
   return {
@@ -24,7 +35,18 @@ function makeSource(overrides: Partial<Source> = {}): Source {
  */
 function StatefulSourcesSection({ initial }: { initial: Source[] }) {
   const [sources, setSources] = useState(initial);
-  return <FacilitySourcesSection sources={sources} onChange={setSources} />;
+  return (
+    <FacilitySourcesSection
+      sources={sources}
+      onChange={setSources}
+      onAdd={() => setSources((prev) => [...prev, makeSource()])}
+      onMove={vi.fn()}
+      onRemove={(i) => {
+        setSources((prev) => prev.filter((_, k) => k !== i));
+        return null;
+      }}
+    />
+  );
 }
 
 describe("FacilitySourcesSection", () => {
@@ -48,26 +70,59 @@ describe("FacilitySourcesSection", () => {
 
   it("adds a new empty row when Add source is clicked", async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
-    render(<FacilitySourcesSection sources={[makeSource()]} onChange={onChange} />);
+    const onAdd = vi.fn();
+    render(<FacilitySourcesSection sources={[makeSource()]} onChange={vi.fn()} onAdd={onAdd} />);
 
     await user.click(screen.getByRole("button", { name: /add source/i }));
 
-    expect(onChange).toHaveBeenCalledWith([
-      makeSource(),
-      { url: "", label: "", retrievedAt: "", kind: "other" },
-    ]);
+    expect(onAdd).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onChange with the row removed when Remove is clicked (2+ rows)", async () => {
+  it("calls onRemove with the row index when Remove is clicked (2+ rows)", async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
+    const onRemove = vi.fn(() => null);
     const sources = [makeSource({ label: "Keep me" }), makeSource({ label: "Remove me" })];
-    render(<FacilitySourcesSection sources={sources} onChange={onChange} />);
+    render(<FacilitySourcesSection sources={sources} onChange={vi.fn()} onRemove={onRemove} />);
 
     await user.click(screen.getByRole("button", { name: /remove source 2/i }));
 
-    expect(onChange).toHaveBeenCalledWith([sources[0]]);
+    expect(onRemove).toHaveBeenCalledWith(1);
+  });
+
+  it("keeps an empty live region mounted on every row before any removal is blocked", () => {
+    render(
+      <FacilitySourcesSection
+        sources={[makeSource(), makeSource()]}
+        onChange={vi.fn()}
+      />
+    );
+
+    const regions = screen.getAllByRole("status");
+    expect(regions).toHaveLength(2);
+    regions.forEach((r) => expect(r).toBeEmptyDOMElement());
+  });
+
+  it("shows the blocking message in a status region and keeps focus on Remove when onRemove refuses", async () => {
+    const user = userEvent.setup();
+    const sources = [makeSource({ label: "Row 1" }), makeSource({ label: "Row 2" })];
+    render(
+      <FacilitySourcesSection
+        sources={sources}
+        onChange={vi.fn()}
+        onRemove={() => "Cited by subsidy 1. Change those citations first."}
+      />
+    );
+
+    const remove = screen.getByRole("button", { name: /remove source 2/i });
+    await user.click(remove);
+
+    const row = screen.getByRole("group", { name: /^source 2$/i });
+    expect(within(row).getByRole("status")).toHaveTextContent(
+      "Cited by subsidy 1. Change those citations first."
+    );
+    expect(document.activeElement).toBe(remove);
+    expect(remove).toHaveAttribute("aria-describedby", "sources.1.remove-status");
+    expect(within(row).getByRole("status")).toHaveAttribute("id", "sources.1.remove-status");
   });
 
   it("disables Remove on the last remaining row (min-1 UI floor)", () => {
@@ -84,15 +139,17 @@ describe("FacilitySourcesSection", () => {
     ).toBeDisabled();
   });
 
-  it("swaps two rows when Move down then Move up are used", async () => {
+  it("calls onMove with the index and direction", async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
+    const onMove = vi.fn();
     const sources = [makeSource({ label: "Row A" }), makeSource({ label: "Row B" })];
-    render(<FacilitySourcesSection sources={sources} onChange={onChange} />);
+    render(<FacilitySourcesSection sources={sources} onChange={vi.fn()} onMove={onMove} />);
 
     await user.click(screen.getByRole("button", { name: /move source 1 down/i }));
+    await user.click(screen.getByRole("button", { name: /move source 2 up/i }));
 
-    expect(onChange).toHaveBeenCalledWith([sources[1], sources[0]]);
+    expect(onMove).toHaveBeenNthCalledWith(1, 0, 1);
+    expect(onMove).toHaveBeenNthCalledWith(2, 1, -1);
   });
 
   it("disables Move up on the first row and Move down on the last row", () => {

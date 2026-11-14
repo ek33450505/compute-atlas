@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,9 +29,12 @@ import { useFocusAfterRemove } from "@/lib/use-focus-after-remove";
 // to the server-side Zod check, so a user can't submit an empty array from
 // the client and only discover the rejection after a round trip.
 //
-// Plain index-based array state: add/remove/move-up/move-down all operate
-// on `sources[i]` via the parent's `onChange(next: Source[])` callback — no
-// drag-and-drop library, per repo convention (YAGNI/no new deps).
+// Row edits go through `onChange(next: Source[])`. Add/move/remove are
+// callbacks owned by the form, because they must also keep `sourceOrigins`
+// and the form's `sourceIndex` refs in step with the rows (see
+// `source-ref-remap.ts`). `onRemove` returns a message when the row is cited
+// and was therefore kept, or null when the row was removed. No drag-and-drop
+// library, per repo convention (YAGNI/no new deps).
 // ---------------------------------------------------------------------------
 
 const SOURCE_KIND_LABELS: Record<Source["kind"], string> = {
@@ -50,7 +55,7 @@ const SOURCE_KIND_LABELS: Record<Source["kind"], string> = {
  * value that survives to the payload; leaving the key absent keeps the row
  * shape consistent with what the server expects for "no publisher given."
  */
-function emptySource(): Source {
+export function emptySource(): Source {
   return {
     url: "",
     label: "",
@@ -62,32 +67,45 @@ function emptySource(): Source {
 export interface FacilitySourcesSectionProps {
   sources: Source[];
   onChange: (next: Source[]) => void;
+  onAdd: () => void;
+  onMove: (index: number, direction: -1 | 1) => void;
+  onRemove: (index: number) => string | null;
 }
 
-export function FacilitySourcesSection({ sources, onChange }: FacilitySourcesSectionProps) {
+export function FacilitySourcesSection({
+  sources,
+  onChange,
+  onAdd,
+  onMove,
+  onRemove,
+}: FacilitySourcesSectionProps) {
   const { registerRemoveButton, registerAddButton, focusAfterRemove } = useFocusAfterRemove();
+  const [blocked, setBlocked] = useState<{ index: number; message: string } | null>(null);
 
   function updateRow(index: number, patch: Partial<Source>) {
     onChange(sources.map((s, i) => (i === index ? { ...s, ...patch } : s)));
   }
 
   function addRow() {
-    onChange([...sources, emptySource()]);
+    setBlocked(null);
+    onAdd();
   }
 
   function removeRow(index: number) {
     if (sources.length <= 1) return; // min-1 floor enforced in the UI too
-    const next = sources.filter((_, i) => i !== index);
-    onChange(next);
-    focusAfterRemove(index, next.length);
+    const message = onRemove(index);
+    if (message) {
+      // Row kept: focus stays on its Remove button.
+      setBlocked({ index, message });
+      return;
+    }
+    setBlocked(null);
+    focusAfterRemove(index, sources.length - 1);
   }
 
   function moveRow(index: number, direction: -1 | 1) {
-    const target = index + direction;
-    if (target < 0 || target >= sources.length) return;
-    const next = [...sources];
-    [next[index], next[target]] = [next[target], next[index]];
-    onChange(next);
+    setBlocked(null);
+    onMove(index, direction);
   }
 
   return (
@@ -124,6 +142,7 @@ export function FacilitySourcesSection({ sources, onChange }: FacilitySourcesSec
             onMoveUp={() => moveRow(index, -1)}
             onMoveDown={() => moveRow(index, 1)}
             removeButtonRef={registerRemoveButton(index)}
+            blockedMessage={blocked?.index === index ? blocked.message : undefined}
           />
         ))}
 
@@ -152,6 +171,7 @@ function SourceRow({
   onMoveUp,
   onMoveDown,
   removeButtonRef,
+  blockedMessage,
 }: {
   index: number;
   source: Source;
@@ -163,6 +183,7 @@ function SourceRow({
   onMoveUp: () => void;
   onMoveDown: () => void;
   removeButtonRef: (el: HTMLButtonElement | null) => void;
+  blockedMessage?: string;
 }) {
   const urlId = `sources.${index}.url`;
   const labelId = `sources.${index}.label`;
@@ -255,6 +276,11 @@ function SourceRow({
         </Select>
       </div>
 
+      {/* Always mounted so assistive tech announces the text when it is filled in. */}
+      <p id={`sources.${index}.remove-status`} role="status" className="text-sm text-destructive">
+        {blockedMessage}
+      </p>
+
       <div className="flex justify-end gap-2">
         <Button
           type="button"
@@ -287,6 +313,7 @@ function SourceRow({
               : `Remove source ${index + 1}`
           }
           title={isOnly ? "At least one source is required" : undefined}
+          aria-describedby={`sources.${index}.remove-status`}
           ref={removeButtonRef}
         >
           Remove

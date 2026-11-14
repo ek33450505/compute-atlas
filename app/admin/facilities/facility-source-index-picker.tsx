@@ -25,11 +25,11 @@ import type { Source } from "@/lib/schema";
 // Renders off the LIVE `sources` prop on every render, not a snapshot taken
 // at mount — sources can be added/removed in the same session before submit
 // via the sources[] array editor, so the option list always reflects what's
-// actually in the form right now. This does NOT retroactively fix a
-// `sourceIndex` that already points at a since-removed/reordered source (see
-// the known, accepted positional-index tradeoff noted in the security
-// review and the plan) — it only guarantees the PICKER itself never
-// *offers* a currently-invalid index.
+// actually in the form right now. The picker itself only guarantees it never
+// *offers* a currently-invalid index; keeping a chosen `sourceIndex` on the
+// same source through a move or remove is the form's job
+// (`source-ref-remap.ts`), and carried citations outside the form are
+// reconciled on save (`lib/source-reconcile.ts`).
 // ---------------------------------------------------------------------------
 
 /**
