@@ -542,6 +542,30 @@ The bench deliberately duplicates the shipped quote-gate logic (see
 `scripts/discovery/bench/quote.mjs` vs. the gate in `extract-fields.ts`), and
 `bench/quote-parity.test.ts` enforces they don't drift.
 
+## Permit lane: Texas TCEQ construction permits
+
+`scripts/discovery/permit-lane.ts` searches TCEQ's public stormwater permit database (TXR15, ACTIVE, statewide) for permits whose coverage began in the lookback window and inserts a `new` lead for each match (data-center/crypto keyword, SIC 7374, or an exact known-operator match). Design and matching rules: [discovery-pipeline.md](./discovery-pipeline.md#permit-lane). It never writes a facility or submission.
+
+**Every scheduled run:** `run.sh` runs it immediately before the leads lane (and inside the same dry-run guard, because it inserts leads), so the leads lane works the new leads in the same run. Env vars:
+
+| Variable | Default | Effect |
+|---|---|---|
+| `PERMIT_LANE_ENABLED` | `true` | exactly `false` skips the lane (kill switch; logs a line) |
+| `PERMIT_LEADS_LIMIT` | `5` | max leads inserted per run (positive integer, at most 50; invalid or larger values warn and fall back) |
+| `PERMIT_LOOKBACK_DAYS` | `120` | window ending on today's Texas (America/Chicago) date, searched in chunks of at most 30 days (positive integer, at most 365; same fallback) |
+
+Logs: the summary JSON goes to `discovery-logs/permit-lane-<run-id>.json` (run id ends `-permits`; pruned like the leads logs) and stderr to `permit-lane.err`. The summary reports the window, rows reported/distinct, matches by rule, `skippedDuplicate`, inserted count and the leads with their notes. A failure (search, summary fetch or insert) exits 1; the run records "permits: lane failed" and continues.
+
+Its TCEQ client never reads a permit's address or site-location fields, and free text shaped like an email or phone number is dropped. A permittee or site name goes into a lead only when it exactly matched a known operator or the site name carries a data-center keyword; otherwise the note says "permittee withheld" / "site name withheld" and the name appears in no note, in stdout or in stderr, and a site name that starts with a digit, has a run of 3+ digits or a route designator plus number (FM 1234, HWY 79), or contains a street, residence, mile or box word is withheld too (a best-effort heuristic, not a guarantee). Notes never include the permit's Address or Site Location fields. Open the TCEQ link for the details. A transient TCEQ failure on a permit summary (anything but HTTP 404/410) skips that permit and exits 1 at the end; three consecutive transient failures across the search and summary phases stop the run (the rest counted as `deferredAfterOutage`); a 404/410 files a minimal-note lead (`summaryUnreadable`). Yield snapshots (dated, each scoped to what it counted, none a rate): 2026-11-13 about 18:00 EST, ACTIVE TXR15 with coverage 08/15 to 11/13: 1,672 distinct permits (keyword 1, SIC 7374 2, exact operator 2, both operator hits false positives); the same window about 18:30 EST: 1,684, the 12 extra having NOIs received 09/22 to 10/20, so TCEQ's search can surface a permit weeks after coverage began, which is why the window is 120 days; a dry run of this lane over 2026-09-01 to 2026-11-13: 10 matched (keyword 5, SIC 7374 6, known operator 1; rules overlap). Estimated cost of a default run (not measured per run): about 2,800 rows, ~56 result pages plus 4 searches at 1 request/second, about a minute. Receiving water is filer free text: capped at 100 characters, and withheld when it contains `@`, `http` or a phone-shaped digit run.
+
+Manual runs (reads TCEQ, the facility snapshot, and the `leads` table as the owner for duplicate detection; `--dry-run` inserts nothing):
+
+```bash
+npx tsx --env-file=.env.local scripts/discovery/permit-lane.ts --dry-run --since=2026-06-01 --limit=10 --run-id=manual-dryrun
+```
+
+Flags: `--limit=N`, `--lookback-days=D`, `--since=YYYY-MM-DD` (overrides the lookback), `--dry-run`, `--run-id=ID`. Bad input exits 2. The window is searched in chunks of at most 30 days; a chunk over the client's 60-page cap is halved, down to one day, before it counts as a failure.
+
 ## Leads lane: closing the loop on public tips
 
 `scripts/discovery/leads-lane.ts` takes anonymous public tips out of the `leads` table (`POST /api/leads`, staged `new` and reviewed at `/admin/leads`), researches each one with a local Ollama model, and stages the promising ones as `pending` `submissions` for the maintainer's normal human approve gate. Like field extraction, this is an operator tool — it never writes a live facility and never imports `lib/facility-write.ts`.

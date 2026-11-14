@@ -16,6 +16,8 @@ import {
   parseResultsPage,
   parseSummaryPage,
   searchTxr15,
+  TceqNarrowSearchError,
+  TceqRequestError,
   usDateToIso,
 } from "./tceq-client";
 
@@ -55,6 +57,10 @@ const HEADER =
     .map((h) => `<th><a href="x">${h}</a></th>`)
     .join("") +
   "</tr>";
+
+function row9(n: string): string {
+  return `<tr><td><a href="index.cfm?fuseaction=home.permit_summary&amp;lgl_ident_txt=${n}">${n}</a></td><td>S</td><td>P</td><td>1</td><td>2</td><td>X</td><td>11</td><td>Y</td><td>loc</td></tr>`;
+}
 
 function pageHtml(reported: number | null, nRows: number, start = 0): string {
   const rows = Array.from({ length: nRows }, (_, i) => {
@@ -121,9 +127,26 @@ describe("parseResultsPage", () => {
     expect(() => parseResultsPage(`<table>${row(9)}</table>`)).toThrow(/before a header/);
   });
 
-  it("rejects a row whose link is not a TCEQ summary URL", () => {
+  it("the columns-changed message carries no header text, and a row with over 40 cells is refused before parsing", () => {
+    const row9 = `<tr><td><a href="index.cfm?fuseaction=home.permit_summary&amp;lgl_ident_txt=A">A</a></td>${"<td>x</td>".repeat(8)}</tr>`;
+    const odd = HEADER.replace("Permittee", "SECRET-PAGE-TEXT");
+    let message = "";
+    try {
+      parseResultsPage(`<table>${odd}${row9}</table>`);
+    } catch (e) {
+      message = (e as Error).message;
+    }
+    expect(message).toMatch(/columns changed/);
+    expect(message).not.toContain("SECRET-PAGE-TEXT");
+    const wide = `<tr><td><a href="index.cfm?fuseaction=home.permit_summary&amp;lgl_ident_txt=A">A</a></td>${"<td>x</td>".repeat(60)}</tr>`;
+    expect(() => parseResultsPage(`<table>${HEADER}${wide}</table>`)).toThrow(/more than 40 cells/);
+  });
+
+  it("drops, and counts, a row whose link is not a TCEQ summary URL", () => {
     const bad = `<tr><td><a href="https://evil.example/wq_dpa/index.cfm?fuseaction=home.permit_summary">A</a></td>${"<td>x</td>".repeat(8)}</tr>`;
-    expect(() => parseResultsPage(`<table>${HEADER}${bad}</table>`)).toThrow(/refusing/);
+    const parsed = parseResultsPage(`<table>${HEADER}${bad}${row9("TXR1500AA")}</table>`);
+    expect(parsed.rows.map((r) => r.permitNumber)).toEqual(["TXR1500AA"]);
+    expect(parsed.dropped).toBe(1);
   });
 
   it("does not read a bare comma as a count of zero", () => {
@@ -135,7 +158,7 @@ describe("parseResultsPage", () => {
   });
 
   it("reads TCEQ's real empty-search page as zero records", () => {
-    expect(parseResultsPage(fixture("no-results.html"))).toEqual({ reported: 0, rows: [] });
+    expect(parseResultsPage(fixture("no-results.html"))).toEqual({ reported: 0, rows: [], dropped: 0 });
     expect(parseResultsPage("*** there  WERE no permits\nfound that match the search criteria provided. ***").reported).toBe(0);
   });
 
@@ -279,18 +302,29 @@ describe("createTceqSession + searchTxr15", () => {
 
   it("refuses to truncate past maxPages", async () => {
     const { f, calls } = fakeFetch((c) => (c.method === "POST" ? pageHtml(2075, 50) : ""));
-    await expect(searchTxr15(createTceqSession({ fetch: f, rateGate: noGate }), { permitStatus: "ACTIVE" }, { maxPages: 10 })).rejects.toThrow(/narrow the search/);
+    await expect(searchTxr15(createTceqSession({ fetch: f, rateGate: noGate }), { permitStatus: "ACTIVE" }, { maxPages: 10 })).rejects.toBeInstanceOf(TceqNarrowSearchError);
     expect(calls.filter((c) => c.url.includes("CurrentPage"))).toHaveLength(0);
   });
 
   it("returns an empty result for TCEQ's real no-results page", async () => {
     const { f } = fakeFetch((c) => (c.method === "POST" ? fixture("no-results.html") : ""));
-    expect(await searchTxr15(createTceqSession({ fetch: f, rateGate: noGate }), { permitStatus: "ACTIVE" })).toEqual({ reported: 0, rows: [] });
+    expect(await searchTxr15(createTceqSession({ fetch: f, rateGate: noGate }), { permitStatus: "ACTIVE" })).toEqual({ reported: 0, rows: [], droppedRows: 0 });
   });
 
   it("returns an empty result for zero records", async () => {
     const { f } = fakeFetch((c) => (c.method === "POST" ? "Your search returned 0 records." : ""));
-    expect(await searchTxr15(createTceqSession({ fetch: f, rateGate: noGate }), { permitStatus: "ACTIVE" })).toEqual({ reported: 0, rows: [] });
+    expect(await searchTxr15(createTceqSession({ fetch: f, rateGate: noGate }), { permitStatus: "ACTIVE" })).toEqual({ reported: 0, rows: [], droppedRows: 0 });
+  });
+
+  it("a dropped row counts toward completeness and is reported, but a count mismatch still fails closed", async () => {
+    const bad = `<tr><td><a href="https://evil.example/wq_dpa/index.cfm?fuseaction=home.permit_summary">A</a></td>${"<td>x</td>".repeat(8)}</tr>`;
+    const page = (reported: number) => `Your search returned ${reported} records.<table>${HEADER}${row9("TXR1500AA")}${bad}</table>`;
+    const ok = fakeFetch((c) => (c.method === "POST" ? page(2) : "")).f;
+    const res = await searchTxr15(createTceqSession({ fetch: ok, rateGate: noGate }), { permitStatus: "ACTIVE" });
+    expect(res.rows.map((r) => r.permitNumber)).toEqual(["TXR1500AA"]);
+    expect(res).toMatchObject({ reported: 2, droppedRows: 1 });
+    const short = fakeFetch((c) => (c.method === "POST" ? page(3) : "")).f;
+    await expect(searchTxr15(createTceqSession({ fetch: short, rateGate: noGate }), { permitStatus: "ACTIVE" })).rejects.toThrow(/reported 3/);
   });
 
   it("throws on a non-2xx response", async () => {
@@ -394,5 +428,85 @@ describe("fetchTxr15Summary", () => {
     const { f, calls } = fakeFetch(() => SUMMARY);
     await expect(fetchTxr15Summary(createTceqSession({ fetch: f, rateGate: noGate }), url)).rejects.toThrow(/refusing/);
     expect(calls).toHaveLength(0);
+  });
+});
+
+describe("TceqRequestError kinds", () => {
+  const getWith = (f: typeof fetch, timeoutMs?: number) =>
+    createTceqSession({ fetch: f, rateGate: noGate, timeoutMs }).get(SUMMARY_URL, { cookies: false });
+  const respondWith = (init: ResponseInit, body = "x") => (async () => new Response(body, init)) as unknown as typeof fetch;
+  const caught = async (p: Promise<unknown>): Promise<TceqRequestError> => {
+    const err = await p.then(
+      () => undefined,
+      (e: unknown) => e,
+    );
+    expect(err).toBeInstanceOf(TceqRequestError);
+    return err as TceqRequestError;
+  };
+
+  it.each([
+    [404, true],
+    [410, true],
+    [403, false],
+    [401, false],
+    [400, false],
+    [500, false],
+    [503, false],
+    [408, false],
+    [429, false],
+  ])("http %i -> permanent %s", async (status, permanent) => {
+    const e = await caught(getWith(respondWith({ status })));
+    expect(e).toMatchObject({ kind: "http", status, permanent });
+  });
+
+  it("redirect is transient", async () => {
+    const e = await caught(getWith(respondWith({ status: 302, headers: { location: "https://evil.example/" } })));
+    expect(e).toMatchObject({ kind: "redirect", status: 302, permanent: false });
+  });
+
+  it("an off-origin response url is transient", async () => {
+    const f = (async () => Object.defineProperty(new Response("x"), "url", { value: "https://evil.example/a" })) as unknown as typeof fetch;
+    expect(await caught(getWith(f))).toMatchObject({ kind: "off_origin", permanent: false });
+  });
+
+  it("an off-origin request url is transient", async () => {
+    const session = createTceqSession({ fetch: respondWith({ status: 200 }), rateGate: noGate });
+    expect(await caught(session.get("https://evil.example/x"))).toMatchObject({ kind: "off_origin", permanent: false });
+  });
+
+  it("an oversize declared body is transient", async () => {
+    const e = await caught(getWith(respondWith({ status: 200, headers: { "content-length": String(6 * 1024 * 1024) } })));
+    expect(e).toMatchObject({ kind: "too_large", permanent: false });
+  });
+
+  it("a streamed body over the cap is transient", async () => {
+    const big = new Uint8Array(6 * 1024 * 1024);
+    expect(await caught(getWith(respondWith({ status: 200 }, big as unknown as string)))).toMatchObject({ kind: "too_large", permanent: false });
+  });
+
+  it("a timed-out fetch is transient", async () => {
+    const hang = ((_u: string, init: RequestInit) =>
+      new Promise((_r, reject) => {
+        init.signal?.addEventListener("abort", () => reject(init.signal?.reason));
+      })) as unknown as typeof fetch;
+    expect(await caught(getWith(hang, 20))).toMatchObject({ kind: "timeout", permanent: false });
+  });
+
+  it("a network error is transient", async () => {
+    const f = (async () => {
+      throw new TypeError("fetch failed");
+    }) as unknown as typeof fetch;
+    expect(await caught(getWith(f))).toMatchObject({ kind: "network", permanent: false });
+  });
+
+  it("a summary page without a permit number is a transient parse error", () => {
+    let err: unknown;
+    try {
+      parseSummaryPage("<html>nothing</html>", SUMMARY_URL);
+    } catch (e) {
+      err = e;
+    }
+    expect(err).toBeInstanceOf(TceqRequestError);
+    expect(err).toMatchObject({ kind: "parse", permanent: false });
   });
 });

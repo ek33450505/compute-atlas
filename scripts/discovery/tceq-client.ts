@@ -127,24 +127,69 @@ export function isoToUsDate(s: string | undefined): string | undefined {
 
 const MAX_BODY_BYTES = 5 * 1024 * 1024;
 
+export type TceqErrorKind = "http" | "redirect" | "off_origin" | "too_large" | "timeout" | "network" | "parse";
+
+/**
+ * Every request/parse failure the client raises. `permanent` is true for HTTP 404 and 410
+ * ONLY. Everything else is transient: a redirect may be a maintenance page, a parse failure
+ * may be a 200 challenge page, and TCEQ responses set Cloudflare's `__cf_bm` bot-management
+ * cookie (seen 2026-11-13), so a 401/403 is more likely a bot wall than a gone page. Messages
+ * carry no page content.
+ */
+export class TceqRequestError extends Error {
+  readonly kind: TceqErrorKind;
+  readonly status?: number;
+  readonly permanent: boolean;
+  constructor(kind: TceqErrorKind, message: string, status?: number) {
+    super(message);
+    this.name = "TceqRequestError";
+    this.kind = kind;
+    this.status = status;
+    this.permanent = kind === "http" && (status === 404 || status === 410);
+  }
+}
+
+/** The search matched more pages than allowed: the caller should narrow the date range. */
+export class TceqNarrowSearchError extends Error {
+  constructor(
+    readonly reported: number,
+    readonly pages: number,
+    readonly maxPages: number,
+  ) {
+    super(`TCEQ search reported ${reported} records over ${pages} pages (maxPages ${maxPages}): narrow the search`);
+    this.name = "TceqNarrowSearchError";
+  }
+}
+
 function assertTceqOrigin(url: string): void {
-  if (new URL(url).origin !== ORIGIN) throw new Error(`refusing off-origin TCEQ request: ${new URL(url).origin}`);
+  if (new URL(url).origin !== ORIGIN) throw new TceqRequestError("off_origin", `refusing off-origin TCEQ request: ${new URL(url).origin}`);
+}
+
+/** Maps a thrown fetch/read failure to a typed error (aborts and timeouts are `timeout`, the rest `network`). */
+function transportError(err: unknown): TceqRequestError {
+  if (err instanceof TceqRequestError) return err;
+  const name = err instanceof Error ? err.name : "";
+  return name === "TimeoutError" || name === "AbortError"
+    ? new TceqRequestError("timeout", "TCEQ request timed out")
+    : new TceqRequestError("network", "TCEQ request failed: network error");
 }
 
 async function readCapped(res: Response): Promise<string> {
   const declared = Number(res.headers.get("content-length"));
-  if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) throw new Error(`TCEQ response too large (${declared} bytes)`);
+  if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) throw new TceqRequestError("too_large", `TCEQ response too large (${declared} bytes)`);
   if (!res.body) return "";
   const reader = res.body.getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
   for (;;) {
-    const { done, value } = await reader.read();
+    const { done, value } = await reader.read().catch((err: unknown) => {
+      throw transportError(err);
+    });
     if (done) break;
     total += value.byteLength;
     if (total > MAX_BODY_BYTES) {
       await reader.cancel();
-      throw new Error(`TCEQ response exceeded ${MAX_BODY_BYTES} bytes`);
+      throw new TceqRequestError("too_large", `TCEQ response exceeded ${MAX_BODY_BYTES} bytes`);
     }
     chunks.push(value);
   }
@@ -162,19 +207,21 @@ export function createTceqSession(deps: TceqSessionDeps = {}): TceqSession {
     await gate();
     const headers: Record<string, string> = { "user-agent": USER_AGENT, ...(init.headers as Record<string, string>) };
     if (useCookies && jar.size > 0) headers.cookie = [...jar].map(([k, v]) => `${k}=${v}`).join("; ");
-    const res = await doFetch(url, { ...init, headers, redirect: "manual", signal: AbortSignal.timeout(timeoutMs) });
+    const res = await doFetch(url, { ...init, headers, redirect: "manual", signal: AbortSignal.timeout(timeoutMs) }).catch((err: unknown) => {
+      throw transportError(err);
+    });
     const drop = () => res.body?.cancel().catch(() => {});
     if (res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400)) {
       await drop();
-      throw new Error(`TCEQ request redirected (HTTP ${res.status}) for ${new URL(url).pathname}`);
+      throw new TceqRequestError("redirect", `TCEQ request redirected (HTTP ${res.status}) for ${new URL(url).pathname}`, res.status);
     }
     if (res.url && new URL(res.url).origin !== ORIGIN) {
       await drop();
-      throw new Error(`TCEQ response from off-origin ${new URL(res.url).origin}`);
+      throw new TceqRequestError("off_origin", `TCEQ response from off-origin ${new URL(res.url).origin}`);
     }
     if (!res.ok) {
       await drop();
-      throw new Error(`TCEQ request failed: HTTP ${res.status} for ${new URL(url).pathname}`);
+      throw new TceqRequestError("http", `TCEQ request failed: HTTP ${res.status} for ${new URL(url).pathname}`, res.status);
     }
     for (const line of res.headers.getSetCookie()) {
       const pair = line.split(";", 1)[0];
@@ -222,32 +269,48 @@ export function buildSearchBody(criteria: TceqCriteria): string {
 // TCEQ's real empty-search page has no count line, only this message.
 const NO_RESULTS_RE = /There\s+were\s+no\s+permits\s+found\s+that\s+match\s+the\s+search\s+criteria\s+provided/i;
 
+const MAX_ROW_CELLS = 40;
+
 const EXPECTED_HEADERS = ["Auth #", "Site Name", "Permittee", "SIC Code", "Segment #", "County", "Region", "City", "Site Location"];
 
-export function parseResultsPage(html: string): { reported?: number; rows: TceqRow[] } {
+/**
+ * `dropped` counts result rows whose link is not a TCEQ summary URL: they are not returned
+ * (nothing to fetch) but still count toward the page-walk completeness check.
+ */
+export function parseResultsPage(html: string): { reported?: number; rows: TceqRow[]; dropped: number } {
   const m = /Your search returned\s+(\d[\d,]*)\s+records?/i.exec(html);
   const reported = m ? Number(m[1].replace(/,/g, "")) : NO_RESULTS_RE.test(html) ? 0 : undefined;
   const rows: TceqRow[] = [];
+  let dropped = 0;
   let headerSeen = false;
   for (const tr of html.split(/<tr[\s>]/i).slice(1)) {
     if (/<th[\s>]/i.test(tr)) {
       const headers = [...tr.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)].map((c) => cleanText(c[1]));
       if (headers.join("|") !== EXPECTED_HEADERS.join("|")) {
-        throw new Error(`TCEQ results columns changed: ${headers.join(" | ")}`);
+        throw new TceqRequestError("parse", `TCEQ results columns changed (${headers.length} header cells)`);
       }
       headerSeen = true;
       continue;
     }
     const link = /<a\s[^>]*href="([^"]*fuseaction=home\.permit_summary[^"]*)"/i.exec(tr);
     if (!link) continue;
-    if (!headerSeen) throw new Error("TCEQ results rows appeared before a header row");
+    if (!headerSeen) throw new TceqRequestError("parse", "TCEQ results rows appeared before a header row");
+    if ((tr.match(/<td[\s>]/gi) ?? []).length > MAX_ROW_CELLS) {
+      throw new TceqRequestError("parse", `TCEQ results row has more than ${MAX_ROW_CELLS} cells`);
+    }
     const cells = [...tr.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map((c) => cleanText(c[1]));
     if (cells.length !== EXPECTED_HEADERS.length) {
-      throw new Error(`TCEQ results row has ${cells.length} cells, expected ${EXPECTED_HEADERS.length}`);
+      throw new TceqRequestError("parse", `TCEQ results row has ${cells.length} cells, expected ${EXPECTED_HEADERS.length}`);
     }
     const [permitNumber, siteName, permittee, sic, segment, county, , city] = cells; // cells[8] = free-text Site Location, dropped on purpose
-    if (!permitNumber) throw new Error("TCEQ results row has an empty Auth #");
-    const summaryUrl = assertSummaryUrl(decodeEntities(link[1]), INDEX_URL).href;
+    if (!permitNumber) throw new TceqRequestError("parse", "TCEQ results row has an empty Auth #");
+    let summaryUrl: string;
+    try {
+      summaryUrl = assertSummaryUrl(decodeEntities(link[1]), INDEX_URL).href;
+    } catch {
+      dropped++;
+      continue;
+    }
     rows.push({
       permitNumber,
       summaryUrl,
@@ -259,7 +322,7 @@ export function parseResultsPage(html: string): { reported?: number; rows: TceqR
       ...(city ? { city } : {}),
     });
   }
-  return { reported, rows };
+  return { reported, rows, dropped };
 }
 
 /** TCEQ repeats a permit row several times per page; keep the first of each. */
@@ -273,27 +336,30 @@ export async function searchTxr15(
   session: TceqSession,
   criteria: TceqCriteria,
   opts: { maxPages?: number } = {},
-): Promise<{ reported: number; rows: TceqRow[] }> {
+): Promise<{ reported: number; rows: TceqRow[]; droppedRows: number }> {
   const maxPages = opts.maxPages ?? DEFAULT_MAX_PAGES;
   await session.get(FORM_URL);
   const first = parseResultsPage(await session.post(INDEX_URL, buildSearchBody(criteria)));
-  if (first.reported === undefined) throw new Error("TCEQ results page has no record count (form re-served?)");
+  if (first.reported === undefined) throw new TceqRequestError("parse", "TCEQ results page has no record count (form re-served?)");
   const reported = first.reported;
-  if (reported === 0) return { reported: 0, rows: [] };
+  if (reported === 0) return { reported: 0, rows: [], droppedRows: 0 };
   const pages = Math.ceil(reported / PAGE_SIZE);
   if (pages > maxPages) {
-    throw new Error(`TCEQ search reported ${reported} records over ${pages} pages (maxPages ${maxPages}): narrow the search`);
+    throw new TceqNarrowSearchError(reported, pages, maxPages);
   }
   const rows = [...first.rows];
+  let droppedRows = first.dropped;
   for (let page = 2; page <= pages; page++) {
     const html = await session.get(`${INDEX_URL}?CurrentPage=${page}&fuseaction=home.permit_list&sort=lgl_ident_txt`);
-    rows.push(...parseResultsPage(html).rows);
+    const parsed = parseResultsPage(html);
+    rows.push(...parsed.rows);
+    droppedRows += parsed.dropped;
   }
   // A truncated page set is indistinguishable from a complete one without this check.
-  if (rows.length !== reported) {
-    throw new Error(`TCEQ page walk returned ${rows.length} rows but the search reported ${reported}`);
+  if (rows.length + droppedRows !== reported) {
+    throw new TceqRequestError("parse", `TCEQ page walk returned ${rows.length + droppedRows} rows but the search reported ${reported}`);
   }
-  return { reported, rows };
+  return { reported, rows, droppedRows };
 }
 
 function summaryLines(html: string): string[] {
@@ -326,7 +392,7 @@ function num(s: string | undefined): number | undefined {
 export function parseSummaryPage(html: string, url: string): TceqSummary {
   const lines = summaryLines(html);
   const permitNumber = field(lines, "Permit Number");
-  if (!permitNumber) throw new Error(`TCEQ summary page has no Permit Number (${new URL(url).search})`);
+  if (!permitNumber) throw new TceqRequestError("parse", `TCEQ summary page has no Permit Number (${new URL(url).search})`);
   // First lat/lon block only (Permitted Site); the Regulated Entity block repeats them as 0/0.
   let lat = num(field(lines, "Latitude"));
   let lon = num(field(lines, "Longitude"));
@@ -367,7 +433,7 @@ export function assertSummaryUrl(url: string, base?: string): URL {
     u.searchParams.getAll("fuseaction").length !== 1 ||
     u.searchParams.get("fuseaction") !== "home.permit_summary"
   ) {
-    throw new Error(`refusing to fetch non-TCEQ-summary URL: ${u.origin}${u.pathname}`);
+    throw new TceqRequestError("off_origin", `refusing to fetch non-TCEQ-summary URL: ${u.origin}${u.pathname}`);
   }
   return u;
 }

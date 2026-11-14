@@ -3437,6 +3437,151 @@ EOF
 	grep -q "Compute Atlas discovery FAILED" "$NOTIFY_CALL_LOG"
 }
 
+@test "a live run invokes the permit lane with the defaults and writes its json log" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	unset PERMIT_LEADS_LIMIT PERMIT_LOOKBACK_DAYS PERMIT_LANE_ENABLED
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	permit_line="$(grep "permit-lane.ts" "$NPX_CALL_LOG" | head -1)"
+	[ -n "$permit_line" ]
+	echo "$permit_line" | grep -q -e "--limit=5 "
+	echo "$permit_line" | grep -q -e "--lookback-days=120"
+	echo "$permit_line" | grep -q -e "--run-id=.*-permits"
+	[ -n "$(find "$LOG_DIR" -name 'permit-lane-*-permits.json' -print -quit)" ]
+}
+
+@test "PERMIT_LEADS_LIMIT and PERMIT_LOOKBACK_DAYS override the permit lane flags" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export PERMIT_LEADS_LIMIT=2
+	export PERMIT_LOOKBACK_DAYS=60
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	permit_line="$(grep "permit-lane.ts" "$NPX_CALL_LOG" | head -1)"
+	echo "$permit_line" | grep -q -e "--limit=2 "
+	echo "$permit_line" | grep -q -e "--lookback-days=60"
+}
+
+@test "invalid permit lane env values warn and fall back to the defaults" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export PERMIT_LEADS_LIMIT=abc
+	export PERMIT_LOOKBACK_DAYS=0
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	echo "$output" | grep -q "PERMIT_LEADS_LIMIT=abc is not a positive integer"
+	echo "$output" | grep -q "PERMIT_LOOKBACK_DAYS=0 is not a positive integer"
+	permit_line="$(grep "permit-lane.ts" "$NPX_CALL_LOG" | head -1)"
+	echo "$permit_line" | grep -q -e "--limit=5 "
+	echo "$permit_line" | grep -q -e "--lookback-days=120"
+	if echo "$permit_line" | grep -q "abc"; then return 1; fi
+}
+
+@test "permit lane env values above the lane's caps warn and fall back to the defaults" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export PERMIT_LEADS_LIMIT=51
+	export PERMIT_LOOKBACK_DAYS=366
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	echo "$output" | grep -q "PERMIT_LEADS_LIMIT=51 is above the maximum 50"
+	echo "$output" | grep -q "PERMIT_LOOKBACK_DAYS=366 is above the maximum 365"
+	permit_line="$(grep "permit-lane.ts" "$NPX_CALL_LOG" | head -1)"
+	echo "$permit_line" | grep -q -e "--limit=5 "
+	echo "$permit_line" | grep -q -e "--lookback-days=120 "
+}
+
+@test "permit lane env values at the caps are passed through" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export PERMIT_LEADS_LIMIT=50
+	export PERMIT_LOOKBACK_DAYS=365
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	permit_line="$(grep "permit-lane.ts" "$NPX_CALL_LOG" | head -1)"
+	echo "$permit_line" | grep -q -e "--limit=50 "
+	echo "$permit_line" | grep -q -e "--lookback-days=365 "
+}
+
+@test "DISCOVERY_DRY_RUN=true does not invoke the permit lane" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=true
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	run grep -c "permit-lane.ts" "$NPX_CALL_LOG"
+	[ "$output" = "0" ]
+}
+
+@test "PERMIT_LANE_ENABLED=false skips the permit lane but the leads lane still runs" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	export PERMIT_LANE_ENABLED=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	echo "$output" | grep -q "permit lane disabled"
+	if grep -q "permit-lane.ts" "$NPX_CALL_LOG"; then return 1; fi
+	grep -q "leads-lane.ts" "$NPX_CALL_LOG"
+}
+
+@test "the permit lane runs before the leads lane" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	run bash "$RUN_SH"
+	[ "$status" -eq 0 ]
+
+	permit_n="$(grep -n "permit-lane.ts" "$NPX_CALL_LOG" | head -1 | cut -d: -f1)"
+	leads_n="$(grep -n "leads-lane.ts" "$NPX_CALL_LOG" | head -1 | cut -d: -f1)"
+	[ -n "$permit_n" ]
+	[ -n "$leads_n" ]
+	[ "$permit_n" -lt "$leads_n" ]
+}
+
+@test "a failing permit lane is reported as a FAIL but the leads lane still runs" {
+	export DISCOVERY_ENABLED=true
+	export DISCOVERY_DRY_RUN=false
+	cat >"$BIN_DIR/npx" <<EOF
+#!/usr/bin/env bash
+echo "npx \$*" >>"$NPX_CALL_LOG"
+case "\$*" in
+*"tsx -e"*)
+	exec "$REAL_NPX" "\$@"
+	;;
+*existing-facilities.ts*)
+	echo ""
+	exit 0
+	;;
+*submit-candidates.ts*)
+	exec "$BIN_DIR/fake-submit" "\$@"
+	;;
+*check-sources.ts*)
+	exit 0
+	;;
+*permit-lane.ts*)
+	exit 1
+	;;
+*)
+	exit 0
+	;;
+esac
+EOF
+	chmod +x "$BIN_DIR/npx"
+
+	run bash "$RUN_SH"
+	[ "$status" -eq 1 ]
+	echo "$output" | grep -q "FAIL: discovery run finished with 1 failure"
+	echo "$output" | grep -q "permits: lane failed"
+	grep -q "leads-lane.ts" "$NPX_CALL_LOG"
+	grep -q "retention-prune.ts" "$NPX_CALL_LOG"
+}
+
 @test "a failing source-liveness check is reported as a FAIL but later steps still run" {
 	export DISCOVERY_ENABLED=true
 	export DISCOVERY_DRY_RUN=false
