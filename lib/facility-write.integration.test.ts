@@ -265,6 +265,80 @@ describe("updateFacility", () => {
     expect(result.status).toBe(404);
   });
 
+  function seedWithCarriedRefs(): DataCenterFacility {
+    const seedDoc = makeSeedDoc();
+    seedDoc.sources = [makeSource("s0"), makeSource("s1"), makeSource("s2")];
+    seedDoc.community = undefined;
+    seedDoc.stakeholders = [
+      { name: "Example Holdings", kind: "organization", role: "lender", sourceIndex: 1, asOf: "2026-01" },
+    ];
+    seedDoc.emissions = { sourceIndex: 2 };
+    seedDoc.construction = { disturbedAcres: { value: 5, sourceIndex: 0 } };
+    return seedDoc;
+  }
+
+  it("re-points carried sourceIndex refs when a reorder comes with sourceOrigins", async () => {
+    const seedDoc = seedWithCarriedRefs();
+    await seedFacility(tdb.db, seedDoc);
+
+    // New order [s2, s0, s1]: origins[newIndex] = oldIndex.
+    const result = await updateFacility(
+      seedDoc.id,
+      { sources: [makeSource("s2"), makeSource("s0"), makeSource("s1")] },
+      "admin-direct",
+      { sourceOrigins: [2, 0, 1] }
+    );
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const urlOf = (i: number | undefined) => result.facility.sources[i as number].url;
+    expect(urlOf(result.facility.stakeholders?.[0].sourceIndex)).toBe("https://example.com/s1");
+    expect(urlOf(result.facility.emissions?.sourceIndex)).toBe("https://example.com/s2");
+    expect(urlOf(result.facility.construction?.disturbedAcres?.sourceIndex)).toBe("https://example.com/s0");
+    expect(urlOf(result.facility.statusHistory[0].sourceIndex)).toBe("https://example.com/s0");
+
+    const rows = await tdb.db.select().from(facilitiesTable).where(eq(facilitiesTable.id, seedDoc.id));
+    expect(rows[0].doc.stakeholders?.[0].sourceIndex).toBe(2);
+  });
+
+  it("409s a reorder with no sourceOrigins (the API PATCH shape), leaving the stored doc unchanged", async () => {
+    const seedDoc = seedWithCarriedRefs();
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await updateFacility(seedDoc.id, {
+      sources: [makeSource("s2"), makeSource("s0"), makeSource("s1")],
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(409);
+
+    const rows = await tdb.db.select().from(facilitiesTable).where(eq(facilitiesTable.id, seedDoc.id));
+    expect(rows[0].doc).toEqual(seedDoc);
+  });
+
+  it("409s naming the citing path when sourceOrigins drops a cited source, leaving the stored doc unchanged", async () => {
+    const seedDoc = makeSeedDoc();
+    seedDoc.sources = [makeSource("s0"), makeSource("s1"), makeSource("s2")];
+    seedDoc.community = undefined;
+    seedDoc.emissions = { sourceIndex: 2 };
+    await seedFacility(tdb.db, seedDoc);
+
+    const result = await updateFacility(
+      seedDoc.id,
+      { sources: [makeSource("s0"), makeSource("s1")] },
+      "admin-direct",
+      { sourceOrigins: [0, 1] }
+    );
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.status).toBe(409);
+    expect(result.issues).toEqual([
+      { path: ["emissions", "sourceIndex"], message: "cites a source that moved or was removed" },
+    ]);
+
+    const rows = await tdb.db.select().from(facilitiesTable).where(eq(facilitiesTable.id, seedDoc.id));
+    expect(rows[0].doc).toEqual(seedDoc);
+  });
+
   it("shallow-merges a partial location patch, keeping lat, lon and an exact precision", async () => {
     const seedDoc = makeSeedDoc(); // location: { lat: 33.4, lon: -84.4, state: "GA", precision: "exact" }
     await seedFacility(tdb.db, seedDoc);

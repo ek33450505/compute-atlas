@@ -44,8 +44,12 @@ export async function createFacilityAction(input: unknown): Promise<WriteResult>
  * state is merged over the stored one. A patch that restates any of them
  * replaces the location wholesale, which is what this form's payload does.
  */
-export async function updateFacilityAction(id: string, input: unknown): Promise<WriteResult> {
+export async function updateFacilityAction(
+  id: string,
+  input: unknown,
+  sourceOrigins?: readonly (number | null)[]
+): Promise<WriteResult> {
   await assertAdminSession();
 
-  return updateFacility(id, input);
+  return updateFacility(id, input, "admin-direct", { sourceOrigins });
 }

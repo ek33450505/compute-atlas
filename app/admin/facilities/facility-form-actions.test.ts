@@ -124,8 +124,21 @@ describe("updateFacilityAction", () => {
     const result = await updateFacilityAction("fac-1", patch);
 
     expect(mockVerifySessionCookie).toHaveBeenCalledWith("some-cookie-value");
-    expect(mockUpdateFacility).toHaveBeenCalledWith("fac-1", patch);
+    expect(mockUpdateFacility).toHaveBeenCalledWith("fac-1", patch, "admin-direct", {
+      sourceOrigins: undefined,
+    });
     expect(result.ok).toBe(true);
+  });
+
+  it("forwards sourceOrigins to updateFacility", async () => {
+    mockVerifySessionCookie.mockReturnValue(true);
+    mockUpdateFacility.mockResolvedValue({ ok: true, facility: { id: "fac-1" } });
+
+    await updateFacilityAction("fac-1", { name: "x" }, [1, 0, null]);
+
+    expect(mockUpdateFacility).toHaveBeenCalledWith("fac-1", { name: "x" }, "admin-direct", {
+      sourceOrigins: [1, 0, null],
+    });
   });
 
   it("propagates a 404 WriteResult when the facility doesn't exist", async () => {
