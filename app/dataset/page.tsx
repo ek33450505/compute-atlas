@@ -14,6 +14,7 @@ import {
   loadOfferEdition,
   n,
 } from "@/lib/dataset-offer";
+import { formatEditionDate } from "@/lib/edition-date";
 import { breadcrumbJsonLdString, datasetJsonLdString } from "@/lib/seo";
 import { MAX_ROWS } from "@/lib/table-query";
 import { statesPhrase } from "@/lib/us-states";
@@ -206,6 +207,28 @@ export default async function DatasetPage() {
                 releases.
               </li>
             </ul>
+            {counts && counts.coverage.length > 0 && (
+              <>
+                <h3 className="font-display text-xl text-foreground">Field coverage</h3>
+                <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+                  Records with a value, counted on {formatEditionDate(counts.asOf)}. A field counts
+                  only the records of the facility types it applies to.
+                </p>
+                <dl className="grid max-w-2xl grid-cols-[auto_1fr] gap-x-6 gap-y-1 font-mono text-sm">
+                  {counts.coverage.map((row) => (
+                    <div key={row.key} className="contents">
+                      <dt className="text-muted-foreground">{row.label}</dt>
+                      <dd className="text-foreground">{`${n(row.filled)} of ${n(row.applicable)}`}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+                  New editions list all {CSV_COLUMN_COUNT} columns and the join keys in their README,
+                  with the change since the previous edition once an earlier one carries these
+                  counts.
+                </p>
+              </>
+            )}
           </section>
 
           {commercial && (

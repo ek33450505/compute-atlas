@@ -225,8 +225,13 @@ function renderCell(value: Cell): string {
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 
+/** One facility's rendered CSV cells, in `CSV_COLUMNS` order; an empty string is an empty cell. */
+export function csvCells(f: Facility): string[] {
+  return COLUMNS.map(([, get]) => renderCell(get(f)));
+}
+
 /** One row per facility, header first, CRLF after every row (the last included). */
 export function facilitiesToCsv(facilities: Facility[]): string {
-  const lines = [CSV_COLUMNS.join(","), ...facilities.map((f) => COLUMNS.map(([, get]) => renderCell(get(f))).join(","))];
+  const lines = [CSV_COLUMNS.join(","), ...facilities.map((f) => csvCells(f).join(","))];
   return lines.map((line) => `${line}\r\n`).join("");
 }

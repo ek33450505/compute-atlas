@@ -143,7 +143,13 @@ describe("buildEdition happy path", () => {
       bytes: Buffer.byteLength(bodyOf("facilities.json")),
       sha256: "b".repeat(64),
     });
-    expect(row.changelogSummary).toEqual({ added: 0, updated: 0, removed: 0, headlines: ["Initial edition: 2 records"] });
+    expect(row.changelogSummary).toEqual({
+      added: 0,
+      updated: 0,
+      removed: 0,
+      headlines: ["Initial edition: 2 records"],
+      coverage: expect.objectContaining({ id: 2, name: 2 }),
+    });
 
     // builtAt is the readAt taken inside the build, not the claim's `now`.
     expect(row.builtAt.getTime()).toBeGreaterThanOrEqual(before);

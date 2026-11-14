@@ -32,7 +32,7 @@ const fac = (facilityType: string, state: string, operator: string, sources: num
   facilityType,
   operator,
   location: { state },
-  sources: Array.from({ length: sources }, () => ({})),
+  sources: Array.from({ length: sources }, () => ({ url: "https://example.com/s" })),
 });
 
 beforeEach(() => {
@@ -86,6 +86,42 @@ describe("DatasetPage", () => {
     render(await DatasetPage());
     expect(datasetNodes()[0].conditionsOfAccess).toBe(
       "Facility pages are free to read. Data files require approved access, free for currently enrolled students.",
+    );
+  });
+
+  it("shows the six coverage rows with labels when counts exist", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(await DatasetPage());
+    expect(screen.getByRole("heading", { level: 3, name: "Field coverage" })).toBeInTheDocument();
+    for (const label of ["Operational MW", "Planned MW", "Serving utility", "Cooling type", "Investment", "Site acreage"]) {
+      expect(screen.getByText(label).tagName).toBe("DT");
+    }
+    expect(screen.getByText("Operational MW").nextElementSibling).toHaveTextContent("0 of 4");
+  });
+
+  it("renders no coverage when the counts read fails", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    mocks.getAllFacilities.mockRejectedValue(new Error("down"));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    render(await DatasetPage());
+    expect(screen.queryByRole("heading", { name: "Field coverage" })).not.toBeInTheDocument();
+  });
+
+  it("renders no coverage block when coverage could not be computed", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    mocks.getAllFacilities.mockResolvedValue([{ ...fac("data_center", "TX", "Alpha", 1), sources: [{}] }]);
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    render(await DatasetPage());
+    expect(screen.getByText(/1 facilities, counted on/)).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Field coverage" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Operational MW")).not.toBeInTheDocument();
+  });
+
+  it("describes the README coverage only as a feature of new editions", async () => {
+    vi.stubEnv("DATASET_SHARING_ENABLED", "true");
+    render(await DatasetPage());
+    expect(document.body.textContent).toContain(
+      `New editions list all ${CSV_COLUMN_COUNT} columns and the join keys in their README, with the change since the previous edition once an earlier one carries these counts.`,
     );
   });
 

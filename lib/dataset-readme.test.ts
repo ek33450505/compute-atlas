@@ -142,4 +142,35 @@ describe("buildReadme", () => {
   it.each([-1, 1.5, Number.NaN])("rejects an invalid record count %j", (recordCount) => {
     expect(() => buildReadme({ ...BASE, recordCount })).toThrow(/recordCount/);
   });
+
+  describe("coverage section", () => {
+    const rows = [
+      { key: "capacityMw.operational", filled: 1200, applicable: 3000, delta: 5 },
+      { key: "landAcres", filled: 40, applicable: 3000, delta: -2 },
+      { key: "water.coolingType", filled: 9, applicable: 3000, delta: 0 },
+      { key: "joinKeys.countyFips", filled: 2999, applicable: 3000, delta: null },
+    ];
+
+    it("is absent, and the output unchanged, without coverage", () => {
+      expect(buildReadme(BASE)).not.toContain("Coverage");
+      expect(buildReadme({ ...BASE, coverage: [] })).toBe(buildReadme(BASE));
+    });
+
+    it("lists counts with +, -, 0 and new changes, before the edition footer", () => {
+      const text = buildReadme({ ...BASE, coverage: rows });
+      expect(text).toContain("\nCoverage\n--------\n");
+      expect(text).toContain("  capacityMw.operational  1,200 of 3,000 (+5)");
+      expect(text).toContain("  landAcres               40 of 3,000 (-2)");
+      expect(text).toContain("  water.coolingType       9 of 3,000 (0)");
+      expect(text).toContain("  joinKeys.countyFips     2,999 of 3,000 (new)");
+      expect(text.indexOf("Coverage\n")).toBeLessThan(text.indexOf("Edition: 2026-11-09"));
+    });
+
+    it("says no change is shown, and prints no change column, when every delta is null", () => {
+      const text = buildReadme({ ...BASE, coverage: rows.map((r) => ({ ...r, delta: null })) });
+      expect(text).toContain("No earlier edition carries coverage counts, so no change is shown.");
+      expect(text).toContain("  landAcres               40 of 3,000\n");
+      expect(text).not.toContain("(new)");
+    });
+  });
 });

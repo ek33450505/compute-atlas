@@ -27,6 +27,8 @@ export interface DatasetChangelogSummary {
   removed: number;
   /** At most `MAX_HEADLINES`, plain and impersonal. */
   headlines: string[];
+  /** Records with a value per field key; added by the edition builder, not by `buildChangelog`. */
+  coverage?: Record<string, number>;
 }
 
 export interface EditionWindow {
