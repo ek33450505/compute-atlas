@@ -345,7 +345,7 @@ export default async function CommercialAccessPage({
             .
           </li>
           <li>Payment is handled by PayPal; a PayPal account is required. Compute Atlas never sees your payment details.</li>
-          <li>One named person per subscription.</li>
+          <li>One personal download link per subscription. Files you download can be shared across your organization or group.</li>
           <li>
             Currently enrolled students: access is free and reviewed by hand against a school email address. See{" "}
             <Link href="/access" className={ACCESS_LINK_CLASS}>

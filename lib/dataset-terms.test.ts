@@ -8,13 +8,15 @@ const privacy = DATASET_PRIVACY_NOTICE.join("\n");
 
 describe("dataset terms", () => {
   it("pins the terms version", () => {
-    expect(DATASET_TERMS_VERSION).toBe("2026-11-13.1");
+    expect(DATASET_TERMS_VERSION).toBe("2026-11-14.1");
   });
 
   it("commercial terms keep the licence whole and state the price, PayPal and one-person scope", () => {
     expect(commercial).toContain("CC BY 4.0");
     expect(commercial).toContain("$150 per month or $1,500 per year, plus applicable tax, paid through PayPal. The fee pays for preparing and delivering the files; it is not a licence fee. A PayPal account is required.");
     expect(commercial).toContain("one named person");
+    expect(commercial).toContain("The link is for that person only and must not be shared. Files downloaded through it may be shared within the subscriber's organization or group, so colleagues do not need a subscription of their own. The files remain licensed CC BY 4.0, and these terms never narrow that licence.");
+    expect(commercial).not.toContain("by arrangement");
     expect(commercial).toContain("continues under the terms accepted at checkout until it is cancelled");
     expect(commercial).toContain("in your PayPal account's automatic payments settings");
     expect(commercial).toContain("There are no refunds for partial periods, except where the law requires one. The maintainer may refund at their discretion.");

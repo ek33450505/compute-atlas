@@ -240,7 +240,7 @@ export function buildDatasetSubscriptionActiveEmail(input: { siteUrl: string; ac
   const dataUrl = `${input.siteUrl}/data`;
   const subject = "Your Compute Atlas dataset subscription is active";
   const refresh = "The dataset refreshes weekly.";
-  const seats = "A subscription gives one named person weekly access through a personal link.";
+  const seats = "A subscription gives one named person weekly access through a personal link. The files you download may be shared within your organization or group.";
   const billing =
     'Cancel from the "Your subscription" section of your dataset page, or in your PayPal account\'s automatic payments settings. If you cancel, access continues to the end of the period you have paid for.';
   const reply = `Questions can go through the contact page: ${input.siteUrl}/contact`;
@@ -350,6 +350,7 @@ export function buildDatasetRenewalReminderEmail(input: {
   expiresAt: Date;
 }): DatasetEmail {
   const url = `${input.siteUrl}/access/renew?token=${encodeURIComponent(input.renewToken)}`;
+  const subscribeUrl = `${input.siteUrl}${COMMERCIAL_PATH}`;
   const date = DATE_FORMAT.format(input.expiresAt);
   const subject = "Your Compute Atlas dataset access is expiring";
   const text = [
@@ -358,11 +359,14 @@ export function buildDatasetRenewalReminderEmail(input: {
     url,
     "",
     "Renewal requests are reviewed by hand. A renewal approved before that date continues without a break; if review is still pending when the date passes, downloads pause until it is approved. If you no longer need the data, ignore this email.",
+    "",
+    `Free renewals are for currently enrolled students. Educators, researchers and anyone no longer enrolled can keep receiving the files with a dataset subscription: ${subscribeUrl}`,
   ].join("\n");
   const html = paragraphs(
     `Your access to the Compute Atlas dataset expires on ${escapeHtml(date)} (UTC). To request a renewal, use this link before then:`,
     `<a href="${escapeHtml(url)}">Request a renewal</a>`,
     "Renewal requests are reviewed by hand. A renewal approved before that date continues without a break; if review is still pending when the date passes, downloads pause until it is approved. If you no longer need the data, ignore this email.",
+    `Free renewals are for currently enrolled students. Educators, researchers and anyone no longer enrolled can keep receiving the files with a <a href="${escapeHtml(subscribeUrl)}">dataset subscription</a>.`,
   );
   return { subject, text, html };
 }
