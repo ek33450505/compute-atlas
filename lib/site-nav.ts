@@ -32,8 +32,8 @@ export function getSiteNavGroups(): readonly SiteNavGroup[] {
   const commercial = sharing && isCommercialTierEnabled();
 
   const dataset: SiteNavLink[] = [{ label: "Dataset", href: "/dataset" }];
-  if (commercial) dataset.push({ label: "Commercial access", href: "/access/commercial" });
-  if (sharing) dataset.push({ label: "Free access for education", href: "/access" });
+  if (commercial) dataset.push({ label: "Dataset subscription", href: "/access/commercial" });
+  if (sharing) dataset.push({ label: "Free access for students", href: "/access" });
   dataset.push({ label: "Cite & license", href: "/data" });
 
   return [

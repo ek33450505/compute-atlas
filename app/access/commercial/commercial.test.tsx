@@ -90,7 +90,7 @@ describe("/access/commercial", () => {
     expect(screen.getByRole("radio", { name: /\$1,500\/year/ })).toBeInTheDocument();
     expect(screen.queryByText(/months free/)).toBeNull();
     expect(screen.getByText(/never sees your payment details/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "dataset access" })).toHaveAttribute("href", "/access");
+    expect(screen.getByRole("link", { name: "free student access" })).toHaveAttribute("href", "/access");
   });
 
   it("dates the live count and separates it from the edition's record count", async () => {
@@ -122,11 +122,11 @@ describe("/access/commercial", () => {
     await renderPage();
     expect(screen.getAllByText(/plus applicable tax/)).toHaveLength(3);
     expect(screen.getByText(/One named person per subscription/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "contact us" })).toHaveAttribute("href", "/contact");
+    expect(screen.queryByRole("link", { name: "contact us" })).toBeNull();
     expect(
       screen.getByText(/Cancel anytime from your PayPal account; access runs to the end of the paid period\. No refunds for partial periods, except where the law requires one\./)
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Commercial access terms" })).toHaveAttribute("href", "/access/terms");
+    expect(screen.getByRole("link", { name: "Dataset subscription terms" })).toHaveAttribute("href", "/access/terms");
   });
 
   it("renders one native form posting plan, details and terms to the checkout route", async () => {

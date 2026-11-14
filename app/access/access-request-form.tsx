@@ -11,11 +11,11 @@ import { HoneypotField, issuesToFieldMap } from "@/components/contribute/contrib
 
 // The visible choices are a subset of DATASET_CATEGORIES in lib/db/schema (that module imports the
 // DB client, which must not reach a client bundle); a drift test keeps every value valid. Free access
-// is education-only, so everyone else files under "commercial", which the server redirects to the
+// is for students only, so everyone else files under "commercial", which the server redirects to the
 // paid tier. The other enum values stay valid for existing rows.
 export const DATASET_CATEGORY_OPTIONS = [
-  { value: "academic", label: "Student or educator" },
-  { value: "commercial", label: "Something else (business, journalism, nonprofit, government)" },
+  { value: "academic", label: "Currently enrolled student" },
+  { value: "commercial", label: "Something else (business, teaching or research, journalism, nonprofit, government)" },
 ] as const;
 
 const INTENDED_USE_MAX = 2000;
@@ -443,13 +443,13 @@ export function AccessRequestForm({ termsVersion, commercialTier }: { termsVersi
             <div role="status" aria-live="polite" className="empty:absolute">
               {showCommercialNote ? (
                 <p id="access-commercial-note" className="text-sm text-muted-foreground">
-                  Free for students and educators. We verify each request against your school email address; requests from personal addresses (Gmail, Outlook and similar) are declined.
-                  Everyone else can get the full dataset through{" "}
+                  Free for currently enrolled students. We verify each request against your school email address; requests from personal addresses (Gmail, Outlook and similar) are declined.
+                  Educators, researchers and everyone else can get the full dataset through a{" "}
                   <Link
                     href={COMMERCIAL_PATH}
                     className="underline underline-offset-2 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-sm"
                   >
-                    commercial access
+                    dataset subscription
                   </Link>
                   .
                 </p>

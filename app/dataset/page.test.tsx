@@ -77,7 +77,7 @@ describe("DatasetPage", () => {
     expect(nodes).toHaveLength(1);
     expect(nodes[0].isAccessibleForFree).toBe(false);
     expect(nodes[0].url).toMatch(/\/dataset$/);
-    expect(nodes[0].conditionsOfAccess).toContain("paid for commercial use");
+    expect(nodes[0].conditionsOfAccess).toContain("paid subscription for everyone else");
   });
 
   it("uses the non-commercial conditionsOfAccess when the commercial tier is off", async () => {
@@ -85,7 +85,7 @@ describe("DatasetPage", () => {
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
     render(await DatasetPage());
     expect(datasetNodes()[0].conditionsOfAccess).toBe(
-      "Facility pages are free to read. Data files require approved access, free for students and educators.",
+      "Facility pages are free to read. Data files require approved access, free for currently enrolled students.",
     );
   });
 
@@ -95,24 +95,24 @@ describe("DatasetPage", () => {
     expect(datasetNodes()).toHaveLength(0);
   });
 
-  it("shows the free card only, with no paid-tier section, when commercial is off", async () => {
+  it("shows the student card only, with no paid-tier section, when commercial is off", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "");
     render(await DatasetPage());
-    expect(screen.getByRole("heading", { level: 3, name: "Free" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { level: 3, name: "Students" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Request access" })).toHaveAttribute("href", "/access?from=data");
-    expect(screen.queryByRole("heading", { name: "Commercial" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Dataset Subscription" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Why it costs money" })).not.toBeInTheDocument();
     expect(screen.queryByText(/\$150/)).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Preview the files and plans" })).not.toBeInTheDocument();
   });
 
-  it("restricts the free tier to students and educators", async () => {
+  it("restricts the free tier to currently enrolled students", async () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(await DatasetPage());
-    const free = screen.getByRole("heading", { level: 3, name: "Free" }).closest("section")!;
-    expect(free).toHaveTextContent("For students and educators");
+    const free = screen.getByRole("heading", { level: 3, name: "Students" }).closest("section")!;
+    expect(free).toHaveTextContent("For currently enrolled students");
     expect(document.body.textContent).not.toMatch(/academics/i);
     expect(free.textContent).not.toMatch(/government|journalist|nonprofit/i);
   });
@@ -121,12 +121,12 @@ describe("DatasetPage", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "true");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(await DatasetPage());
-    const card = screen.getByRole("heading", { level: 3, name: "Commercial" }).closest("section")!;
+    const card = screen.getByRole("heading", { level: 3, name: "Dataset Subscription" }).closest("section")!;
     expect(card).toHaveTextContent("$150/month or $1,500/year, plus applicable tax");
-    expect(card).toHaveTextContent("For everyone else: companies, consultancies, investors, utilities, law firms, journalists, nonprofits and government.");
-    expect(card).toHaveTextContent("One link per subscription; for a team, contact us.");
+    expect(card).toHaveTextContent("For companies, consultancies, investors, utilities, law firms, journalists, nonprofits, government, educators and researchers.");
+    expect(card).toHaveTextContent("One link per subscription.");
     expect(within(card).getByRole("link", { name: "Preview the files and plans" })).toHaveAttribute("href", "/access/commercial");
-    expect(within(card).getByRole("link", { name: "contact us" })).toHaveAttribute("href", "/contact");
+    expect(within(card).queryByRole("link", { name: "contact us" })).toBeNull();
     expect(screen.getByRole("heading", { level: 2, name: "Why it costs money" })).toBeInTheDocument();
     expect(document.body.textContent).toContain("the fee pays for the work, not a license");
     expect(document.body.textContent).not.toMatch(/donat|support us|months free/i);
@@ -234,8 +234,8 @@ describe("DatasetPage", () => {
     vi.stubEnv("DATASET_SHARING_ENABLED", "");
     vi.stubEnv("COMMERCIAL_TIER_ENABLED", "true");
     render(await DatasetPage());
-    expect(screen.queryByRole("heading", { name: "Free" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("heading", { name: "Commercial" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Students" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Dataset Subscription" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Why it costs money" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "contact page" })).toHaveAttribute("href", "/contact");
     expect(screen.getByRole("link", { name: "Cite & license" })).toHaveAttribute("href", "/data");
